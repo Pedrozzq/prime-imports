@@ -14,7 +14,7 @@
             const TubesCursor = module.default;
             app = TubesCursor(canvas, {
                 tubes: {
-                    colors: ['#D4AF37', '#F3E5AB', '#AA8529'],
+                    colors: ['#D4AF37', '#f8f5e9', '#AA8529'],
                     lights: {
                         intensity: 200,
                         colors: ['#D4AF37', '#F3E5AB', '#ffffff', '#AA8529']
