@@ -322,6 +322,35 @@ input,select{font:inherit}
 .gaveta__vazio{padding:48px 10px;text-align:center;color:var(--tinta-fraca)}
 .gaveta__vazio svg{width:52px;height:52px;margin:0 auto 14px;stroke:var(--ouro-forte);fill:none;stroke-width:1}
 
+/* ---------- cupom de desconto (sacola) ---------- */
+.cupom{display:flex;gap:8px;margin-bottom:12px}
+.cupom input{flex:1;min-width:0;padding:11px 12px;border:1px solid rgba(25,24,23,.22);background:var(--creme);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--tinta)}
+.cupom input:focus{outline:none;border-color:var(--ouro-forte)}
+.cupom .btn-vazado{flex:none;width:auto;margin:0;padding:11px 16px;white-space:nowrap}
+.cupom--ok{display:block}
+.cupom__aplicado{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border:1px dashed var(--ouro-forte);background:rgba(217,179,108,.12);font-size:12px}
+.cupom__aplicado b{letter-spacing:.12em}
+.cupom__aplicado button{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#a8574a}
+.cupom__aplicado button:hover{text-decoration:underline}
+.cupom__aviso{margin:-4px 0 12px;font-size:11.5px;line-height:1.4}
+.cupom__aviso.ok{color:#3f7d3f}
+.cupom__aviso.erro{color:#a8574a}
+.total-linha--desc{color:#3f7d3f}
+
+/* ---------- sugestões dentro da sacola ---------- */
+.sugestoes-sacola{margin-top:6px;padding-top:16px;border-top:1px solid rgba(25,24,23,.1)}
+.sugestoes-sacola__titulo{margin:0 0 10px;font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--ouro-forte)}
+.sugestoes-sacola__lista{display:flex;flex-direction:column;gap:8px}
+.mini-prod{display:grid;grid-template-columns:44px 1fr auto;align-items:center;gap:10px;padding:8px;background:transparent;border:1px solid rgba(25,24,23,.12)}
+.mini-prod img{width:44px;height:44px;object-fit:cover}
+.mini-prod__info{display:flex;flex-direction:column;min-width:0}
+.mini-prod__nome{font-size:11.5px;font-weight:500;letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mini-prod__marca{font-size:10px;color:var(--tinta-fraca);text-transform:uppercase;letter-spacing:.1em}
+.mini-prod__preco{font-size:11.5px;margin-top:2px}
+.mini-prod__add{width:30px;height:30px;flex:none;display:grid;place-items:center;background:var(--ouro);color:#000;border-radius:50%;transition:.2s}
+.mini-prod__add:hover{background:var(--ouro-claro)}
+.mini-prod__add svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round}
+
 /* ---------- modal produto ---------- */
 .modal{position:fixed;inset:0;z-index:95;display:grid;place-items:center;padding:16px;opacity:0;visibility:hidden;transition:.28s}
 .modal.aberto{opacity:1;visibility:visible}
@@ -848,7 +877,8 @@ const CATEGORIAS = {
    ============================================================ */
 const estado = {
   rota:"inicio", params:{}, ordem:"destaque",
-  carrinho:[], favoritos:new Set(), logado:false, entrega:null
+  carrinho:[], favoritos:new Set(), logado:false, entrega:null,
+  cupom:null, cupomAviso:null
 };
 
 // casas árabes (para as subseções Importados x Árabes)
@@ -900,6 +930,92 @@ function remover(chave){
 const totalSacola = () => estado.carrinho.reduce((s,i) => s + i.preco*i.qtd, 0);
 const pecasSacola = () => estado.carrinho.reduce((s,i) => s + i.qtd, 0);
 
+/* ---------- Cupons de desconto ----------
+   ESPELHO da lista do servidor (api/_lib/cupons.js) — usada só para o cliente
+   ver o desconto na sacola. Quem cobra o valor certo é o servidor. Se mudar
+   um cupom aqui, mude também lá.
+     tipo "percentual" → `valor` em %   | tipo "fixo" → `valor` em reais
+     minimo → subtotal mínimo (R$)      | teto → desconto máx. (R$), 0 = sem teto */
+const CUPONS = {
+  PRIME10:    { tipo:"percentual", valor:10, minimo:0,   teto:150, rotulo:"10% OFF" },
+  PRIME15:    { tipo:"percentual", valor:15, minimo:500, teto:300, rotulo:"15% OFF acima de R$ 500" },
+  BEMVINDO30: { tipo:"fixo",       valor:30, minimo:199, teto:0,   rotulo:"R$ 30 OFF acima de R$ 199" }
+};
+const CUPOM_LS = "prime_imports_cupom";
+
+/** Valida um código contra o subtotal. Retorna {ok, code, rotulo?, desconto, motivo?}. */
+function conferirCupom(codigo, subtotal){
+  const code = String(codigo || "").trim().toUpperCase();
+  if(!code) return { ok:false, code:"", desconto:0, motivo:"Digite um cupom." };
+  const c = CUPONS[code];
+  if(!c) return { ok:false, code, desconto:0, motivo:"Cupom inválido ou expirado." };
+  if(subtotal < (c.minimo || 0))
+    return { ok:false, code, desconto:0, motivo:`Válido em compras a partir de ${dinheiro(c.minimo)}.` };
+  let d = c.tipo === "percentual" ? subtotal * (c.valor/100) : c.valor;
+  if(c.tipo === "percentual" && c.teto) d = Math.min(d, c.teto);
+  d = Math.max(0, Math.min(d, subtotal));
+  d = Math.round(d*100)/100;
+  return d > 0
+    ? { ok:true, code, rotulo:c.rotulo || code, desconto:d }
+    : { ok:false, code, desconto:0, motivo:"Cupom sem efeito para este valor." };
+}
+
+/** Cupom válido para o subtotal atual (ou null). Some sozinho se a sacola mudar. */
+function cupomAtivo(){
+  if(!estado.cupom) return null;
+  const r = conferirCupom(estado.cupom.code, totalSacola());
+  return r.ok ? r : null;
+}
+
+function salvarCupomLS(){
+  try{
+    const r = cupomAtivo();
+    if(r) localStorage.setItem(CUPOM_LS, JSON.stringify({ code:r.code, rotulo:r.rotulo, desconto:r.desconto }));
+    else localStorage.removeItem(CUPOM_LS);
+  }catch(e){}
+}
+
+function aplicarCupom(codigo){
+  const r = conferirCupom(codigo, totalSacola());
+  estado.cupom = r.ok ? { code:r.code } : estado.cupom;
+  estado.cupomAviso = r.ok ? { tipo:"ok", texto:`Cupom ${r.code} aplicado — ${r.rotulo}.` }
+                           : { tipo:"erro", texto:r.motivo };
+  if(r.ok) avisar(`Cupom ${r.code} aplicado`);
+  salvarCupomLS();
+  pintarCarrinho();
+}
+
+function removerCupom(){
+  estado.cupom = null;
+  estado.cupomAviso = null;
+  salvarCupomLS();
+  pintarCarrinho();
+}
+
+/* ---------- Produtos relacionados na sacola ---------- */
+function relacionadosSacola(limite = 3){
+  if(!estado.carrinho.length) return [];
+  const naSacola = new Set(estado.carrinho.map(i => i.id));
+  const base = estado.carrinho.map(i => acharProduto(i.id)).filter(Boolean);
+  const marcas = new Set(base.map(p => p.marca));
+  const familias = new Set(base.map(p => p.familia));
+  const cats = new Set(base.map(p => p.cat));
+  return PRODUTOS
+    .filter(p => !naSacola.has(p.id))
+    .map(p => {
+      let score = 0;
+      if(familias.has(p.familia)) score += 3;
+      if(marcas.has(p.marca))     score += 2;
+      if(cats.has(p.cat))         score += 2;
+      if(p.destaque)              score += 0.5;
+      return { p, score };
+    })
+    .filter(x => x.score > 0)
+    .sort((a,b) => b.score - a.score || a.p.preco - b.p.preco)
+    .slice(0, limite)
+    .map(x => x.p);
+}
+
 function pintarCarrinho(){
   document.getElementById("seloCarrinho").textContent = pecasSacola();
   const corpo = document.getElementById("corpoCarrinho");
@@ -913,7 +1029,7 @@ function pintarCarrinho(){
     return;
   }
 
-  corpo.innerHTML = estado.carrinho.map(i => {
+  const itensHtml = estado.carrinho.map(i => {
     const p = acharProduto(i.id);
     return `<div class="item">
       <img src="${p.img}" alt="${p.nome}">
@@ -933,8 +1049,47 @@ function pintarCarrinho(){
     </div>`;
   }).join("");
 
+  const relacionados = relacionadosSacola(3);
+  const relHtml = relacionados.length ? `
+    <div class="sugestoes-sacola">
+      <p class="sugestoes-sacola__titulo">Combina com a sua sacola</p>
+      <div class="sugestoes-sacola__lista">
+        ${relacionados.map(p => `
+          <div class="mini-prod">
+            <img src="${p.img}" alt="${p.nome}" loading="lazy">
+            <div class="mini-prod__info">
+              <span class="mini-prod__nome">${p.nome}</span>
+              <span class="mini-prod__marca">${p.marca}</span>
+              <span class="mini-prod__preco">${dinheiro(p.preco)}</span>
+            </div>
+            <button type="button" class="mini-prod__add" data-add-relacionado="${p.id}" aria-label="Adicionar ${p.nome} à sacola">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            </button>
+          </div>`).join("")}
+      </div>
+    </div>` : "";
+  corpo.innerHTML = itensHtml + relHtml;
+
   const total = totalSacola();
   const frete = total >= 500 ? 0 : 29.9;
+  const cup = cupomAtivo();
+  const desconto = cup ? cup.desconto : 0;
+  const totalFinal = Math.max(0, total - desconto) + frete;
+
+  const cupomInput = estado.cupom && cup ? `
+    <div class="cupom cupom--ok">
+      <div class="cupom__aplicado">
+        <span><b>${cup.code}</b> · ${cup.rotulo}</span>
+        <button type="button" id="btnRemoverCupom" aria-label="Remover cupom">Remover</button>
+      </div>
+    </div>` : `
+    <div class="cupom">
+      <input type="text" id="campoCupom" placeholder="Cupom de desconto" autocomplete="off" spellcheck="false"
+             maxlength="24" aria-label="Código do cupom" value="${estado.cupom ? estado.cupom.code : ""}">
+      <button type="button" class="btn-vazado" id="btnAplicarCupom">Aplicar</button>
+    </div>`;
+  const cupomAviso = estado.cupomAviso ? `<p class="cupom__aviso ${estado.cupomAviso.tipo}">${estado.cupomAviso.texto}</p>` : "";
+
   const en = estado.entrega;
   const temEntrega = en && en.nome;
   const blocoEntrega = temEntrega ? `
@@ -943,10 +1098,13 @@ function pintarCarrinho(){
       <p>${en.nome} · ${en.fone}<br>${en.rua}, ${en.numero}${en.complemento ? " — " + en.complemento : ""}<br>${en.bairro} · ${en.cidade}/${(en.uf||"").toUpperCase()} · CEP ${en.cep}</p>
     </div>` : "";
   pe.innerHTML = `
+    ${cupomInput}
+    ${cupomAviso}
     <div class="total-linha"><span>Subtotal</span><span>${dinheiro(total)}</span></div>
+    ${desconto ? `<div class="total-linha total-linha--desc"><span>Desconto (${cup.code})</span><span>− ${dinheiro(desconto)}</span></div>` : ""}
     <div class="total-linha"><span>Frete</span><span>${frete === 0 ? "Grátis" : dinheiro(frete)}</span></div>
-    <div class="total"><span>Total</span><b>${dinheiro(total+frete)}</b></div>
-    <p style="margin:0 0 12px;font-size:12px;color:#d8ccb6">ou ${parcela(total+frete)} sem juros</p>
+    <div class="total"><span>Total</span><b>${dinheiro(totalFinal)}</b></div>
+    <p style="margin:0 0 12px;font-size:12px;color:#d8ccb6">ou ${parcela(totalFinal)} sem juros</p>
     ${blocoEntrega}
     ${temEntrega
       ? `<button class="btn-ouro" type="button" id="btnPagarOnline" style="width:100%;text-align:center">Pagar com Cartão ou Pix</button>
@@ -1463,6 +1621,18 @@ document.addEventListener("click", e => {
   const rm = alvo.closest("[data-remover]");
   if(rm){ remover(rm.dataset.remover); return; }
 
+  // produtos relacionados dentro da sacola
+  const rel = alvo.closest("[data-add-relacionado]");
+  if(rel){ adicionar(rel.dataset.addRelacionado); return; }
+
+  // cupom de desconto
+  if(alvo.closest("#btnAplicarCupom")){
+    const campo = document.getElementById("campoCupom");
+    aplicarCupom(campo ? campo.value : "");
+    return;
+  }
+  if(alvo.closest("#btnRemoverCupom")){ removerCupom(); return; }
+
   // filtro por família
   const fam = alvo.closest("[data-familia]");
   if(fam){
@@ -1492,6 +1662,7 @@ document.addEventListener("click", e => {
     try {
       localStorage.setItem("prime_imports_cart", JSON.stringify(itensPagamento));
       localStorage.setItem("prime_imports_entrega", JSON.stringify(estado.entrega));
+      salvarCupomLS();
     } catch(err) {}
     window.location.href = "checkout.html";
     return;
@@ -1504,7 +1675,12 @@ document.addEventListener("click", e => {
     const en = estado.entrega;
     const linhas = estado.carrinho.map(i => `• ${acharProduto(i.id).nome} (${i.ml}) x${i.qtd} — ${dinheiro(i.preco*i.qtd)}`).join("\n");
     const endereco = `${en.nome} — ${en.fone}\n${en.rua}, ${en.numero}${en.complemento ? " (" + en.complemento + ")" : ""}\n${en.bairro}, ${en.cidade}/${(en.uf||"").toUpperCase()} — CEP ${en.cep}`;
-    const texto = `Olá! Quero finalizar meu pedido na Prime Imports BR:\n\n${linhas}\n\nTotal: ${dinheiro(totalSacola())}\n\nEntrega:\n${endereco}`;
+    const cupWa = cupomAtivo();
+    const blocoCupom = cupWa
+      ? `\nSubtotal: ${dinheiro(totalSacola())}\nCupom ${cupWa.code}: − ${dinheiro(cupWa.desconto)}`
+      : "";
+    const totalWa = Math.max(0, totalSacola() - (cupWa ? cupWa.desconto : 0));
+    const texto = `Olá! Quero finalizar meu pedido na Prime Imports BR:\n\n${linhas}${blocoCupom}\n\nTotal: ${dinheiro(totalWa)}\n\nEntrega:\n${endereco}`;
     window.open("https://wa.me/5521996931199?text=" + encodeURIComponent(texto), "_blank", "noopener");
     avisar("Pedido enviado para o atendimento");
     return;
@@ -1549,6 +1725,14 @@ document.addEventListener("change", e => {
 });
 
 document.addEventListener("keydown", e => { if(e.key === "Escape") fecharTudo(); });
+
+// Enter aplica o cupom de desconto
+document.addEventListener("keydown", e => {
+  if(e.key === "Enter" && e.target && e.target.id === "campoCupom"){
+    e.preventDefault();
+    aplicarCupom(e.target.value);
+  }
+});
 
 // newsletter
 document.getElementById("btnAssinar").addEventListener("click", () => {
@@ -1649,6 +1833,14 @@ document.getElementById("btnRastrear").addEventListener("click", () => {
    14. INÍCIO
    ============================================================ */
 window.addEventListener("hashchange", navegar);
+
+// Restaura um cupom aplicado numa visita anterior (só o código; o desconto é
+// sempre recalculado sobre a sacola atual).
+try {
+  const cupomSalvo = JSON.parse(localStorage.getItem(CUPOM_LS) || "null");
+  if (cupomSalvo && cupomSalvo.code) estado.cupom = { code: String(cupomSalvo.code).toUpperCase() };
+} catch (e) {}
+
 navegar();
 pintarCarrinho();
 </script>

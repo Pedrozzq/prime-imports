@@ -25,6 +25,7 @@ import crypto from 'node:crypto';
 import { MercadoPagoConfig, Payment } from 'mercadopago';
 import { enviarEmailPedido } from './_lib/order-email.js';
 import { validarSacola } from './_lib/catalogo.js';
+import { validarCupom } from './_lib/cupons.js';
 
 const ACCESS_TOKEN = process.env.MP_ACCESS_TOKEN;
 
@@ -77,7 +78,17 @@ export default async function handler(req, res) {
         }
 
         items = sacola.itens;
-        var transactionAmount = sacola.total;
+        var subtotal = sacola.total;
+        var transactionAmount = subtotal;
+
+        // Cupom: o cliente manda só o código; o desconto é decidido aqui.
+        // Um código inválido não derruba a compra — ela segue pelo valor cheio.
+        var cupom = validarCupom(body.cupom, subtotal);
+        if (cupom.ok && cupom.desconto > 0) {
+            transactionAmount = Math.round((subtotal - cupom.desconto) * 100) / 100;
+        } else if (body.cupom) {
+            console.warn('Cupom recusado (' + (cupom.code || '(vazio)') + '):', cupom.motivo);
+        }
 
         if (!(transactionAmount > 0)) {
             return res.status(400).json({ error: 'Valor do pedido inválido.' });
@@ -119,6 +130,8 @@ export default async function handler(req, res) {
             formData: formData,
             items: items,
             entrega: entrega,
+            subtotal: subtotal,
+            cupom: (cupom.ok && cupom.desconto > 0) ? cupom : null,
             total: transactionAmount
         });
 

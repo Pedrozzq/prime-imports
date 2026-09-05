@@ -21,6 +21,7 @@
     var NOTIFY_CHECKOUT_URL = '/api/notify-checkout';
     var STORAGE_KEY = 'prime_imports_cart';
     var ENTREGA_KEY = 'prime_imports_entrega';
+    var CUPOM_KEY = 'prime_imports_cupom';
     var AVISADO_KEY = 'prime_imports_checkout_avisado';
 
     if (typeof MercadoPago === 'undefined') {
@@ -42,6 +43,26 @@
             return raw ? JSON.parse(raw) : [];
         } catch (e) {
             return [];
+        }
+    }
+
+    /**
+     * Cupom aplicado na sacola do index.html. É só para exibição: quem decide
+     * o desconto de verdade é o servidor (api/_lib/cupons.js). Aqui usamos
+     * `desconto` apenas para mostrar o valor certo no resumo e no Brick.
+     */
+    function getCupom(items) {
+        try {
+            var raw = localStorage.getItem(CUPOM_KEY);
+            var obj = raw ? JSON.parse(raw) : null;
+            if (!obj || !obj.code) return null;
+            var desconto = Number(obj.desconto) || 0;
+            var subtotal = getSubtotal(items || []);
+            // Se a sacola mudou e o desconto não faz mais sentido, ignora.
+            if (desconto <= 0 || desconto >= subtotal) return null;
+            return { code: String(obj.code), rotulo: obj.rotulo || String(obj.code), desconto: desconto };
+        } catch (e) {
+            return null;
         }
     }
 
@@ -70,7 +91,7 @@
         });
     }
 
-    function renderSummary(items) {
+    function renderSummary(items, cupom) {
         var listEl = document.getElementById('checkout-summary-items');
         var totalEl = document.getElementById('checkout-summary-total');
         if (!listEl) return;
@@ -78,14 +99,28 @@
         if (!items.length) {
             listEl.innerHTML = '<p class="text-brand-gray text-sm">Sua sacola está vazia.</p>';
         } else {
-            listEl.innerHTML = items.map(function (it) {
+            var linhas = items.map(function (it) {
                 return '<div class="flex justify-between items-center gap-4 text-sm py-3 border-b border-white/10">' +
                     '<span class="text-white">' + it.qty + 'x ' + escapeHtml(it.name) + '</span>' +
                     '<span class="text-brand-gray whitespace-nowrap">' + formatBRL(it.qty * it.price) + '</span>' +
                     '</div>';
             }).join('');
+
+            if (cupom) {
+                linhas += '<div class="flex justify-between items-center gap-4 text-sm pt-3">' +
+                        '<span class="text-brand-gray">Subtotal</span>' +
+                        '<span class="text-brand-gray whitespace-nowrap">' + formatBRL(getSubtotal(items)) + '</span>' +
+                    '</div>' +
+                    '<div class="flex justify-between items-center gap-4 text-sm py-1 text-green-400">' +
+                        '<span>Cupom ' + escapeHtml(cupom.code) + '</span>' +
+                        '<span class="whitespace-nowrap">-' + formatBRL(cupom.desconto) + '</span>' +
+                    '</div>';
+            }
+            listEl.innerHTML = linhas;
         }
-        if (totalEl) totalEl.textContent = formatBRL(getSubtotal(items));
+
+        var total = getSubtotal(items) - (cupom ? cupom.desconto : 0);
+        if (totalEl) totalEl.textContent = formatBRL(total > 0 ? total : 0);
     }
 
     /** Mostra para onde o pedido será enviado — ou avisa que falta o endereço. */
@@ -147,6 +182,7 @@
         try {
             localStorage.removeItem(STORAGE_KEY);
             localStorage.removeItem(ENTREGA_KEY);
+            localStorage.removeItem(CUPOM_KEY);
             sessionStorage.removeItem(AVISADO_KEY);
         } catch (e) {}
     }
@@ -167,11 +203,12 @@
      * Assinatura simples da sacola + endereço. Serve só para não avisar duas
      * vezes o mesmo checkout quando o cliente recarrega a página ou volta.
      */
-    function assinaturaCheckout(items, entrega) {
+    function assinaturaCheckout(items, entrega, cupom) {
         var itensStr = items.map(function (it) {
             return String(it.id || it.name) + ':' + it.qty + ':' + it.price;
         }).join('|');
-        return itensStr + '#' + [entrega.nome, entrega.cep, entrega.numero].join('~');
+        return itensStr + '#' + [entrega.nome, entrega.cep, entrega.numero].join('~') +
+            '#' + (cupom ? cupom.code : '');
     }
 
     function jaAvisou(assinatura) {
@@ -192,29 +229,29 @@
      * Avisa a loja que o cliente chegou ao pagamento. É best-effort: qualquer
      * falha some no console e o checkout segue normalmente.
      */
-    function avisarCheckout(items, entrega) {
+    function avisarCheckout(items, entrega, cupom) {
         if (!items.length) return;
         if (getSubtotal(items) <= 0) return;
 
-        var assinatura = assinaturaCheckout(items, entrega);
+        var assinatura = assinaturaCheckout(items, entrega, cupom);
         if (jaAvisou(assinatura)) return;
         marcarAvisado(assinatura);
 
         fetch(NOTIFY_CHECKOUT_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ items: items, entrega: entrega }),
+            body: JSON.stringify({ items: items, entrega: entrega, cupom: cupom ? cupom.code : undefined }),
             keepalive: true
         }).catch(function (err) {
             console.warn('Não foi possível avisar a loja sobre o checkout:', err && err.message);
         });
     }
 
-    function initBrick(items, entrega) {
+    function initBrick(items, entrega, cupom) {
         var container = document.getElementById('paymentBrick_container');
         if (!container) return;
 
-        var amount = getSubtotal(items);
+        var amount = getSubtotal(items) - (cupom ? cupom.desconto : 0);
         if (amount <= 0) {
             container.innerHTML = '<p class="text-brand-gray text-sm">Adicione produtos à sacola antes de continuar para o pagamento.</p>';
             return;
@@ -243,7 +280,7 @@
                         fetch(CREATE_PAYMENT_URL, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ formData: formData, items: items, entrega: entrega })
+                            body: JSON.stringify({ formData: formData, items: items, entrega: entrega, cupom: cupom ? cupom.code : undefined })
                         })
                         .then(function (res) {
                             return res.json().then(function (json) { return { ok: res.ok, json: json }; });
@@ -277,10 +314,11 @@
     function init() {
         var items = getCartItems();
         var entrega = getEntrega();
-        renderSummary(items);
+        var cupom = getCupom(items);
+        renderSummary(items, cupom);
         renderEntrega(entrega);
-        avisarCheckout(items, entrega);
-        initBrick(items, entrega);
+        avisarCheckout(items, entrega, cupom);
+        initBrick(items, entrega, cupom);
     }
 
     if (document.readyState === 'loading') {
