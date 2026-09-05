@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+    <defs>
+        <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#F3E5AB"/>
+            <stop offset="50%" stop-color="#D4AF37"/>
+            <stop offset="100%" stop-color="#AA8529"/>
+        </linearGradient>
+    </defs>
+
+    <!-- tampa -->
+    <rect x="168" y="58" width="64" height="28" rx="4" fill="none" stroke="url(#goldGrad)" stroke-width="3"/>
+    <!-- bico -->
+    <rect x="188" y="86" width="24" height="22" fill="none" stroke="url(#goldGrad)" stroke-width="3"/>
+    <!-- corpo do frasco -->
+    <path d="M150 108 h100 v18 q32 22 32 62 v128 q0 22 -22 22 h-120 q-22 0 -22 -22 v-128 q0 -40 32 -62 z"
+          fill="none" stroke="url(#goldGrad)" stroke-width="3" stroke-linejoin="round"/>
+    <!-- rótulo -->
+    <rect x="158" y="228" width="84" height="42" rx="2" fill="none" stroke="url(#goldGrad)" stroke-width="2" opacity="0.55"/>
+    <line x1="172" y1="242" x2="228" y2="242" stroke="url(#goldGrad)" stroke-width="1.5" opacity="0.5"/>
+    <line x1="176" y1="252" x2="224" y2="252" stroke="url(#goldGrad)" stroke-width="1.5" opacity="0.4"/>
+
+    <!-- brilhos -->
+    <g fill="url(#goldGrad)" opacity="0.85">
+        <path d="M84 96 l4.5 13 13 4.5 -13 4.5 -4.5 13 -4.5 -13 -13 -4.5 13 -4.5 z"/>
+        <path d="M316 314 l3.5 10 10 3.5 -10 3.5 -3.5 10 -3.5 -10 -10 -3.5 10 -3.5 z"/>
+        <path d="M306 82 l2.5 7.5 7.5 2.5 -7.5 2.5 -2.5 7.5 -2.5 -7.5 -7.5 -2.5 7.5 -2.5 z"/>
+    </g>
+</svg>

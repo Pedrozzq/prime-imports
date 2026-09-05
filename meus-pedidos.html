@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meus Pedidos | Prime Imports BR</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Cinzel:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Carrinho de compras (client-side) -->
+    <script src="js/cart.js" defer></script>
+
+    <!-- Dependências de animação/scroll: GSAP + Lenis (smooth scroll), via CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lenis@1.3.26/dist/lenis.css">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/ScrollTrigger.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/lenis@1.3.26/dist/lenis.min.js" defer></script>
+    <script src="js/lenis-init.js" defer></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            black: '#0a0a0a',
+                            dark: '#171717',
+                            gold: '#D4AF37',
+                            'gold-light': '#F3E5AB',
+                            'gold-dark': '#AA8529',
+                            gray: '#a3a3a3'
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['"Playfair Display"', 'serif'],
+                        sans: ['Montserrat', 'sans-serif'],
+                        display: ['Cinzel', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0a0a0a; }
+        ::-webkit-scrollbar-thumb { background: #404040; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #D4AF37; }
+    </style>
+</head>
+<body class="bg-brand-black text-white font-sans antialiased overflow-x-hidden">
+
+
+    <!-- Main Navigation -->
+    <nav class="bg-brand-black/95 backdrop-blur-md sticky top-0 z-50 border-b border-white/10 transition-all duration-300">
+        <div class="container mx-auto px-4 md:px-6 lg:px-8">
+            <div class="relative flex justify-between items-center h-24 md:h-28">
+
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-btn" class="md:hidden text-white hover:text-brand-gold transition-colors text-2xl">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+
+                <!-- Logo -->
+                <a href="index.html" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-1.5">
+                    <img src="img/logo-mark.webp" alt="Prime Imports Perfumes" class="h-16 md:h-20 w-auto object-contain">
+                    <span class="font-display text-white text-xs md:text-sm tracking-[0.25em] font-semibold uppercase">Prime Imports</span>
+                </a>
+
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex space-x-8 items-center">
+                    <a href="index.html#bestsellers" class="text-sm font-medium hover:text-brand-gold transition-colors">Marcas</a>
+                    <a href="index.html#bestsellers" class="text-sm font-medium hover:text-brand-gold transition-colors">Feminino</a>
+                    <a href="index.html#bestsellers" class="text-sm font-medium hover:text-brand-gold transition-colors">Masculino</a>
+                    <a href="index.html#bestsellers" class="text-sm font-medium hover:text-brand-gold transition-colors">Unissex</a>
+                    <a href="index.html#bestsellers" class="text-sm font-medium text-brand-gold hover:text-white transition-colors">Ofertas</a>
+                </div>
+
+                <!-- Icons (Search, User, Cart) -->
+                <div class="flex space-x-5 items-center">
+                    <button class="text-white hover:text-brand-gold transition-colors hidden sm:block">
+                        <i class="fa-solid fa-magnifying-glass text-lg"></i>
+                    </button>
+                    <button class="text-white hover:text-brand-gold transition-colors hidden sm:block">
+                        <i class="fa-regular fa-user text-lg"></i>
+                    </button>
+                    <button data-cart-open class="text-white hover:text-brand-gold transition-colors relative">
+                        <i class="fa-solid fa-bag-shopping text-lg"></i>
+                        <span data-cart-badge class="hidden absolute -top-2 -right-2 bg-brand-gold text-black text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Dropdown (Hidden by default) -->
+        <div id="mobile-menu" class="hidden md:hidden bg-brand-dark border-t border-white/10 absolute w-full left-0 top-[100%] shadow-2xl">
+            <div class="flex flex-col px-6 py-4 space-y-4">
+                <div class="relative mb-4">
+                    <input type="text" placeholder="Buscar perfumes..." class="w-full bg-brand-black border border-white/20 rounded-md py-2 px-4 text-sm text-white focus:outline-none focus:border-brand-gold">
+                    <i class="fa-solid fa-magnifying-glass absolute right-3 top-3 text-brand-gray text-sm"></i>
+                </div>
+                <a href="index.html#bestsellers" class="text-sm font-medium text-white hover:text-brand-gold">Marcas</a>
+                <a href="index.html#bestsellers" class="text-sm font-medium text-white hover:text-brand-gold">Feminino</a>
+                <a href="index.html#bestsellers" class="text-sm font-medium text-white hover:text-brand-gold">Masculino</a>
+                <a href="index.html#bestsellers" class="text-sm font-medium text-white hover:text-brand-gold">Unissex</a>
+                <a href="index.html#bestsellers" class="text-sm font-medium text-brand-gold">Ofertas</a>
+                <div class="pt-4 border-t border-white/10 flex space-x-4">
+                    <a href="#" class="text-sm text-brand-gray hover:text-white"><i class="fa-regular fa-user mr-2"></i> Minha Conta</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Breadcrumb -->
+    <div class="container mx-auto px-6 pt-6 text-xs text-brand-gray uppercase tracking-widest">
+        <a href="index.html" class="hover:text-brand-gold transition-colors">Início</a>
+        <span class="mx-2">/</span>
+        <span class="text-white">Meus Pedidos</span>
+    </div>
+
+    <!-- Page Header -->
+    <header class="py-16 md:py-20 text-center">
+        <div class="container mx-auto px-6">
+            <span class="font-display text-brand-gold uppercase tracking-[0.2em] text-sm font-semibold mb-4 block">Acompanhamento</span>
+            <h1 class="font-serif text-4xl md:text-6xl font-bold leading-tight">Meus <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-gold to-brand-gold-light italic">Pedidos</span></h1>
+        </div>
+    </header>
+
+    <!-- Content -->
+    <main class="pb-20">
+        <div class="container mx-auto px-6 max-w-2xl text-center">
+            <p class="text-brand-gray text-base leading-relaxed mb-4">
+                Como nossos pedidos são combinados diretamente pelo WhatsApp, é por lá também que cuidamos do acompanhamento — rápido, direto, sem burocracia.
+            </p>
+            <p class="text-brand-gray text-base leading-relaxed mb-10">
+                Para agilizar sua consulta, tenha em mãos o <strong class="text-white">nome completo usado no pedido</strong> e a <strong class="text-white">data aproximada da compra</strong>.
+            </p>
+
+            <!-- TODO: substitua pelo número de WhatsApp real da loja (mesmo número usado em js/cart.js) -->
+            <a href="https://wa.me/5511999999999?text=Ol%C3%A1!%20Quero%20consultar%20o%20status%20do%20meu%20pedido." target="_blank" rel="noopener" class="inline-flex items-center gap-3 bg-[#25D366] hover:bg-[#1ebe57] text-black font-semibold py-4 px-10 rounded-sm transition-all duration-300 uppercase tracking-wider text-sm">
+                <i class="fa-brands fa-whatsapp text-xl"></i> Consultar Meu Pedido no WhatsApp
+            </a>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-brand-black pt-20 pb-10 border-t border-white/10">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+                <!-- Brand Info -->
+                <div>
+                    <a href="index.html" class="block mb-6">
+                        <img src="img/logo.webp" alt="Prime Imports Perfumes" class="h-20 w-auto object-contain">
+                    </a>
+                    <p class="text-brand-gray text-sm leading-relaxed mb-6">
+                        Sua perfumaria de luxo online. Oferecemos as melhores e mais exclusivas fragrâncias internacionais com garantia de autenticidade.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-brand-dark border border-white/10 flex items-center justify-center text-white hover:bg-brand-gold hover:border-brand-gold hover:text-black transition-all">
+                            <i class="fa-brands fa-instagram"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-brand-dark border border-white/10 flex items-center justify-center text-white hover:bg-brand-gold hover:border-brand-gold hover:text-black transition-all">
+                            <i class="fa-brands fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-brand-dark border border-white/10 flex items-center justify-center text-white hover:bg-brand-gold hover:border-brand-gold hover:text-black transition-all">
+                            <i class="fa-brands fa-tiktok"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div>
+                    <h4 class="text-white font-serif text-lg mb-6 tracking-wide">Institucional</h4>
+                    <ul class="space-y-3">
+                        <li><a href="garantia-autenticidade.html" class="text-brand-gray hover:text-brand-gold text-sm transition-colors">Garantia de Autenticidade</a></li>
+                        <li><a href="politica-privacidade.html" class="text-brand-gray hover:text-brand-gold text-sm transition-colors">Política de Privacidade</a></li>
+                        <li><a href="termos-condicoes.html" class="text-brand-gray hover:text-brand-gold text-sm transition-colors">Termos e Condições</a></li>
+                    </ul>
+                </div>
+
+                <!-- Support -->
+                <div>
+                    <h4 class="text-white font-serif text-lg mb-6 tracking-wide">Atendimento</h4>
+                    <ul class="space-y-3">
+                        <li><a href="meus-pedidos.html" class="text-brand-gray hover:text-brand-gold text-sm transition-colors">Meus Pedidos</a></li>
+                        <li><a href="trocas-devolucoes.html" class="text-brand-gray hover:text-brand-gold text-sm transition-colors">Trocas e Devoluções</a></li>
+                        <li><a href="faq.html" class="text-brand-gray hover:text-brand-gold text-sm transition-colors">Perguntas Frequentes (FAQ)</a></li>
+                        <li><a href="fale-conosco.html" class="text-brand-gray hover:text-brand-gold text-sm transition-colors">Fale Conosco</a></li>
+                    </ul>
+                </div>
+
+                <!-- Newsletter -->
+                <div>
+                    <h4 class="text-white font-serif text-lg mb-6 tracking-wide">Newsletter VIP</h4>
+                    <p class="text-brand-gray text-sm mb-4">Inscreva-se para receber lançamentos e ofertas exclusivas em primeira mão.</p>
+                    <form class="flex flex-col space-y-3">
+                        <input type="email" placeholder="Seu melhor e-mail" class="bg-brand-dark border border-white/20 text-white text-sm px-4 py-3 focus:outline-none focus:border-brand-gold rounded-sm">
+                        <button type="submit" class="bg-brand-gold hover:bg-brand-gold-dark text-black font-semibold py-3 px-4 rounded-sm transition-colors uppercase text-xs tracking-wider">Assinar Agora</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Bottom Footer -->
+            <div class="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p class="text-brand-gray text-xs">
+                    &copy; 2026 Prime Imports BR. Todos os direitos reservados.
+                </p>
+                <div class="flex items-center space-x-3 text-brand-gray text-2xl">
+                    <i class="fa-brands fa-cc-visa hover:text-white transition-colors"></i>
+                    <i class="fa-brands fa-cc-mastercard hover:text-white transition-colors"></i>
+                    <i class="fa-brands fa-cc-amex hover:text-white transition-colors"></i>
+                    <i class="fa-brands fa-pix hover:text-white transition-colors"></i>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile Menu Toggle
+        const btn = document.getElementById('mobile-menu-btn');
+        const menu = document.getElementById('mobile-menu');
+        const icon = btn.querySelector('i');
+
+        btn.addEventListener('click', () => {
+            menu.classList.toggle('hidden');
+            if (menu.classList.contains('hidden')) {
+                icon.classList.remove('fa-xmark');
+                icon.classList.add('fa-bars');
+            } else {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-xmark');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+/* Prime Imports — motor de "flythrough" no scroll (sem vídeo, só CSS/JS).
+   Empilha painéis "sticky" com overlap negativo entre eles: enquanto um painel
+   ainda está saindo (fade-out), o próximo já está entrando por baixo (fade-in),
+   criando a sensação de fluir de uma cena para a outra sem corte. */
+
+.sw-root {
+    position: relative;
+    background: var(--sw-bg, #0a0a0a);
+}
+
+.sw-scene {
+    position: relative;
+    height: 180vh;
+}
+.sw-scene:first-child {
+    margin-top: 0 !important;
+}
+.sw-scene + .sw-scene {
+    margin-top: -60vh;
+}
+
+.sw-sticky {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sw-bg {
+    position: absolute;
+    inset: -10%;
+    background-size: cover;
+    background-position: center;
+    will-change: transform, opacity;
+    transform: scale(1.15);
+}
+
+.sw-bg-shade {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(10,10,10,0.35) 0%, rgba(10,10,10,0.55) 55%, rgba(10,10,10,0.85) 100%);
+}
+
+.sw-content {
+    position: relative;
+    z-index: 2;
+    max-width: 640px;
+    padding: 0 1.5rem;
+    text-align: center;
+    will-change: transform, opacity;
+}
+
+.sw-eyebrow {
+    letter-spacing: 0.3em;
+}
+
+/* Reduz o movimento para quem pediu isso no sistema operacional */
+@media (prefers-reduced-motion: reduce) {
+    .sw-bg, .sw-content { transition: none !important; }
+}

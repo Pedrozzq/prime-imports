@@ -1,0 +1,14 @@
+{
+  "name": "prime-imports-br",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Site estático da Prime Imports BR + checkout Mercado Pago (Vercel Serverless Function em /api).",
+  "scripts": {
+    "dev": "vercel dev",
+    "catalogo": "node scripts/gerar-catalogo.mjs"
+  },
+  "dependencies": {
+    "mercadopago": "^3.6.0"
+  }
+}

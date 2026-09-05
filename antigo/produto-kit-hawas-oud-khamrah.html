@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kit Hawas Black + Oud for Glory + Khamrah — Prime Imports BR</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Cinzel:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="css/buttons.css">
+
+    <script src="js/cart.js" defer></script>
+
+    <!-- Dependências de animação/scroll: GSAP + Lenis (smooth scroll), via CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lenis@1.3.26/dist/lenis.css">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/ScrollTrigger.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/lenis@1.3.26/dist/lenis.min.js" defer></script>
+    <script src="js/lenis-init.js" defer></script>
+
+    <link rel="stylesheet" href="css/scroll-world.css">
+    <script src="js/scroll-world.js" defer></script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            black: '#0a0a0a',
+                            dark: '#171717',
+                            gold: '#D4AF37',
+                            'gold-light': '#F3E5AB',
+                            'gold-dark': '#AA8529',
+                            gray: '#a3a3a3'
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['"Playfair Display"', 'serif'],
+                        sans: ['Montserrat', 'sans-serif'],
+                        display: ['Cinzel', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0a0a0a; }
+        ::-webkit-scrollbar-thumb { background: #404040; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #D4AF37; }
+
+        /* Ícone de perfume (placeholder): muda de cor ao passar o mouse; em celulares (sem hover) anima sozinho */
+        .perfume-icon {
+            transition: filter 0.4s ease;
+        }
+        .perfume-icon:hover {
+            animation: perfume-icon-hue 3s linear infinite;
+        }
+        @keyframes perfume-icon-hue {
+            0%   { filter: hue-rotate(0deg) saturate(1.4) brightness(1.05); }
+            50%  { filter: hue-rotate(180deg) saturate(1.7) brightness(1.15); }
+            100% { filter: hue-rotate(360deg) saturate(1.4) brightness(1.05); }
+        }
+        @media (hover: none) {
+            .perfume-icon { animation: perfume-icon-hue 6s linear infinite; }
+        }
+
+        /* ---------- Selos de confiança (mesmo estilo do index) ---------- */
+        .trust-item { position: relative; }
+        .trust-item + .trust-item::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 10%;
+            height: 80%;
+            width: 1px;
+            background: linear-gradient(to bottom, transparent, rgba(212,175,55,0.25), transparent);
+        }
+        .trust-icon-ring {
+            position: relative;
+            width: 4.25rem;
+            height: 4.25rem;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background:
+                linear-gradient(#0a0a0a, #0a0a0a) padding-box,
+                linear-gradient(135deg, #D4AF37, rgba(212,175,55,0.15) 45%, rgba(212,175,55,0.4)) border-box;
+            border: 1px solid transparent;
+            box-shadow: 0 0 0 rgba(212,175,55,0);
+            transition: box-shadow 0.5s ease, transform 0.5s ease;
+        }
+        .trust-item:hover .trust-icon-ring {
+            box-shadow: 0 0 26px rgba(212,175,55,0.35);
+            transform: translateY(-3px);
+        }
+        .trust-icon-ring i {
+            background: linear-gradient(135deg, #F3E5AB, #D4AF37);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .trust-icon-ring--sm { width: 2.75rem; height: 2.75rem; }
+        .trust-icon-ring--sm i { font-size: 0.9rem; }
+        .trust-title { letter-spacing: 0.14em; }
+    </style>
+</head>
+<body class="bg-brand-black text-white font-sans antialiased overflow-x-hidden">
+
+    <div class="bg-brand-gold text-black text-xs md:text-sm text-center py-2 font-display font-medium tracking-widest uppercase">
+        Frete grátis para todo o Brasil nas compras acima de R$ 499
+    </div>
+
+    <nav class="bg-brand-black/95 backdrop-blur-md sticky top-0 z-50 border-b border-white/10 transition-all duration-300">
+        <div class="container mx-auto px-4 md:px-6 lg:px-8">
+            <div class="relative flex justify-between items-center h-24 md:h-28">
+                <button id="mobile-menu-btn" class="md:hidden text-white hover:text-brand-gold transition-colors text-2xl">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+
+                <a href="index.html" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-1.5">
+                    <img src="img/logo-mark.webp" alt="Prime Imports Perfumes" class="h-16 md:h-20 w-auto object-contain">
+                    <span class="font-display text-white text-xs md:text-sm tracking-[0.25em] font-semibold uppercase">Prime Imports</span>
+                </a>
+
+                <div class="hidden md:flex space-x-8 items-center">
+                    <a href="index.html#bestsellers" class="text-sm font-medium hover:text-brand-gold transition-colors">Marcas</a>
+                    <a href="index.html#bestsellers" class="text-sm font-medium hover:text-brand-gold transition-colors">Feminino</a>
+                    <a href="index.html#bestsellers" class="text-sm font-medium hover:text-brand-gold transition-colors">Masculino</a>
+                    <a href="index.html#bestsellers" class="text-sm font-medium hover:text-brand-gold transition-colors">Unissex</a>
+                    <a href="index.html#bestsellers" class="text-sm font-medium text-brand-gold hover:text-white transition-colors">Ofertas</a>
+                </div>
+
+                <div class="flex space-x-5 items-center">
+                    <button class="text-white hover:text-brand-gold transition-colors hidden sm:block">
+                        <i class="fa-solid fa-magnifying-glass text-lg"></i>
+                    </button>
+                    <button class="text-white hover:text-brand-gold transition-colors hidden sm:block">
+                        <i class="fa-regular fa-user text-lg"></i>
+                    </button>
+                    <button data-cart-open class="text-white hover:text-brand-gold transition-colors relative">
+                        <i class="fa-solid fa-bag-shopping text-lg"></i>
+                        <span data-cart-badge class="hidden absolute -top-2 -right-2 bg-brand-gold text-black text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="mobile-menu" class="hidden md:hidden bg-brand-dark border-t border-white/10 absolute w-full left-0 top-[100%] shadow-2xl">
+            <div class="flex flex-col px-6 py-4 space-y-4">
+                <div class="relative mb-4">
+                    <input type="text" placeholder="Buscar perfumes..." class="w-full bg-brand-black border border-white/20 rounded-md py-2 px-4 text-sm text-white focus:outline-none focus:border-brand-gold">
+                    <i class="fa-solid fa-magnifying-glass absolute right-3 top-3 text-brand-gray text-sm"></i>
+                </div>
+                <a href="index.html#bestsellers" class="text-sm font-medium text-white hover:text-brand-gold">Marcas</a>
+                <a href="index.html#bestsellers" class="text-sm font-medium text-white hover:text-brand-gold">Feminino</a>
+                <a href="index.html#bestsellers" class="text-sm font-medium text-white hover:text-brand-gold">Masculino</a>
+                <a href="index.html#bestsellers" class="text-sm font-medium text-white hover:text-brand-gold">Unissex</a>
+                <a href="index.html#bestsellers" class="text-sm font-medium text-brand-gold">Ofertas</a>
+                <div class="pt-4 border-t border-white/10 flex space-x-4">
+                    <a href="#" class="text-sm text-brand-gray hover:text-white"><i class="fa-regular fa-user mr-2"></i> Minha Conta</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-6 pt-6 text-xs text-brand-gray uppercase tracking-widest">
+        <a href="index.html" class="hover:text-brand-gold transition-colors">Início</a>
+        <span class="mx-2">/</span>
+        <a href="index.html#bestsellers" class="hover:text-brand-gold transition-colors">Ofertas</a>
+        <span class="mx-2">/</span>
+        <span class="text-white">Kit Hawas + Oud for Glory + Khamrah</span>
+    </div>
+
+        <section class="py-20 bg-brand-black relative z-10">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div class="bg-brand-dark rounded-sm border border-white/5 h-[420px] md:h-[520px] flex items-center justify-center overflow-hidden relative">
+                    <img src="img/kit-hawas-oud-khamrah.png" alt="Kit Hawas Black + Oud for Glory + Khamrah" class="w-full h-full object-contain p-8 md:p-10">
+                    <span class="absolute bottom-4 inset-x-0 text-center text-[10px] uppercase tracking-widest text-brand-gray/70">Imagem ilustrativa</span>
+                </div>
+                <div>
+                    <p class="text-brand-gold text-xs uppercase tracking-widest mb-2">Kit Exclusivo · Rasasi &amp; Lattafa</p>
+                    <h2 class="font-serif text-3xl md:text-4xl font-bold mb-4">Kit Hawas Black + Oud for Glory + Khamrah</h2>
+                    <p class="text-brand-gray text-sm leading-relaxed mb-4 max-w-md">
+                        1x Hawas Black 100ml + 1x Bade'e Al Oud for Glory 100ml + 1x Khamrah 100ml — amadeirado, oud e especiarias árabes num só kit, com desconto exclusivo.
+                    </p>
+                    <ul class="text-brand-gray text-xs leading-relaxed mb-6 space-y-1.5">
+                        <li><i class="fa-solid fa-check text-brand-gold mr-2"></i>Rasasi Hawas Black 100ml</li>
+                        <li><i class="fa-solid fa-check text-brand-gold mr-2"></i>Lattafa Bade'e Al Oud for Glory 100ml</li>
+                        <li><i class="fa-solid fa-check text-brand-gold mr-2"></i>Lattafa Khamrah 100ml</li>
+                    </ul>
+                    <div class="flex items-baseline gap-3 mb-8">
+                        <p class="text-brand-gray text-lg line-through">R$ 549,70</p>
+                        <p class="text-white font-semibold text-3xl">R$ 486,90</p>
+                    </div>
+
+                    <div class="flex items-center gap-4 mb-8">
+                        <div class="flex items-center border border-white/15 rounded-sm">
+                            <button id="qty-minus" type="button" class="w-10 h-12 text-brand-gray hover:text-brand-gold transition-colors">-</button>
+                            <span id="qty-value" class="w-10 text-center text-white">1</span>
+                            <button id="qty-plus" type="button" class="w-10 h-12 text-brand-gray hover:text-brand-gold transition-colors">+</button>
+                        </div>
+                        <button id="add-to-cart-btn" data-cart-id="kit-hawas-oud-khamrah" data-cart-name="Kit Hawas Black + Oud for Glory + Khamrah (100ml cada)" data-cart-brand="Lattafa &amp; Rasasi" data-cart-price="486.90" data-cart-image="img/kit-hawas-oud-khamrah.png" class="btn-venus-solid flex-1 bg-brand-gold hover:bg-brand-gold-dark text-black font-semibold py-4 rounded-sm transition-all duration-300 uppercase tracking-wider text-sm">
+                            Adicionar à Sacola
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-4 pt-6 border-t border-white/10">
+                        <div class="trust-item flex flex-col items-center text-center px-1">
+                            <div class="trust-icon-ring trust-icon-ring--sm mb-3">
+                                <i class="fa-solid fa-shield-halved"></i>
+                            </div>
+                            <h3 class="font-display trust-title text-white text-[9px] md:text-[10px] font-semibold uppercase">100% Original</h3>
+                        </div>
+                        <div class="trust-item flex flex-col items-center text-center px-1">
+                            <div class="trust-icon-ring trust-icon-ring--sm mb-3">
+                                <i class="fa-solid fa-truck-fast"></i>
+                            </div>
+                            <h3 class="font-display trust-title text-white text-[9px] md:text-[10px] font-semibold uppercase">Entrega Rápida</h3>
+                        </div>
+                        <div class="trust-item flex flex-col items-center text-center px-1">
+                            <div class="trust-icon-ring trust-icon-ring--sm mb-3">
+                                <i class="fa-solid fa-credit-card"></i>
+                            </div>
+                            <h3 class="font-display trust-title text-white text-[9px] md:text-[10px] font-semibold uppercase">Até 10x Sem Juros</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="sw-root mt-6" data-scroll-world style="--sw-bg:#0a0a0a;">
+
+        <section class="sw-scene" data-sw-scene>
+            <div class="sw-sticky">
+                <div class="sw-bg" style="background-image: radial-gradient(circle at 30% 30%, rgba(212,175,55,0.24), transparent 60%), radial-gradient(circle at 75% 70%, rgba(212,175,55,0.12), transparent 55%), linear-gradient(160deg, #0a0a0a 0%, #171717 55%, #0a0a0a 100%);"></div>
+                <div class="sw-bg-shade"></div>
+                <div class="sw-content">
+                    <span class="font-display sw-eyebrow text-brand-gold uppercase text-xs md:text-sm font-semibold mb-4 block">Kit Exclusivo · Rasasi &amp; Lattafa</span>
+                    <h1 class="font-serif text-4xl md:text-6xl font-bold mb-4">Hawas Black + Oud for Glory + Khamrah</h1>
+                    <p class="text-brand-gray text-base md:text-lg max-w-lg mx-auto font-light leading-relaxed">Amadeirado, oud e especiarias num só kit — de R$ 549,70 por R$ 486,90.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="sw-scene" data-sw-scene>
+            <div class="sw-sticky">
+                <div class="sw-bg" style="background-image: radial-gradient(circle at 70% 35%, rgba(212,175,55,0.2), transparent 55%), radial-gradient(circle at 20% 80%, rgba(212,175,55,0.10), transparent 55%), linear-gradient(200deg, #0a0a0a 0%, #171717 55%, #0a0a0a 100%);"></div>
+                <div class="sw-bg-shade"></div>
+                <div class="sw-content">
+                    <span class="font-display sw-eyebrow text-brand-gold uppercase text-xs md:text-sm font-semibold mb-4 block">O que vem no kit</span>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 text-left max-w-2xl mx-auto mt-6">
+                        <div>
+                            <p class="text-brand-gold text-[10px] uppercase tracking-[0.2em] mb-1">Rasasi</p>
+                            <p class="font-serif text-lg mb-1">Hawas Black 100ml</p>
+                            <p class="text-brand-gray text-xs leading-relaxed">Amadeirado aromático, intenso e marcante.</p>
+                        </div>
+                        <div>
+                            <p class="text-brand-gold text-[10px] uppercase tracking-[0.2em] mb-1">Lattafa</p>
+                            <p class="font-serif text-lg mb-1">Bade'e Al Oud for Glory 100ml</p>
+                            <p class="text-brand-gray text-xs leading-relaxed">Oud floral com rosa turca e âmbar.</p>
+                        </div>
+                        <div>
+                            <p class="text-brand-gold text-[10px] uppercase tracking-[0.2em] mb-1">Lattafa</p>
+                            <p class="font-serif text-lg mb-1">Khamrah 100ml</p>
+                            <p class="text-brand-gray text-xs leading-relaxed">Oriental gourmand de canela, tâmaras e âmbar.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="sw-scene" data-sw-scene>
+            <div class="sw-sticky">
+                <div class="sw-bg" style="background-image: radial-gradient(circle at 30% 30%, rgba(212,175,55,0.22), transparent 60%), radial-gradient(circle at 75% 70%, rgba(212,175,55,0.10), transparent 55%), linear-gradient(160deg, #0a0a0a 0%, #171717 55%, #0a0a0a 100%);"></div>
+                <div class="sw-bg-shade"></div>
+                <div class="sw-content">
+                    <span class="font-display sw-eyebrow text-brand-gold uppercase text-xs md:text-sm font-semibold mb-4 block">Prime Imports</span>
+                    <h2 class="font-serif text-3xl md:text-5xl font-bold mb-4">100% Original & Lacrado</h2>
+                    <p class="text-brand-gray text-base md:text-lg max-w-lg mx-auto font-light leading-relaxed">Os três frascos importados com procedência garantida, nota fiscal e selo de autenticidade. Role até o fim para adicionar à sua sacola.</p>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <section class="py-16 bg-brand-dark border-t border-white/5">
+        <div class="container mx-auto px-6">
+            <h2 class="font-serif text-2xl md:text-3xl font-bold mb-10 text-center">Você Também Pode Gostar</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-4xl mx-auto">
+                <a href="produto-hawas-black.html" class="group bg-brand-black p-4 rounded-sm border border-white/5 hover:border-brand-gold/50 transition-all duration-300">
+                    <div class="h-48 mb-4 overflow-hidden bg-white/5 rounded flex items-center justify-center">
+                        <img src="img/hawas-black.png" alt="Rasasi Hawas Black" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                    </div>
+                    <p class="text-brand-gold text-[10px] uppercase tracking-widest mb-1">Rasasi</p>
+                    <h3 class="text-sm font-serif font-medium">Hawas Black</h3>
+                    <p class="text-white text-sm font-semibold mt-1">R$ 219,90</p>
+                </a>
+                <a href="produto-bade-al-oud.html" class="group bg-brand-black p-4 rounded-sm border border-white/5 hover:border-brand-gold/50 transition-all duration-300">
+                    <div class="h-48 mb-4 overflow-hidden bg-white/5 rounded flex items-center justify-center">
+                        <img src="img/bade-al-oud.png" alt="Lattafa Bade'e Al Oud for Glory" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                    </div>
+                    <p class="text-brand-gold text-[10px] uppercase tracking-widest mb-1">Lattafa</p>
+                    <h3 class="text-sm font-serif font-medium">Bade'e Al Oud for Glory</h3>
+                    <p class="text-white text-sm font-semibold mt-1">R$ 154,90</p>
+                </a>
+                <a href="produto-khamrah.html" class="group bg-brand-black p-4 rounded-sm border border-white/5 hover:border-brand-gold/50 transition-all duration-300">
+                    <div class="h-48 mb-4 overflow-hidden bg-white/5 rounded flex items-center justify-center">
+                        <img src="img/khamrah.png" alt="Lattafa Khamrah" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                    </div>
+                    <p class="text-brand-gold text-[10px] uppercase tracking-widest mb-1">Lattafa</p>
+                    <h3 class="text-sm font-serif font-medium">Khamrah 100ml</h3>
+                    <p class="text-white text-sm font-semibold mt-1">R$ 174,90</p>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-brand-black pt-20 pb-10 border-t border-white/10">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+                <div>
+                    <a href="index.html" class="block mb-6">
+                        <img src="img/logo.webp" alt="Prime Imports Perfumes" class="h-20 w-auto object-contain">
+                    </a>
+                    <p class="text-brand-gray text-sm leading-relaxed mb-6">
+                        Sua perfumaria de luxo online. Oferecemos as melhores e mais exclusivas fragrâncias internacionais com garantia de autenticidade.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-brand-dark border border-white/10 flex items-center justify-center text-white hover:bg-brand-gold hover:border-brand-gold hover:text-black transition-all">
+                            <i class="fa-brands fa-instagram"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-brand-dark border border-white/10 flex items-center justify-center text-white hover:bg-brand-gold hover:border-brand-gold hover:text-black transition-all">
+                            <i class="fa-brands fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-brand-dark border border-white/10 flex items-center justify-center text-white hover:bg-brand-gold hover:border-brand-gold hover:text-black transition-all">
+                            <i class="fa-brands fa-tiktok"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-serif text-lg mb-6 tracking-wide">Institucional</h4>
+                    <ul class="space-y-3">
+                        <li><a href="garantia-autenticidade.html" class="text-brand-gray hover:text-brand-gold text-sm transition-colors">Garantia de Autenticidade</a></li>
+                        <li><a href="politica-privacidade.html" class="text-brand-gray hover:text-brand-gold text-sm transition-colors">Política de Privacidade</a></li>
+                        <li><a href="termos-condicoes.html" class="text-brand-gray hover:text-brand-gold text-sm transition-colors">Termos e Condições</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-serif text-lg mb-6 tracking-wide">Atendimento</h4>
+                    <ul class="space-y-3">
+                        <li><a href="meus-pedidos.html" class="text-brand-gray hover:text-brand-gold text-sm transition-colors">Meus Pedidos</a></li>
+                        <li><a href="trocas-devolucoes.html" class="text-brand-gray hover:text-brand-gold text-sm transition-colors">Trocas e Devoluções</a></li>
+                        <li><a href="faq.html" class="text-brand-gray hover:text-brand-gold text-sm transition-colors">Perguntas Frequentes (FAQ)</a></li>
+                        <li><a href="fale-conosco.html" class="text-brand-gray hover:text-brand-gold text-sm transition-colors">Fale Conosco</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-serif text-lg mb-6 tracking-wide">Newsletter VIP</h4>
+                    <p class="text-brand-gray text-sm mb-4">Inscreva-se para receber lançamentos e ofertas exclusivas em primeira mão.</p>
+                    <form class="flex flex-col space-y-3">
+                        <input type="email" placeholder="Seu melhor e-mail" class="bg-brand-dark border border-white/20 text-white text-sm px-4 py-3 focus:outline-none focus:border-brand-gold rounded-sm">
+                        <button type="submit" class="bg-brand-gold hover:bg-brand-gold-dark text-black font-semibold py-3 px-4 rounded-sm transition-colors uppercase text-xs tracking-wider">Assinar Agora</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p class="text-brand-gray text-xs">
+                    &copy; 2026 Prime Imports BR. Todos os direitos reservados.
+                </p>
+                <div class="flex items-center space-x-3 text-brand-gray text-2xl">
+                    <i class="fa-brands fa-cc-visa hover:text-white transition-colors"></i>
+                    <i class="fa-brands fa-cc-mastercard hover:text-white transition-colors"></i>
+                    <i class="fa-brands fa-cc-amex hover:text-white transition-colors"></i>
+                    <i class="fa-brands fa-pix hover:text-white transition-colors"></i>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const btn = document.getElementById('mobile-menu-btn');
+        const menu = document.getElementById('mobile-menu');
+        const icon = btn.querySelector('i');
+
+        btn.addEventListener('click', () => {
+            menu.classList.toggle('hidden');
+            if (menu.classList.contains('hidden')) {
+                icon.classList.remove('fa-xmark');
+                icon.classList.add('fa-bars');
+            } else {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-xmark');
+            }
+        });
+
+        (function () {
+            const minus = document.getElementById('qty-minus');
+            const plus = document.getElementById('qty-plus');
+            const value = document.getElementById('qty-value');
+            const addBtn = document.getElementById('add-to-cart-btn');
+            let qty = 1;
+
+            function render() { value.textContent = qty; }
+            minus.addEventListener('click', () => { if (qty > 1) { qty--; render(); } });
+            plus.addEventListener('click', () => { if (qty < 10) { qty++; render(); } });
+
+            addBtn.addEventListener('click', () => {
+                var product = {
+                    id: addBtn.getAttribute('data-cart-id'),
+                    name: addBtn.getAttribute('data-cart-name'),
+                    brand: addBtn.getAttribute('data-cart-brand'),
+                    price: parseFloat(addBtn.getAttribute('data-cart-price')),
+                    image: addBtn.getAttribute('data-cart-image')
+                };
+                for (let i = 0; i < qty; i++) window.PrimeCart.add(product);
+            });
+        })();
+    </script>
+</body>
+</html>

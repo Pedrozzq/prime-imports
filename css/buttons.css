@@ -1,0 +1,76 @@
+/**
+ * Prime Imports — Botões (estética "Vênus"): vidro dourado translúcido em repouso,
+ * preenchimento sólido + elevação + brilho dourado no hover, com a mesma curva de
+ * transição premium (cubic-bezier expo-out) do site de referência.
+ * Usar junto das classes de tamanho/padding já existentes no elemento (Tailwind).
+ */
+
+.btn-venus {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    white-space: nowrap;
+    border-radius: 0.5rem;
+    border: 1px solid rgba(212, 175, 55, 0.25);
+    background: rgba(212, 175, 55, 0.08);
+    color: #F3E5AB;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+    cursor: pointer;
+}
+.btn-venus:hover,
+.btn-venus:focus-visible {
+    background: #D4AF37;
+    border-color: #D4AF37;
+    color: #0a0a0a;
+    transform: translateY(-4px);
+    box-shadow: 0 15px 40px rgba(212, 175, 55, 0.35);
+}
+.btn-venus:active {
+    transform: translateY(-1px);
+}
+.btn-venus:disabled,
+.btn-venus.is-disabled {
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+/* Variante para CTAs que já nascem em dourado sólido (ex.: Adicionar à Sacola):
+   mesma elevação + brilho no hover, mantendo o preenchimento em repouso. */
+.btn-venus-solid {
+    transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+}
+.btn-venus-solid:hover,
+.btn-venus-solid:focus-visible {
+    transform: translateY(-4px);
+    box-shadow: 0 15px 40px rgba(212, 175, 55, 0.35);
+}
+.btn-venus-solid:active {
+    transform: translateY(-1px);
+}
+
+/* Variante para linhas/blocos onde o layout (flex/justify/padding) já é definido pelo
+   elemento em si (ex.: cabeçalho de um item de accordion) — mesma linguagem visual do
+   .btn-venus (vidro dourado -> preenchimento sólido + elevação + brilho), sem forçar
+   display/justify-content próprios. */
+.btn-venus-row {
+    border-radius: 0.5rem;
+    border: 1px solid rgba(212, 175, 55, 0.25);
+    background: rgba(212, 175, 55, 0.08);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+}
+.btn-venus-row:hover {
+    background: #D4AF37;
+    border-color: #D4AF37;
+    color: #0a0a0a;
+    transform: translateY(-3px);
+    box-shadow: 0 15px 40px rgba(212, 175, 55, 0.35);
+}

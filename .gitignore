@@ -1,0 +1,19 @@
+# Dependências
+node_modules/
+
+# Segredos — nunca commitar credenciais reais
+.env
+.env.local
+.env.*.local
+
+# Vercel
+.vercel
+
+# Backups e material que não precisa ir para o deploy
+*.bak
+*.zip
+Nova pasta/
+
+# Sistema
+.DS_Store
+Thumbs.db
