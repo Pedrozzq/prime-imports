@@ -15,6 +15,7 @@
 
 import { enviarEmailCheckout } from './_lib/checkout-email.js';
 import { validarSacola } from './_lib/catalogo.js';
+import { validarCupom } from './_lib/cupons.js';
 
 const MAX_ITENS = 50;
 const CAMPOS_ENTREGA = ['nome', 'fone', 'cep', 'rua', 'numero', 'complemento', 'bairro', 'cidade', 'uf'];
@@ -72,12 +73,23 @@ export default async function handler(req, res) {
         }
 
         // Sacola vazia = nada de útil para avisar (e evita disparo por robô/varredura).
-        var total = items.reduce(function (soma, it) { return soma + it.price * it.qty; }, 0);
-        if (!items.length || total <= 0) {
+        var subtotal = items.reduce(function (soma, it) { return soma + it.price * it.qty; }, 0);
+        if (!items.length || subtotal <= 0) {
             return res.status(204).end();
         }
 
-        var resultado = await enviarEmailCheckout({ items: items, entrega: entrega, total: total });
+        // Cupom é só informativo aqui — mostra no e-mail o total que o cliente vê.
+        var cupom = validarCupom(body.cupom, subtotal);
+        var aplicado = cupom.ok && cupom.desconto > 0 ? cupom : null;
+        var total = aplicado ? Math.round((subtotal - aplicado.desconto) * 100) / 100 : subtotal;
+
+        var resultado = await enviarEmailCheckout({
+            items: items,
+            entrega: entrega,
+            subtotal: subtotal,
+            cupom: aplicado,
+            total: total
+        });
 
         return res.status(202).json({ ok: !!resultado.ok, skipped: !!resultado.skipped });
     } catch (err) {

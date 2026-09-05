@@ -44,12 +44,22 @@ export function montarEmailCheckout(dados) {
     var items = Array.isArray(dados.items) ? dados.items : [];
     var entrega = dados.entrega || {};
     var total = Number(dados.total) || 0;
+    var cupom = dados.cupom && dados.cupom.desconto > 0 ? dados.cupom : null;
+    var subtotal = Number(dados.subtotal) || (cupom ? total + cupom.desconto : total);
 
     var nomeCliente = entrega.nome || 'Cliente sem nome';
     var endereco = linhaEndereco(entrega);
     var linkZap = foneWhatsapp(entrega.fone);
 
     var assunto = '[CHECKOUT] ' + nomeCliente + ' está pagando — ' + brl(total);
+
+    var linhasCupomHtml = cupom
+        ? '<tr><td colspan="2" style="padding:6px 8px;color:#555">Subtotal</td>' +
+          '<td style="padding:6px 8px;text-align:right;color:#555">' + brl(subtotal) + '</td></tr>' +
+          '<tr><td colspan="2" style="padding:6px 8px;color:#15803d">Cupom ' + escapeHtml(cupom.code) +
+          (cupom.rotulo ? ' <span style="color:#888">(' + escapeHtml(cupom.rotulo) + ')</span>' : '') + '</td>' +
+          '<td style="padding:6px 8px;text-align:right;color:#15803d">-' + brl(cupom.desconto) + '</td></tr>'
+        : '';
 
     var linhasHtml = items.length
         ? items.map(function (it) {
@@ -85,7 +95,7 @@ export function montarEmailCheckout(dados) {
         'Se o pedido não chegar em seguida, ela desistiu no meio do caminho — vale um contato.</p>' +
 
         '<h3 style="font-size:14px;text-transform:uppercase;letter-spacing:1px;color:#666;margin:22px 0 8px">Itens na sacola</h3>' +
-        '<table style="width:100%;border-collapse:collapse;font-size:14px">' + linhasHtml +
+        '<table style="width:100%;border-collapse:collapse;font-size:14px">' + linhasHtml + linhasCupomHtml +
         '<tr><td colspan="2" style="padding:12px 8px;font-weight:bold">Total</td>' +
         '<td style="padding:12px 8px;text-align:right;font-weight:bold;font-size:16px">' + brl(total) + '</td></tr>' +
         '</table>' +
@@ -108,6 +118,8 @@ export function montarEmailCheckout(dados) {
             }).join('\n')
             : '- (nenhum item enviado)',
         '',
+        cupom ? 'Subtotal: ' + brl(subtotal) : null,
+        cupom ? 'Cupom ' + cupom.code + (cupom.rotulo ? ' (' + cupom.rotulo + ')' : '') + ': -' + brl(cupom.desconto) : null,
         'TOTAL: ' + brl(total),
         '',
         'ENTREGA',
@@ -118,7 +130,7 @@ export function montarEmailCheckout(dados) {
     if (linkZap) linhasTexto.push('WhatsApp: ' + linkZap);
     linhasTexto.push('', 'Se o e-mail do pedido não chegar em seguida, o pagamento não foi concluído.');
 
-    var texto = linhasTexto.join('\n');
+    var texto = linhasTexto.filter(function (linha) { return linha !== null; }).join('\n');
 
     return { assunto: assunto, html: html, texto: texto };
 }
