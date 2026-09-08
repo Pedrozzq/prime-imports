@@ -703,13 +703,13 @@ const PRODUTOS = [
 
   /* --- itens acrescentados (sem controle de estoque; preços de referência) --- */
   { id:"sebastian-dark-oil-kit", nome:"Sebastian Dark Oil Kit", sub:"Shampoo + Condicionador 1 L", marca:"Sebastian", cat:"cosmeticos", familia:"Cabelo",
-    preco:650.00, img:"img/sebastian-dark-oil-kit.webp", tom:"claro",
+    preco:494.00, img:"img/sebastian-dark-oil-kit.webp", tom:"claro",
     desc:"Dupla de lavagem e condicionamento com óleos de argan e semente escura. Brilho intenso, controle de frizz e fios leves.",
     notas:{Uso:"A cada lavagem", Ativos:"Óleo de argan, óleo de semente escura", Cabelo:"Todos os tipos, sobretudo opacos"},
     tamanhos:[{ml:"Kit 1 L",mult:1}] },
 
   { id:"sebastian-mascara-dark-oil", nome:"Sebastian Máscara Dark Oil", sub:"Máscara capilar 500 ml", marca:"Sebastian", cat:"cosmeticos", familia:"Cabelo",
-    preco:270.00, img:"img/sebastian-mascara-dark-oil.webp", tom:"claro",
+    preco:309.00, img:"img/sebastian-mascara-dark-oil.webp", tom:"claro",
     desc:"Tratamento profundo que nutre, alinha e reduz o volume. Brilho espelhado desde a primeira aplicação.",
     notas:{Uso:"1 a 2 vezes por semana", Ativos:"Óleo de argan, antioxidantes", Cabelo:"Ressecados a normais"},
     tamanhos:[{ml:"500 ml",mult:1},{ml:"250 ml",mult:0.6}] },
@@ -750,11 +750,11 @@ const PRODUTOS = [
     notas:{Topo:"Absinto, anis", Corpo:"Lavanda preta, especiarias", Fundo:"Musk, madeiras, baunilha"},
     tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 10 ml",mult:0.2}] },
 
-  { id:"invictus-edp", nome:"Paco Rabanne Invictus", sub:"Eau de Parfum 200 ml", marca:"Paco Rabanne", cat:"masculino", familia:"Aquático",
-    preco:1190.00, img:"img/invictus-toilette.webp", tom:"claro",
+  { id:"invictus-edp", nome:"Paco Rabanne Invictus", sub:"Eau de Toilette 100 ml", marca:"Paco Rabanne", cat:"masculino", familia:"Aquático",
+    preco:779.00, img:"img/invictus-toilette.webp", tom:"claro",
     desc:"Aquático amadeirado com toranja e ambroxan. Fresco, esportivo e com ótima projeção no calor.",
     notas:{Topo:"Toranja, notas marinhas", Corpo:"Folha de louro, jasmim", Fundo:"Âmbar cinza, guaíaco, patchouli"},
-    tamanhos:[{ml:"200 ml",mult:1},{ml:"100 ml",mult:0.62}] },
+    tamanhos:[{ml:"100 ml",mult:1}] },
 
   { id:"sauvage-edp-200", nome:"Dior Sauvage", sub:"Eau de Parfum 200 ml", marca:"Dior", cat:"masculino", familia:"Cítrico",
     preco:1390.00, img:"img/sauvage-edp-200.webp", tom:"claro", destaque:true,
@@ -804,14 +804,14 @@ const PRODUTOS = [
     notas:{Topo:"Neroli, bergamota", Corpo:"Jasmim, flor de laranjeira", Fundo:"Âmbar branco, almíscar"},
     tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 10 ml",mult:0.2}] },
 
-  { id:"orientica-royal-amber-80", nome:"Orientica Royal Amber", sub:"Extrait de Parfum 80 ml", marca:"Orientica", cat:"unissex", familia:"Árabe",
-    preco:469.00, img:"img/orientica-royal-amber-80.webp", tom:"claro", destaque:true,
+  { id:"orientica-royal-amber-80", nome:"Orientica Royal Amber", sub:"Extrait de Parfum 80 ml", marca:"Orientica", cat:"feminino", familia:"Árabe",
+    preco:439.00, img:"img/orientica-royal-amber-80.webp", tom:"claro", destaque:true,
     desc:"Âmbar resinoso com baunilha, incenso e madeiras. Rastro potente e doçura sofisticada de nicho árabe.",
     notas:{Topo:"Bergamota, açafrão", Corpo:"Âmbar, incenso, rosa", Fundo:"Baunilha, oud, madeiras"},
     tamanhos:[{ml:"80 ml",mult:1},{ml:"Decant 10 ml",mult:0.22}] },
 
-  { id:"orientica-royal-amber-150", nome:"Orientica Royal Amber", sub:"Extrait de Parfum 150 ml", marca:"Orientica", cat:"unissex", familia:"Árabe",
-    preco:949.00, img:"img/orientica-royal-amber-150.webp", tom:"claro",
+  { id:"orientica-royal-amber-150", nome:"Orientica Royal Amber", sub:"Extrait de Parfum 150 ml", marca:"Orientica", cat:"feminino", familia:"Árabe",
+    preco:649.00, img:"img/orientica-royal-amber-150.webp", tom:"claro",
     desc:"O mesmo âmbar viciante da linha Royal, em frasco grande de 150 ml para quem já fez dele a assinatura.",
     notas:{Topo:"Bergamota, açafrão", Corpo:"Âmbar, incenso, rosa", Fundo:"Baunilha, oud, madeiras"},
     tamanhos:[{ml:"150 ml",mult:1},{ml:"80 ml",mult:0.62}] },
@@ -823,7 +823,7 @@ const PRODUTOS = [
     tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 10 ml",mult:0.2}] },
 
   { id:"fakhar-extrait", nome:"Lattafa Fakhar Extrait", sub:"Extrait de Parfum Women 100 ml", marca:"Lattafa", cat:"feminino", familia:"Floral",
-    preco:219.90, img:"img/fakhar-extrait.webp", tom:"claro", destaque:true,
+    preco:219.90, img:"img/lattafa-fakar.jpeg", tom:"claro", destaque:true,
     desc:"Perfume floral doce marcante, feminino, sensual e chamativo, com aquele DNA de perfume árabe de alta fixação.",
     notas:{Topo:"Frutas vermelhas, bergamota", Corpo:"Floral doce, baunilha", Fundo:"Âmbar, almíscar, madeiras"},
     tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 10 ml",mult:0.2}] },
@@ -1261,6 +1261,7 @@ function vistaInicio(){
       <div class="hero__grade">
         <div>
           <img class="hero__logo" src="img/logo.webp" alt="Prime Imports BR Perfumes">
+          <p class="hero__slogan">Comodidade, confiança e segurança</p>
         </div>
         <div class="hero__vitrine">
           <div class="hero__frascos" id="heroFrascos">${HERO_FRASCOS.map((f,i) => `
