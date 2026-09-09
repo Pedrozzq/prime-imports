@@ -5,7 +5,7 @@
  * index.html. A chave é "<id do produto>|<tamanho>", exatamente como o
  * carrinho do front-end monta.
  *
- * Gerado a partir de index.html — 26 produtos, 46 variantes.
+ * Gerado a partir de index.html — 26 produtos, 45 variantes.
  */
 
 export const CATALOGO = {
@@ -21,8 +21,7 @@ export const CATALOGO = {
     "goodgirl-edp-100|Decant 10 ml": { nome: "Carolina Herrera Good Girl (Decant 10 ml)", marca: "Carolina Herrera", preco: 145.80 },
     "hawas-black|100 ml": { nome: "Rasasi Hawas Black (100 ml)", marca: "Rasasi", preco: 219.90 },
     "hawas-black|Decant 10 ml": { nome: "Rasasi Hawas Black (Decant 10 ml)", marca: "Rasasi", preco: 43.98 },
-    "invictus-edp|100 ml": { nome: "Paco Rabanne Invictus (100 ml)", marca: "Paco Rabanne", preco: 737.80 },
-    "invictus-edp|200 ml": { nome: "Paco Rabanne Invictus (200 ml)", marca: "Paco Rabanne", preco: 1190.00 },
+    "invictus-edp|100 ml": { nome: "Paco Rabanne Invictus (100 ml)", marca: "Paco Rabanne", preco: 779.00 },
     "jadore-edp-200|100 ml": { nome: "Dior J'adore (100 ml)", marca: "Dior", preco: 1090.00 },
     "jadore-edp-200|Decant 10 ml": { nome: "Dior J'adore (Decant 10 ml)", marca: "Dior", preco: 218.00 },
     "khamrah|100 ml": { nome: "Lattafa Khamrah (100 ml)", marca: "Lattafa", preco: 174.90 },
@@ -37,10 +36,10 @@ export const CATALOGO = {
     "miss-dior-edp|Decant 10 ml": { nome: "Dior Miss Dior (Decant 10 ml)", marca: "Dior", preco: 198.00 },
     "onemillion-edp|100 ml": { nome: "Paco Rabanne 1 Million (100 ml)", marca: "Paco Rabanne", preco: 820.00 },
     "onemillion-edp|Decant 10 ml": { nome: "Paco Rabanne 1 Million (Decant 10 ml)", marca: "Paco Rabanne", preco: 164.00 },
-    "orientica-royal-amber-150|150 ml": { nome: "Orientica Royal Amber (150 ml)", marca: "Orientica", preco: 949.00 },
-    "orientica-royal-amber-150|80 ml": { nome: "Orientica Royal Amber (80 ml)", marca: "Orientica", preco: 588.38 },
-    "orientica-royal-amber-80|80 ml": { nome: "Orientica Royal Amber (80 ml)", marca: "Orientica", preco: 469.00 },
-    "orientica-royal-amber-80|Decant 10 ml": { nome: "Orientica Royal Amber (Decant 10 ml)", marca: "Orientica", preco: 103.18 },
+    "orientica-royal-amber-150|150 ml": { nome: "Orientica Royal Amber (150 ml)", marca: "Orientica", preco: 649.00 },
+    "orientica-royal-amber-150|80 ml": { nome: "Orientica Royal Amber (80 ml)", marca: "Orientica", preco: 402.38 },
+    "orientica-royal-amber-80|80 ml": { nome: "Orientica Royal Amber (80 ml)", marca: "Orientica", preco: 439.00 },
+    "orientica-royal-amber-80|Decant 10 ml": { nome: "Orientica Royal Amber (Decant 10 ml)", marca: "Orientica", preco: 96.58 },
     "oudforglory|100 ml": { nome: "Lattafa Oud For Glory (100 ml)", marca: "Lattafa", preco: 154.90 },
     "oudforglory|Decant 10 ml": { nome: "Lattafa Oud For Glory (Decant 10 ml)", marca: "Lattafa", preco: 27.88 },
     "paradoxe-200|100 ml": { nome: "Prada Paradoxe (100 ml)", marca: "Prada", preco: 989.00 },
@@ -49,9 +48,9 @@ export const CATALOGO = {
     "sauvage-edp-200|200 ml": { nome: "Dior Sauvage (200 ml)", marca: "Dior", preco: 1390.00 },
     "scandal-intense|80 ml": { nome: "Jean Paul Gaultier Scandal Intense (80 ml)", marca: "Jean Paul Gaultier", preco: 890.00 },
     "scandal-intense|Decant 10 ml": { nome: "Jean Paul Gaultier Scandal Intense (Decant 10 ml)", marca: "Jean Paul Gaultier", preco: 178.00 },
-    "sebastian-dark-oil-kit|Kit 1 L": { nome: "Sebastian Dark Oil Kit (Kit 1 L)", marca: "Sebastian", preco: 650.00 },
-    "sebastian-mascara-dark-oil|250 ml": { nome: "Sebastian Máscara Dark Oil (250 ml)", marca: "Sebastian", preco: 162.00 },
-    "sebastian-mascara-dark-oil|500 ml": { nome: "Sebastian Máscara Dark Oil (500 ml)", marca: "Sebastian", preco: 270.00 },
+    "sebastian-dark-oil-kit|Kit 1 L": { nome: "Sebastian Dark Oil Kit (Kit 1 L)", marca: "Sebastian", preco: 494.00 },
+    "sebastian-mascara-dark-oil|250 ml": { nome: "Sebastian Máscara Dark Oil (250 ml)", marca: "Sebastian", preco: 185.40 },
+    "sebastian-mascara-dark-oil|500 ml": { nome: "Sebastian Máscara Dark Oil (500 ml)", marca: "Sebastian", preco: 309.00 },
     "vs-splash-bare-vanilla|250 ml": { nome: "Victoria's Secret Bare Vanilla (250 ml)", marca: "Victoria's Secret", preco: 149.00 },
     "vs-splash-midnight-bloom|250 ml": { nome: "Victoria's Secret Midnight Bloom (250 ml)", marca: "Victoria's Secret", preco: 149.00 },
     "vs-splash-pure-seduction|250 ml": { nome: "Victoria's Secret Pure Seduction (250 ml)", marca: "Victoria's Secret", preco: 149.00 }
