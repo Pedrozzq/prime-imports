@@ -132,6 +132,7 @@ input,select{font:inherit}
 .hero__grade{position:relative;z-index:2;display:grid;grid-template-columns:1.15fr .85fr;align-items:center;gap:20px;padding:34px 0 0;min-height:430px}
 .hero__brand{width:min(460px,100%);margin-inline:auto}
 .hero__logo{width:100%;display:block;margin-inline:auto;filter:drop-shadow(0 12px 30px rgba(0,0,0,.6))}
+.hero__slogan{margin:-25% 0 0;text-align:center;font-family:var(--serif);font-style:italic;font-size:clamp(18px,2.4vw,25px);font-weight:400;color:#f2e7d2;letter-spacing:.02em}
 .hero__vitrine{align-self:end;justify-self:end;width:min(400px,100%)}
 .hero__frascos{position:relative;width:100%;aspect-ratio:1/1;margin:0}
 .hero__frasco{position:absolute;inset:0;display:grid;place-items:center;opacity:0;transition:opacity .55s ease;pointer-events:none}
@@ -1260,7 +1261,8 @@ function vistaInicio(){
     <div class="env">
       <div class="hero__grade">
         <div class="hero__brand">
-          <img class="hero__logo" src="img/logo-hero.webp" alt="Prime Imports Perfumes — comodidade, confiança e segurança" width="1216" height="1216">
+          <img class="hero__logo" src="img/logo.webp" alt="Prime Imports BR Perfumes">
+          <p class="hero__slogan">Comodidade, confiança e segurança</p>
         </div>
         <div class="hero__vitrine">
           <div class="hero__frascos" id="heroFrascos">${HERO_FRASCOS.map((f,i) => `
