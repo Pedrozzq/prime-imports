@@ -97,6 +97,12 @@ Opcionalmente, uma quinta: `CHECKOUT_EMAIL_TO`, para mandar o aviso de
 ela, o aviso vai para o mesmo `ORDER_EMAIL_TO`. Para desligar só esse
 aviso, crie `CHECKOUT_EMAIL_OFF` com valor `1`.
 
+E uma sexta, `PUBLIC_BASE_URL` (ex.: `https://primeimportsbr.com.br`): é a
+URL para onde o Mercado Pago devolve o cliente depois do pagamento
+(Checkout Pro). Se ficar em branco, o servidor usa o próprio host da
+requisição — o que já funciona na Vercel. Preencha só se o domínio de
+retorno precisar ser fixo e diferente do host que serve as páginas.
+
 Depois de salvar, vá em **Deployments → … → Redeploy** para que a função
 passe a enxergar as variáveis.
 
@@ -104,11 +110,15 @@ passe a enxergar as variáveis.
 
 ## 6. Conferir se está funcionando
 
-1. Abra a URL de produção, monte uma sacola, preencha o endereço e pague.
+1. Abra a URL de produção, monte uma sacola, preencha o endereço e clique
+   em **Pagar com Mercado Pago**. Você é levado para a página do Mercado
+   Pago; ao concluir, volta para `checkout.html?mp=success`.
 2. O e-mail chega em `lojaprimeimportsbr@gmail.com` com assunto
-   `[PAGO] Pedido #123456789 — Nome — R$ 0,00`.
-3. Se não chegar: **Vercel → Deployments → Functions → create-payments →
-   Logs**. As mensagens são explícitas (`RESEND_API_KEY ausente`,
+   `[PAGO] Pedido #123456789 — Nome — R$ 0,00` (ou
+   `[AGUARDANDO PAGAMENTO]` para Pix/boleto ainda não compensados).
+3. Se não chegar: **Vercel → Deployments → Functions**, e veja os logs de
+   `create-preference` (criação do pagamento) e `confirm-order` (retorno +
+   e-mail do pedido). As mensagens são explícitas (`RESEND_API_KEY ausente`,
    `Resend 403: ...`, etc.). Confira também o spam do Gmail e marque como
    "não é spam" no primeiro e-mail.
 
