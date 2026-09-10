@@ -97,6 +97,14 @@ export default async function handler(req, res) {
                 failure: base + '/checkout.html?mp=failure',
                 pending: base + '/checkout.html?mp=pending'
             },
+            payment_methods: {
+                // Não exclui nada: cartão, Pix e boleto aparecem conforme o que
+                // a conta do Mercado Pago tem habilitado (o Pix precisa estar
+                // ativado no painel do Mercado Pago para aparecer aqui).
+                excluded_payment_types: [],
+                excluded_payment_methods: [],
+                installments: 12
+            },
             statement_descriptor: 'PRIMEIMPORTS',
             external_reference: referencia,
             metadata: {

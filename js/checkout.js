@@ -2,22 +2,21 @@
  * Prime Imports — Checkout Mercado Pago (Checkout Pro)
  * Incluir em checkout.html, depois de js/cart.js.
  *
- * O pagamento acontece na PÁGINA DO PRÓPRIO MERCADO PAGO:
+ * O pagamento acontece na PÁGINA DO PRÓPRIO MERCADO PAGO. Normalmente a loja
+ * (index.html) já cria a preference e manda o cliente direto para o Mercado
+ * Pago. Esta página funciona como passagem/volta:
  *
- *  1. A página lê o carrinho + endereço + cupom salvos pela loja (localStorage)
- *     e mostra o resumo do pedido.
- *  2. No botão "Pagar", envia a sacola para /api/create-preference, que confere
- *     os preços no servidor e devolve um `init_point`.
- *  3. O navegador é redirecionado para esse `init_point` (ambiente do Mercado
- *     Pago: cartão, Pix, boleto).
- *  4. Ao concluir, o Mercado Pago devolve o cliente para
+ *  1. Se abrir SEM ?mp na URL: lê o carrinho + endereço + cupom (localStorage),
+ *     chama /api/create-preference e redireciona sozinha para o `init_point`
+ *     (ambiente do Mercado Pago: cartão, Pix, boleto). O botão fica só como
+ *     alternativa caso o redirect automático não aconteça.
+ *  2. Ao concluir, o Mercado Pago devolve o cliente para
  *     checkout.html?mp=success|failure|pending (+ payment_id na URL). Aqui a
  *     página mostra o resultado, chama /api/confirm-order (que busca o
  *     pagamento no Mercado Pago e dispara o e-mail do pedido) e limpa a sacola.
  *
- * Ao carregar a página (fora das telas de retorno) também avisa a loja por
- * e-mail (/api/notify-checkout) que o cliente chegou ao pagamento — uma vez por
- * sacola/sessão, para que recarregar a página não gere spam.
+ * Fora das telas de retorno também avisa a loja por e-mail
+ * (/api/notify-checkout) que o cliente foi pagar — uma vez por sacola/sessão.
  */
 (function () {
     'use strict';
@@ -215,16 +214,29 @@
     }
 
     /* ------------------------------------------------------------------ *
-     *  Fluxo 1 — montar o pedido e ir para o Mercado Pago               *
+     *  Fluxo 1 — checkout.html é só passagem: cria a preference e vai    *
+     *  DIRETO para o checkout do Mercado Pago.                           *
      * ------------------------------------------------------------------ */
+
+    var botaoJaLigado = false;
+    function ligarBotaoPagar() {
+        if (botaoJaLigado) return;
+        var btn = document.getElementById('checkout-pay-btn');
+        if (!btn) return;
+        botaoJaLigado = true;
+        btn.addEventListener('click', function () {
+            iniciarPagamento(getCartItems(), getEntrega(), getCupom(getCartItems()));
+        });
+    }
 
     function iniciarPagamento(items, entrega, cupom) {
         if (!items.length || getSubtotal(items) <= 0) {
             showStatus('error', 'Sua sacola está vazia. <a class="underline" href="index.html">Volte à loja</a> para montar o pedido.');
+            setPayButton('Sacola vazia', true);
             return;
         }
 
-        setPayButton('Redirecionando para o Mercado Pago…', true);
+        setPayButton('Redirecionando ao Mercado Pago…', true);
 
         fetch(CREATE_PREFERENCE_URL, {
             method: 'POST',
@@ -254,29 +266,36 @@
         });
     }
 
-    function montarTelaPagamento() {
+    /** Sem ?mp na URL: dispara o redirect automaticamente ao carregar. */
+    function redirecionarParaPagamento() {
         var items = getCartItems();
         var entrega = getEntrega();
         var cupom = getCupom(items);
 
         renderSummary(items, cupom);
         renderEntrega(entrega);
-        avisarCheckout(items, entrega, cupom);
+        ligarBotaoPagar();
 
         var total = getSubtotal(items) - (cupom ? cupom.desconto : 0);
-        var btn = document.getElementById('checkout-pay-btn');
-
         if (!items.length || total <= 0) {
             setPayButton('Sacola vazia', true);
+            showStatus('error', 'Sua sacola está vazia. <a class="underline" href="index.html">Volte à loja</a> para montar o pedido.');
             return;
         }
 
-        setPayButton('Pagar ' + formatBRL(total) + ' com Mercado Pago', false);
-        if (btn) {
-            btn.addEventListener('click', function () {
-                iniciarPagamento(getCartItems(), getEntrega(), getCupom(getCartItems()));
-            });
-        }
+        avisarCheckout(items, entrega, cupom);
+        iniciarPagamento(items, entrega, cupom);
+    }
+
+    /** Retorno de falha: NÃO redireciona sozinho — mostra o botão para tentar de novo. */
+    function mostrarBotaoTentarNovamente() {
+        var items = getCartItems();
+        var cupom = getCupom(items);
+        renderSummary(items, cupom);
+        renderEntrega(getEntrega());
+        ligarBotaoPagar();
+        var total = getSubtotal(items) - (cupom ? cupom.desconto : 0);
+        setPayButton(items.length && total > 0 ? 'Tentar novamente' : 'Sacola vazia', !(items.length && total > 0));
     }
 
     /* ------------------------------------------------------------------ *
@@ -359,7 +378,7 @@
         showStatus('error',
             '<strong>Pagamento não concluído.</strong> Nenhum valor foi cobrado. ' +
             'Revise os dados e tente novamente, ou use outro meio de pagamento.');
-        montarTelaPagamento();
+        mostrarBotaoTentarNovamente();
     }
 
     /* ------------------------------------------------------------------ *
@@ -371,7 +390,7 @@
         if (params.get('mp')) {
             tratarRetorno(params);
         } else {
-            montarTelaPagamento();
+            redirecionarParaPagamento();
         }
     }
 

@@ -1646,10 +1646,22 @@ document.addEventListener("click", e => {
   // editar endereço de entrega
   if(alvo.closest("#btnEditarEntrega")){ fecharTudo(); abrirEntrega(); return; }
 
-  // pagar online (Mercado Pago): manda a sacola pro checkout.html via localStorage
+  // pagar online: cria a preference no servidor e vai DIRETO para o
+  // checkout do Mercado Pago (sem passar pela checkout.html).
   if(alvo.closest("#btnPagarOnline")){
     if(!estado.carrinho.length){ avisar("Sua sacola está vazia"); return; }
     if(!estado.entrega || !estado.entrega.nome){ fecharTudo(); abrirEntrega(); return; }
+
+    const btn = alvo.closest("#btnPagarOnline");
+    if(btn.dataset.carregando) return;
+    const textoOrig = btn.textContent;
+    btn.dataset.carregando = "1";
+    btn.disabled = true;
+    btn.textContent = "Redirecionando ao Mercado Pago…";
+    const restaurarBotao = () => {
+      btn.textContent = textoOrig; btn.disabled = false; delete btn.dataset.carregando;
+    };
+
     const itensPagamento = estado.carrinho.map(i => {
       const p = acharProduto(i.id);
       return {
@@ -1661,12 +1673,42 @@ document.addEventListener("click", e => {
         qty: i.qtd
       };
     });
+    const cup = cupomAtivo();
+    const codCupom = cup ? cup.code : undefined;
+
+    // guarda a sacola para a tela de retorno (checkout.html?mp=...) confirmar o pedido
     try {
       localStorage.setItem("prime_imports_cart", JSON.stringify(itensPagamento));
       localStorage.setItem("prime_imports_entrega", JSON.stringify(estado.entrega));
       salvarCupomLS();
     } catch(err) {}
-    window.location.href = "checkout.html";
+
+    // avisa a loja que o cliente foi pagar (best-effort, não bloqueia)
+    fetch("/api/notify-checkout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ items: itensPagamento, entrega: estado.entrega, cupom: codCupom }),
+      keepalive: true
+    }).catch(() => {});
+
+    fetch("/api/create-preference", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ items: itensPagamento, entrega: estado.entrega, cupom: codCupom })
+    })
+      .then(r => r.json().then(j => ({ ok: r.ok, j })))
+      .then(({ ok, j }) => {
+        if(!ok || !j || !j.init_point){
+          avisar((j && j.error) || "Não foi possível iniciar o pagamento. Tente novamente.");
+          restaurarBotao();
+          return;
+        }
+        window.location.href = j.init_point;
+      })
+      .catch(() => {
+        avisar("Erro de conexão ao iniciar o pagamento. Tente novamente.");
+        restaurarBotao();
+      });
     return;
   }
 
