@@ -684,6 +684,13 @@ input,select{font:inherit}
    ============================================================ */
 
 const PRODUTOS = [
+  /* ⚠️ PRODUTO DE TESTE — só para validar o checkout do Mercado Pago. Remover depois dos testes. */
+  { id:"teste-checkout", nome:"PRODUTO TESTE — Checkout", sub:"Item de teste (R$ 3)", marca:"Teste", cat:"cosmeticos", familia:"Cabelo",
+    preco:3.00, img:"img/placeholder-perfume.svg", tom:"claro",
+    desc:"Produto de teste para validar o pagamento pelo Mercado Pago, com valor simbólico de R$ 3,00. Não é um item real — pode ser removido depois dos testes.",
+    notas:{Uso:"Somente teste de checkout", Valor:"R$ 3,00", Observação:"Remover após validar o pagamento"},
+    tamanhos:[{ml:"Único",mult:1}] },
+
   { id:"khamrah", nome:"Lattafa Khamrah", sub:"Parfum", marca:"Lattafa", cat:"feminino", familia:"Árabe",
     preco:174.90, img:"img/khamrah.webp", tom:"claro", destaque:true,
     desc:"Um oriental cremoso e especiado, construído sobre canela, tâmara e baunilha. Rastro marcante e longa fixação — a escolha certa para noites frias e ocasiões memoráveis.",
