@@ -20,10 +20,7 @@
     <!-- Carrinho de compras (client-side) -->
     <script src="js/cart.js" defer></script>
 
-    <!-- SDK oficial do Mercado Pago (Checkout Bricks) -->
-    <script src="https://sdk.mercadopago.com/js/v2"></script>
-
-    <!-- Checkout Mercado Pago (Payment Brick) -->
+    <!-- Checkout Mercado Pago (Checkout Pro — pagamento na página do Mercado Pago) -->
     <script src="js/checkout.js" defer></script>
 
     <!-- Tailwind CSS -->
@@ -120,10 +117,27 @@
                 <!-- Pagamento -->
                 <section class="lg:col-span-3 order-1 lg:order-2">
                     <div class="bg-brand-dark border border-white/10 rounded-sm p-6">
-                        <h2 class="font-serif text-xl mb-4 tracking-wide">Forma de pagamento</h2>
-                        <div id="paymentBrick_container">
-                            <p class="text-brand-gray text-sm">Carregando formulário de pagamento…</p>
+                        <h2 class="font-serif text-xl mb-4 tracking-wide">Pagamento</h2>
+
+                        <div id="checkout-pay-box">
+                            <p class="text-brand-gray text-sm leading-relaxed mb-6">
+                                Você será direcionado ao ambiente seguro do
+                                <strong class="text-white">Mercado Pago</strong> para concluir o
+                                pagamento com <strong class="text-white">cartão de crédito, cartão de
+                                débito, Pix ou boleto</strong>. Ao finalizar, você volta
+                                automaticamente para a Prime Imports.
+                            </p>
+                            <button id="checkout-pay-btn" type="button"
+                                class="btn-venus w-full px-6 py-4 text-sm rounded-sm" disabled>
+                                <i class="fa-solid fa-lock"></i>
+                                <span id="checkout-pay-label">Carregando resumo…</span>
+                            </button>
+                            <p class="text-brand-gray text-xs mt-4 flex items-center gap-2">
+                                <i class="fa-solid fa-shield-halved text-brand-gold"></i>
+                                Ambiente processado 100% pelo Mercado Pago.
+                            </p>
                         </div>
+
                         <div id="checkout-status" class="hidden"></div>
                     </div>
                 </section>

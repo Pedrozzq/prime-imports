@@ -1,37 +1,39 @@
 /**
- * Prime Imports — Checkout Mercado Pago (Payment Brick)
- * Incluir em checkout.html, depois de: js/cart.js e
- * <script src="https://sdk.mercadopago.com/js/v2"></script>
+ * Prime Imports — Checkout Mercado Pago (Checkout Pro)
+ * Incluir em checkout.html, depois de js/cart.js.
  *
- * Lê o carrinho e o endereço salvos pela loja (localStorage), renderiza o resumo
- * do pedido + dados de entrega e monta o Payment Brick, que recolhe os dados de
- * pagamento (cartão, Pix, etc.) e os envia para api/create-payments.js — que por
- * sua vez cria o pagamento e dispara o e-mail do pedido para a loja.
+ * O pagamento acontece na PÁGINA DO PRÓPRIO MERCADO PAGO:
  *
- * Ao carregar a página também avisa a loja por e-mail (api/notify-checkout.js)
- * que o cliente chegou ao pagamento, com a sacola e o endereço de entrega —
- * uma vez por sacola/sessão, para que recarregar a página não gere spam.
+ *  1. A página lê o carrinho + endereço + cupom salvos pela loja (localStorage)
+ *     e mostra o resumo do pedido.
+ *  2. No botão "Pagar", envia a sacola para /api/create-preference, que confere
+ *     os preços no servidor e devolve um `init_point`.
+ *  3. O navegador é redirecionado para esse `init_point` (ambiente do Mercado
+ *     Pago: cartão, Pix, boleto).
+ *  4. Ao concluir, o Mercado Pago devolve o cliente para
+ *     checkout.html?mp=success|failure|pending (+ payment_id na URL). Aqui a
+ *     página mostra o resultado, chama /api/confirm-order (que busca o
+ *     pagamento no Mercado Pago e dispara o e-mail do pedido) e limpa a sacola.
+ *
+ * Ao carregar a página (fora das telas de retorno) também avisa a loja por
+ * e-mail (/api/notify-checkout) que o cliente chegou ao pagamento — uma vez por
+ * sacola/sessão, para que recarregar a página não gere spam.
  */
 (function () {
     'use strict';
 
-    // Public Key é segura para expor no front-end (ao contrário do Access Token).
-    var MP_PUBLIC_KEY = 'APP_USR-7707b052-4d3c-4e64-88fa-17d2b24b781b';
-    var CREATE_PAYMENT_URL = '/api/create-payments';
+    var CREATE_PREFERENCE_URL = '/api/create-preference';
+    var CONFIRM_ORDER_URL = '/api/confirm-order';
     var NOTIFY_CHECKOUT_URL = '/api/notify-checkout';
     var STORAGE_KEY = 'prime_imports_cart';
     var ENTREGA_KEY = 'prime_imports_entrega';
     var CUPOM_KEY = 'prime_imports_cupom';
     var AVISADO_KEY = 'prime_imports_checkout_avisado';
+    var CONFIRMADO_PREFIX = 'prime_imports_pedido_confirmado_';
 
-    if (typeof MercadoPago === 'undefined') {
-        console.error('SDK do Mercado Pago não carregado. Inclua <script src="https://sdk.mercadopago.com/js/v2"></script> antes de js/checkout.js.');
-        showStatus('error', 'Não foi possível carregar o checkout. Recarregue a página.');
-        return;
-    }
-
-    var mp = new MercadoPago(MP_PUBLIC_KEY, { locale: 'pt-BR' });
-    var brickController = null;
+    /* ------------------------------------------------------------------ *
+     *  Leitura da sacola / endereço / cupom                             *
+     * ------------------------------------------------------------------ */
 
     function getCartItems() {
         if (window.PrimeCart && typeof window.PrimeCart.get === 'function') {
@@ -49,7 +51,7 @@
     /**
      * Cupom aplicado na sacola do index.html. É só para exibição: quem decide
      * o desconto de verdade é o servidor (api/_lib/cupons.js). Aqui usamos
-     * `desconto` apenas para mostrar o valor certo no resumo e no Brick.
+     * `desconto` apenas para mostrar o valor certo no resumo.
      */
     function getCupom(items) {
         try {
@@ -58,7 +60,6 @@
             if (!obj || !obj.code) return null;
             var desconto = Number(obj.desconto) || 0;
             var subtotal = getSubtotal(items || []);
-            // Se a sacola mudou e o desconto não faz mais sentido, ignora.
             if (desconto <= 0 || desconto >= subtotal) return null;
             return { code: String(obj.code), rotulo: obj.rotulo || String(obj.code), desconto: desconto };
         } catch (e) {
@@ -80,6 +81,10 @@
     function getSubtotal(items) {
         return items.reduce(function (sum, it) { return sum + it.qty * it.price; }, 0);
     }
+
+    /* ------------------------------------------------------------------ *
+     *  Utilidades de exibição                                           *
+     * ------------------------------------------------------------------ */
 
     function formatBRL(value) {
         return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -162,20 +167,11 @@
         box.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
-    function renderPixExtras(payment) {
-        var poi = payment.point_of_interaction;
-        var data = poi && poi.transaction_data;
-        if (!data) return '';
-        var img = data.qr_code_base64
-            ? '<img src="data:image/png;base64,' + data.qr_code_base64 + '" alt="QR Code Pix" class="mx-auto my-4 w-48 h-48 bg-white p-2 rounded-sm">'
-            : '';
-        var code = data.qr_code
-            ? '<textarea readonly class="w-full text-xs p-2 bg-black/40 border border-white/10 rounded-sm text-brand-gray" rows="3" onclick="this.select()">' + escapeHtml(data.qr_code) + '</textarea>'
-            : '';
-        return '<div class="mt-3 text-center">' +
-            '<p class="mb-2">Escaneie o QR Code ou copie o código Pix abaixo para concluir o pagamento:</p>' +
-            img + code +
-            '</div>';
+    function setPayButton(label, disabled) {
+        var btn = document.getElementById('checkout-pay-btn');
+        var lbl = document.getElementById('checkout-pay-label');
+        if (lbl) lbl.textContent = label;
+        if (btn) btn.disabled = !!disabled;
     }
 
     function limparSacola() {
@@ -187,22 +183,10 @@
         } catch (e) {}
     }
 
-    function handlePaymentResult(payment) {
-        if (payment.status === 'approved') {
-            showStatus('success', '<strong>Pagamento aprovado!</strong> Pedido #' + payment.id + '. Em breve entraremos em contato pelo WhatsApp com os detalhes de envio.');
-            limparSacola();
-            if (window.PrimeCart && typeof window.PrimeCart.close === 'function') window.PrimeCart.close();
-        } else if (payment.status === 'pending' || payment.status === 'in_process') {
-            showStatus('pending', '<strong>Pagamento em processamento</strong> (pedido #' + payment.id + ').' + renderPixExtras(payment));
-        } else {
-            showStatus('error', '<strong>Pagamento não aprovado.</strong> Motivo: ' + escapeHtml(payment.status_detail || payment.status || 'desconhecido') + '. Tente novamente ou use outro meio de pagamento.');
-        }
-    }
+    /* ------------------------------------------------------------------ *
+     *  Aviso "cliente chegou ao checkout" (best-effort)                 *
+     * ------------------------------------------------------------------ */
 
-    /**
-     * Assinatura simples da sacola + endereço. Serve só para não avisar duas
-     * vezes o mesmo checkout quando o cliente recarrega a página ou volta.
-     */
     function assinaturaCheckout(items, entrega, cupom) {
         var itensStr = items.map(function (it) {
             return String(it.id || it.name) + ':' + it.qty + ':' + it.price;
@@ -211,31 +195,14 @@
             '#' + (cupom ? cupom.code : '');
     }
 
-    function jaAvisou(assinatura) {
-        try {
-            return sessionStorage.getItem(AVISADO_KEY) === assinatura;
-        } catch (e) {
-            return false;
-        }
-    }
-
-    function marcarAvisado(assinatura) {
-        try {
-            sessionStorage.setItem(AVISADO_KEY, assinatura);
-        } catch (e) {}
-    }
-
-    /**
-     * Avisa a loja que o cliente chegou ao pagamento. É best-effort: qualquer
-     * falha some no console e o checkout segue normalmente.
-     */
     function avisarCheckout(items, entrega, cupom) {
-        if (!items.length) return;
-        if (getSubtotal(items) <= 0) return;
+        if (!items.length || getSubtotal(items) <= 0) return;
 
         var assinatura = assinaturaCheckout(items, entrega, cupom);
-        if (jaAvisou(assinatura)) return;
-        marcarAvisado(assinatura);
+        try {
+            if (sessionStorage.getItem(AVISADO_KEY) === assinatura) return;
+            sessionStorage.setItem(AVISADO_KEY, assinatura);
+        } catch (e) {}
 
         fetch(NOTIFY_CHECKOUT_URL, {
             method: 'POST',
@@ -247,78 +214,165 @@
         });
     }
 
-    function initBrick(items, entrega, cupom) {
-        var container = document.getElementById('paymentBrick_container');
-        if (!container) return;
+    /* ------------------------------------------------------------------ *
+     *  Fluxo 1 — montar o pedido e ir para o Mercado Pago               *
+     * ------------------------------------------------------------------ */
 
-        var amount = getSubtotal(items) - (cupom ? cupom.desconto : 0);
-        if (amount <= 0) {
-            container.innerHTML = '<p class="text-brand-gray text-sm">Adicione produtos à sacola antes de continuar para o pagamento.</p>';
+    function iniciarPagamento(items, entrega, cupom) {
+        if (!items.length || getSubtotal(items) <= 0) {
+            showStatus('error', 'Sua sacola está vazia. <a class="underline" href="index.html">Volte à loja</a> para montar o pedido.');
             return;
         }
 
-        mp.bricks().create('payment', 'paymentBrick_container', {
-            initialization: {
-                amount: amount
-            },
-            customization: {
-                visual: {
-                    style: { theme: 'dark' }
-                },
-                paymentMethods: {
-                    creditCard: 'all',
-                    debitCard: 'all',
-                    bankTransfer: 'all', // Pix
-                    maxInstallments: 12
-                }
-            },
-            callbacks: {
-                onReady: function () {},
-                onSubmit: function (data) {
-                    var formData = data.formData;
-                    return new Promise(function (resolve, reject) {
-                        fetch(CREATE_PAYMENT_URL, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ formData: formData, items: items, entrega: entrega, cupom: cupom ? cupom.code : undefined })
-                        })
-                        .then(function (res) {
-                            return res.json().then(function (json) { return { ok: res.ok, json: json }; });
-                        })
-                        .then(function (result) {
-                            if (!result.ok) {
-                                showStatus('error', 'Não foi possível processar o pagamento: ' + escapeHtml(result.json.error || 'erro desconhecido') + '.');
-                                reject();
-                                return;
-                            }
-                            handlePaymentResult(result.json);
-                            resolve();
-                        })
-                        .catch(function (err) {
-                            console.error('Erro de conexão ao criar pagamento:', err);
-                            showStatus('error', 'Erro de conexão ao processar o pagamento. Tente novamente.');
-                            reject(err);
-                        });
-                    });
-                },
-                onError: function (error) {
-                    console.error('Erro no Payment Brick:', error);
-                    showStatus('error', 'Ocorreu um erro ao carregar o formulário de pagamento. Recarregue a página.');
-                }
+        setPayButton('Redirecionando para o Mercado Pago…', true);
+
+        fetch(CREATE_PREFERENCE_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                items: items,
+                entrega: entrega,
+                cupom: cupom ? cupom.code : undefined
+            })
+        })
+        .then(function (res) {
+            return res.json().then(function (json) { return { ok: res.ok, json: json }; });
+        })
+        .then(function (result) {
+            if (!result.ok || !result.json || !result.json.init_point) {
+                showStatus('error', 'Não foi possível iniciar o pagamento: ' +
+                    escapeHtml((result.json && result.json.error) || 'erro desconhecido') + '.');
+                setPayButton('Tentar novamente', false);
+                return;
             }
-        }).then(function (controller) {
-            brickController = controller;
+            window.location.href = result.json.init_point;
+        })
+        .catch(function (err) {
+            console.error('Erro de conexão ao criar a preference:', err);
+            showStatus('error', 'Erro de conexão ao iniciar o pagamento. Tente novamente.');
+            setPayButton('Tentar novamente', false);
         });
     }
 
-    function init() {
+    function montarTelaPagamento() {
         var items = getCartItems();
         var entrega = getEntrega();
         var cupom = getCupom(items);
+
         renderSummary(items, cupom);
         renderEntrega(entrega);
         avisarCheckout(items, entrega, cupom);
-        initBrick(items, entrega, cupom);
+
+        var total = getSubtotal(items) - (cupom ? cupom.desconto : 0);
+        var btn = document.getElementById('checkout-pay-btn');
+
+        if (!items.length || total <= 0) {
+            setPayButton('Sacola vazia', true);
+            return;
+        }
+
+        setPayButton('Pagar ' + formatBRL(total) + ' com Mercado Pago', false);
+        if (btn) {
+            btn.addEventListener('click', function () {
+                iniciarPagamento(getCartItems(), getEntrega(), getCupom(getCartItems()));
+            });
+        }
+    }
+
+    /* ------------------------------------------------------------------ *
+     *  Fluxo 2 — retorno do Mercado Pago (?mp=success|failure|pending)  *
+     * ------------------------------------------------------------------ */
+
+    function confirmarPedido(paymentId, externalRef) {
+        // Evita e-mail duplicado se o cliente recarregar a tela de "obrigado".
+        var chave = CONFIRMADO_PREFIX + (paymentId || externalRef || 'sem-id');
+        try {
+            if (localStorage.getItem(chave) === '1') { limparSacola(); return; }
+        } catch (e) {}
+
+        var items = getCartItems();
+        var entrega = getEntrega();
+        var cupom = getCupom(items);
+
+        fetch(CONFIRM_ORDER_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                payment_id: paymentId || undefined,
+                external_reference: externalRef || undefined,
+                items: items,
+                entrega: entrega,
+                cupom: cupom ? cupom.code : undefined
+            }),
+            keepalive: true
+        })
+        .catch(function (err) {
+            console.warn('Não foi possível confirmar o pedido:', err && err.message);
+        })
+        .then(function () {
+            try { localStorage.setItem(chave, '1'); } catch (e) {}
+            limparSacola();
+            if (window.PrimeCart && typeof window.PrimeCart.close === 'function') window.PrimeCart.close();
+        });
+    }
+
+    function esconderCaixaPagamento() {
+        var box = document.getElementById('checkout-pay-box');
+        if (box) box.hidden = true;
+    }
+
+    function tratarRetorno(params) {
+        var mp = params.get('mp');
+        var paymentId = params.get('payment_id') || params.get('collection_id') || '';
+        var statusMp = params.get('status') || params.get('collection_status') || '';
+        var externalRef = params.get('external_reference') || '';
+
+        // Mostra o resumo (do que ainda houver) só como referência visual.
+        var items = getCartItems();
+        renderSummary(items, getCupom(items));
+        renderEntrega(getEntrega());
+        esconderCaixaPagamento();
+
+        if (mp === 'success' || statusMp === 'approved') {
+            showStatus('success',
+                '<strong>Pagamento aprovado!</strong> ' +
+                (paymentId ? 'Pedido #' + escapeHtml(paymentId) + '. ' : '') +
+                'Em breve entraremos em contato pelo WhatsApp com os detalhes de envio. ' +
+                '<a class="underline" href="index.html">Voltar à loja</a>');
+            confirmarPedido(paymentId, externalRef);
+            return;
+        }
+
+        if (mp === 'pending' || statusMp === 'pending' || statusMp === 'in_process') {
+            showStatus('pending',
+                '<strong>Pagamento em processamento.</strong> ' +
+                (paymentId ? 'Pedido #' + escapeHtml(paymentId) + '. ' : '') +
+                'Assim que o Mercado Pago confirmar (Pix/boleto costumam levar alguns minutos), seu pedido entra na fila de envio. ' +
+                '<a class="underline" href="index.html">Voltar à loja</a>');
+            confirmarPedido(paymentId, externalRef);
+            return;
+        }
+
+        // failure / rejected / qualquer outra coisa: mantém a sacola e deixa tentar de novo.
+        var box = document.getElementById('checkout-pay-box');
+        if (box) box.hidden = false;
+        showStatus('error',
+            '<strong>Pagamento não concluído.</strong> Nenhum valor foi cobrado. ' +
+            'Revise os dados e tente novamente, ou use outro meio de pagamento.');
+        montarTelaPagamento();
+    }
+
+    /* ------------------------------------------------------------------ *
+     *  Boot                                                             *
+     * ------------------------------------------------------------------ */
+
+    function init() {
+        var params = new URLSearchParams(window.location.search);
+        if (params.get('mp')) {
+            tratarRetorno(params);
+        } else {
+            montarTelaPagamento();
+        }
     }
 
     if (document.readyState === 'loading') {

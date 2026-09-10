@@ -12,7 +12,7 @@ O modo avançado **não aceita `@` nem `*`**. Para a raiz do domínio, o campo
 ## 1. Apague os 5 registros atuais
 
 Eles apontam o domínio para o GitHub Pages, onde o checkout não funciona
-(GitHub Pages só serve arquivos estáticos, então `/api/create-payments` e
+(GitHub Pages só serve arquivos estáticos, então `/api/create-preference` e
 `/api/notify-checkout` retornam 404).
 
 | Tipo | Nome | Dados |
