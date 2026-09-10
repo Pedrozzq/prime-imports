@@ -23,7 +23,7 @@
 import { MercadoPagoConfig, Preference } from 'mercadopago';
 import { validarSacola } from './_lib/catalogo.js';
 import { validarCupom } from './_lib/cupons.js';
-import { baseUrlDeRequest, montarPayer, itensPreferencia } from './_lib/checkout-pro.js';
+import { baseUrlDeRequest, montarPayer, itensPreferencia, metadataDoPedido } from './_lib/checkout-pro.js';
 
 const ACCESS_TOKEN = process.env.MP_ACCESS_TOKEN;
 
@@ -107,16 +107,24 @@ export default async function handler(req, res) {
             },
             statement_descriptor: 'PRIMEIMPORTS',
             external_reference: referencia,
-            metadata: {
-                referencia: referencia,
-                cupom: descontoAplicado > 0 ? cupom.code : null,
-                subtotal: subtotal,
-                total: total
-            }
+            metadata: metadataDoPedido(
+                entrega,
+                sacola.itens,
+                descontoAplicado > 0 ? cupom.code : null,
+                referencia,
+                subtotal,
+                total
+            )
         };
         // auto_return exige back_urls https válidas; em `vercel dev` (http) o
         // Mercado Pago recusa a preference se mandarmos auto_return.
         if (ehHttps) prefBody.auto_return = 'approved';
+
+        // notification_url: para onde o Mercado Pago avisa quando o pagamento
+        // muda de status (principalmente Pix/boleto pagos depois que o cliente
+        // saiu do site). Precisa ser https público — em `vercel dev` (http) não
+        // adianta mandar. Ver api/webhook-mercadopago.js.
+        if (ehHttps) prefBody.notification_url = base + '/api/webhook-mercadopago';
 
         var preference = new Preference(client);
         var pref = await preference.create({ body: prefBody });

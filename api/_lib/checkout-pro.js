@@ -94,3 +94,37 @@ export function itensPreferencia(itens, total, descontoReais, cupomCodigo) {
         };
     });
 }
+
+/** Campos de endereço que guardamos no metadata (mesma lista do notify-checkout). */
+var CAMPOS_ENTREGA = ['nome', 'fone', 'cep', 'rua', 'numero', 'complemento', 'bairro', 'cidade', 'uf'];
+
+/**
+ * "Mochila" que viaja dentro do pagamento no Mercado Pago (campo `metadata`).
+ *
+ * O webhook (api/webhook-mercadopago.js) roda sem o navegador do cliente, então
+ * não tem o `localStorage` com a sacola. Guardamos aqui o mínimo para
+ * reconstruir o pedido do lado do servidor: os ids + quantidades (o preço volta
+ * a ser lido do catálogo, nunca daqui), o código do cupom e o endereço.
+ *
+ * Só chaves de uma palavra minúscula — o Mercado Pago mexe em chaves com
+ * camelCase/maiúscula no metadata, então evitamos isso de propósito.
+ */
+export function metadataDoPedido(entrega, sacolaItens, cupomCodigo, referencia, subtotal, total) {
+    var e = entrega && typeof entrega === 'object' ? entrega : {};
+    var end = {};
+    CAMPOS_ENTREGA.forEach(function (campo) {
+        var valor = String(e[campo] == null ? '' : e[campo]).slice(0, 160).trim();
+        if (valor) end[campo] = valor;
+    });
+
+    return {
+        referencia: referencia,
+        cupom: cupomCodigo || null,
+        subtotal: subtotal,
+        total: total,
+        sacola: (Array.isArray(sacolaItens) ? sacolaItens : []).map(function (it) {
+            return { id: String(it.id || ''), qty: Number(it.qty) || 0 };
+        }),
+        entrega: end
+    };
+}
