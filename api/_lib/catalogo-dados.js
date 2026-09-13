@@ -5,7 +5,7 @@
  * index.html. A chave é "<id do produto>|<tamanho>", exatamente como o
  * carrinho do front-end monta.
  *
- * Gerado a partir de index.html — 27 produtos, 46 variantes.
+ * Gerado a partir de index.html — 26 produtos, 45 variantes.
  */
 
 export const CATALOGO = {
@@ -51,7 +51,6 @@ export const CATALOGO = {
     "sebastian-dark-oil-kit|Kit 1 L": { nome: "Sebastian Dark Oil Kit (Kit 1 L)", marca: "Sebastian", preco: 494.00 },
     "sebastian-mascara-dark-oil|250 ml": { nome: "Sebastian Máscara Dark Oil (250 ml)", marca: "Sebastian", preco: 185.40 },
     "sebastian-mascara-dark-oil|500 ml": { nome: "Sebastian Máscara Dark Oil (500 ml)", marca: "Sebastian", preco: 309.00 },
-    "teste-checkout|Único": { nome: "PRODUTO TESTE — Checkout (Único)", marca: "Teste", preco: 3.00 },
     "vs-splash-bare-vanilla|250 ml": { nome: "Victoria's Secret Bare Vanilla (250 ml)", marca: "Victoria's Secret", preco: 149.00 },
     "vs-splash-midnight-bloom|250 ml": { nome: "Victoria's Secret Midnight Bloom (250 ml)", marca: "Victoria's Secret", preco: 149.00 },
     "vs-splash-pure-seduction|250 ml": { nome: "Victoria's Secret Pure Seduction (250 ml)", marca: "Victoria's Secret", preco: 149.00 }
