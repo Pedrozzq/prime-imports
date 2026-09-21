@@ -1,5 +1,5 @@
 /**
- * Prime Imports — Montagem e envio do e-mail de pedido.
+ * Prime Perfumes — Montagem e envio do e-mail de pedido.
  *
  * Usa a API HTTP do Resend (https://resend.com) via fetch nativo do Node 18+,
  * sem dependência extra no package.json.
@@ -7,7 +7,7 @@
  * Variáveis de ambiente (Vercel → Project Settings → Environment Variables):
  *   RESEND_API_KEY   (obrigatória)  chave "re_..." gerada no painel do Resend
  *   ORDER_EMAIL_TO   (opcional)     destino; padrão lojaprimeimportsbr@gmail.com
- *   ORDER_EMAIL_FROM (opcional)     remetente; padrão "Prime Imports BR <onboarding@resend.dev>"
+ *   ORDER_EMAIL_FROM (opcional)     remetente; padrão "Prime Perfumes <onboarding@resend.dev>"
  *
  * Enquanto você não verificar um domínio próprio no Resend, mantenha o
  * remetente onboarding@resend.dev — ele só entrega para o e-mail dono da conta
@@ -16,7 +16,7 @@
 
 const RESEND_ENDPOINT = 'https://api.resend.com/emails';
 const DEFAULT_TO = 'lojaprimeimportsbr@gmail.com';
-const DEFAULT_FROM = 'Prime Imports BR <onboarding@resend.dev>';
+const DEFAULT_FROM = 'Prime Perfumes <onboarding@resend.dev>';
 
 export function escapeHtml(value) {
     return String(value == null ? '' : value).replace(/[&<>"']/g, function (c) {
@@ -133,7 +133,7 @@ export function montarEmailPedido(dados) {
 
     var html =
         '<div style="font-family:Arial,Helvetica,sans-serif;max-width:640px;margin:0 auto;color:#111">' +
-        '<div style="background:#0a0a0a;color:#D4AF37;padding:18px 20px;font-size:18px;letter-spacing:2px">PRIME IMPORTS BR</div>' +
+        '<div style="background:#0a0a0a;color:#D4AF37;padding:18px 20px;font-size:18px;letter-spacing:2px">PRIME PERFUMES</div>' +
         '<div style="padding:20px;border:1px solid #eee;border-top:none">' +
         '<p style="margin:0 0 4px;font-size:13px;color:#666">' + escapeHtml(agoraBR()) + '</p>' +
         '<h2 style="margin:0 0 4px;font-size:20px">Pedido #' + escapeHtml(pedidoId) + '</h2>' +
@@ -158,7 +158,7 @@ export function montarEmailPedido(dados) {
         '</div></div>';
 
     var texto = [
-        'PRIME IMPORTS BR — Pedido #' + pedidoId,
+        'PRIME PERFUMES — Pedido #' + pedidoId,
         agoraBR(),
         'Status: ' + rotuloStatus(status) + (payment.status_detail ? ' (' + payment.status_detail + ')' : ''),
         '',

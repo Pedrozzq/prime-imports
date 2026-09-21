@@ -1,5 +1,5 @@
 /**
- * Prime Imports — Tabela de preços do servidor. ARQUIVO GERADO.
+ * Prime Perfumes — Tabela de preços do servidor. ARQUIVO GERADO.
  *
  * Não edite à mão: rode "npm run catalogo" depois de alterar os preços no
  * index.html. A chave é "<id do produto>|<tamanho>", exatamente como o
@@ -26,8 +26,8 @@ export const CATALOGO = {
     "jadore-edp-200|Decant 10 ml": { nome: "Dior J'adore (Decant 10 ml)", marca: "Dior", preco: 218.00 },
     "khamrah|100 ml": { nome: "Lattafa Khamrah (100 ml)", marca: "Lattafa", preco: 174.90 },
     "khamrah|Decant 10 ml": { nome: "Lattafa Khamrah (Decant 10 ml)", marca: "Lattafa", preco: 31.48 },
-    "kit-hawas-oud-khamrah|Kit 3 x 100 ml": { nome: "Kit Promoção da Semana (Kit 3 x 100 ml)", marca: "Prime Imports", preco: 486.90 },
-    "kit-khamrah-fakhar-hawas|Kit 3 x 100 ml": { nome: "Kit Promoção da Semana (Kit 3 x 100 ml)", marca: "Prime Imports", preco: 537.30 },
+    "kit-hawas-oud-khamrah|Kit 3 x 100 ml": { nome: "Kit Promoção da Semana (Kit 3 x 100 ml)", marca: "Prime Perfumes", preco: 486.90 },
+    "kit-khamrah-fakhar-hawas|Kit 3 x 100 ml": { nome: "Kit Promoção da Semana (Kit 3 x 100 ml)", marca: "Prime Perfumes", preco: 537.30 },
     "la-vie-est-belle-200|100 ml": { nome: "Lancôme La Vie Est Belle (100 ml)", marca: "Lancôme", preco: 849.00 },
     "la-vie-est-belle-200|Decant 10 ml": { nome: "Lancôme La Vie Est Belle (Decant 10 ml)", marca: "Lancôme", preco: 169.80 },
     "le-male-edp|125 ml": { nome: "Jean Paul Gaultier Le Male (125 ml)", marca: "Jean Paul Gaultier", preco: 640.80 },

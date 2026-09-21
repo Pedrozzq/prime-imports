@@ -1,5 +1,5 @@
 /**
- * Prime Imports — Confirmação do pedido após o Checkout Pro
+ * Prime Perfumes — Confirmação do pedido após o Checkout Pro
  *
  * Vercel Serverless Function: POST /api/confirm-order
  * Chamada por js/checkout.js quando o cliente volta do Mercado Pago pela

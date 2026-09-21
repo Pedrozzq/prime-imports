@@ -1,5 +1,5 @@
 /**
- * Prime Imports — "scroll-world" leve (sem geração de vídeo por IA).
+ * Prime Perfumes — "scroll-world" leve (sem geração de vídeo por IA).
  * Recria a sensação de voar de uma cena para outra ao rolar a página,
  * usando só transformações CSS acionadas por scroll (rAF).
  *

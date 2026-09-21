@@ -1,5 +1,5 @@
 /**
- * Prime Imports — Aviso de checkout iniciado
+ * Prime Perfumes — Aviso de checkout iniciado
  *
  * Vercel Serverless Function: POST /api/notify-checkout
  * Chamada por js/checkout.js assim que a página de pagamento carrega, antes

@@ -1,5 +1,5 @@
 /**
- * Prime Imports — Cupons de desconto (autoridade do servidor).
+ * Prime Perfumes — Cupons de desconto (autoridade do servidor).
  *
  * Mesma lógica dos preços (api/_lib/catalogo.js): o navegador manda só o
  * CÓDIGO do cupom; as regras e o valor do desconto são decididos aqui.

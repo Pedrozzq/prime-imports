@@ -1,5 +1,5 @@
 /**
- * Prime Imports — Validação de preços no servidor.
+ * Prime Perfumes — Validação de preços no servidor.
  *
  * O navegador manda a sacola, mas NÃO manda o preço que vale. Este módulo
  * ignora qualquer valor que venha do cliente e reconstrói cada item a partir
