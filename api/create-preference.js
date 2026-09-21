@@ -1,5 +1,5 @@
 /**
- * Prime Imports — Criação da preference do Checkout Pro
+ * Prime Perfumes — Criação da preference do Checkout Pro
  *
  * Vercel Serverless Function: POST /api/create-preference
  * Recebe a sacola (itens + endereço + código de cupom), confere tudo pelos

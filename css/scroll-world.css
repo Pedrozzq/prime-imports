@@ -1,4 +1,4 @@
-/* Prime Imports — motor de "flythrough" no scroll (sem vídeo, só CSS/JS).
+/* Prime Perfumes — motor de "flythrough" no scroll (sem vídeo, só CSS/JS).
    Empilha painéis "sticky" com overlap negativo entre eles: enquanto um painel
    ainda está saindo (fade-out), o próximo já está entrando por baixo (fade-in),
    criando a sensação de fluir de uma cena para a outra sem corte. */

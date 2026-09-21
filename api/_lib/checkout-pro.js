@@ -1,5 +1,5 @@
 /**
- * Prime Imports — Helpers do Checkout Pro (pagamento na página do Mercado Pago).
+ * Prime Perfumes — Helpers do Checkout Pro (pagamento na página do Mercado Pago).
  *
  * No Checkout Pro o cliente é redirecionado para o ambiente do próprio Mercado
  * Pago (o `init_point` de uma "preference"). Aqui ficam as funções que montam
@@ -76,7 +76,7 @@ export function itensPreferencia(itens, total, descontoReais, cupomCodigo) {
         var qtd = itens.reduce(function (soma, it) { return soma + (Number(it.qty) || 0); }, 0);
         return [{
             id: 'pedido-prime',
-            title: 'Pedido Prime Imports — ' + qtd + ' item(ns)'
+            title: 'Pedido Prime Perfumes — ' + qtd + ' item(ns)'
                 + (cupomCodigo ? ' (cupom ' + String(cupomCodigo).toUpperCase() + ')' : ''),
             quantity: 1,
             currency_id: 'BRL',

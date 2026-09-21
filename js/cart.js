@@ -1,5 +1,5 @@
 /**
- * Prime Imports — Carrinho de compras (client-side, localStorage).
+ * Prime Perfumes — Carrinho de compras (client-side, localStorage).
  * Incluir em toda página com: <script src="js/cart.js" defer></script>
  * Botões de compra devem ter: data-cart-add, data-cart-id, data-cart-name,
  * data-cart-brand, data-cart-price (número), data-cart-image.
@@ -184,7 +184,7 @@
 
     function buildWhatsappLink() {
         if (!cartItems.length) return '#';
-        var lines = ['Olá! Quero finalizar meu pedido na Prime Imports:', ''];
+        var lines = ['Olá! Quero finalizar meu pedido na Prime Perfumes:', ''];
         cartItems.forEach(function (it) {
             lines.push('• ' + it.qty + 'x ' + it.brand + ' — ' + it.name + ' (' + formatBRL(it.price) + ' cada)');
         });

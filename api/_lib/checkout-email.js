@@ -1,5 +1,5 @@
 /**
- * Prime Imports — Aviso de "checkout iniciado".
+ * Prime Perfumes — Aviso de "checkout iniciado".
  *
  * Dispara um e-mail para a loja assim que o cliente chega em checkout.html,
  * ANTES de pagar, levando junto os dados de entrega e a sacola. Serve para
@@ -13,7 +13,7 @@
  *   RESEND_API_KEY      (obrigatória)  chave "re_..." gerada no painel do Resend
  *   CHECKOUT_EMAIL_TO   (opcional)     destino deste aviso; padrão = ORDER_EMAIL_TO
  *   ORDER_EMAIL_TO      (opcional)     destino dos pedidos; padrão lojaprimeimportsbr@gmail.com
- *   ORDER_EMAIL_FROM    (opcional)     remetente; padrão "Prime Imports BR <onboarding@resend.dev>"
+ *   ORDER_EMAIL_FROM    (opcional)     remetente; padrão "Prime Perfumes <onboarding@resend.dev>"
  *   CHECKOUT_EMAIL_OFF  (opcional)     "1" desliga este aviso sem mexer no código
  *
  * Enquanto não houver domínio verificado no Resend, o remetente precisa ser
@@ -25,7 +25,7 @@ import { escapeHtml, brl, agoraBR, linhaEndereco } from './order-email.js';
 
 const RESEND_ENDPOINT = 'https://api.resend.com/emails';
 const DEFAULT_TO = 'lojaprimeimportsbr@gmail.com';
-const DEFAULT_FROM = 'Prime Imports BR <onboarding@resend.dev>';
+const DEFAULT_FROM = 'Prime Perfumes <onboarding@resend.dev>';
 const WHATSAPP_BASE = 'https://wa.me/';
 
 /** Deixa só os dígitos e prefixa 55 quando o número vem sem DDI. */
@@ -86,7 +86,7 @@ export function montarEmailCheckout(dados) {
 
     var html =
         '<div style="font-family:Arial,Helvetica,sans-serif;max-width:640px;margin:0 auto;color:#111">' +
-        '<div style="background:#0a0a0a;color:#D4AF37;padding:18px 20px;font-size:18px;letter-spacing:2px">PRIME IMPORTS BR</div>' +
+        '<div style="background:#0a0a0a;color:#D4AF37;padding:18px 20px;font-size:18px;letter-spacing:2px">PRIME PERFUMES</div>' +
         '<div style="padding:20px;border:1px solid #eee;border-top:none">' +
         '<p style="margin:0 0 4px;font-size:13px;color:#666">' + escapeHtml(agoraBR()) + '</p>' +
         '<h2 style="margin:0 0 4px;font-size:20px">Checkout iniciado</h2>' +
@@ -108,7 +108,7 @@ export function montarEmailCheckout(dados) {
         '</div></div>';
 
     var linhasTexto = [
-        'PRIME IMPORTS BR — Checkout iniciado (ainda não pago)',
+        'PRIME PERFUMES — Checkout iniciado (ainda não pago)',
         agoraBR(),
         '',
         'ITENS NA SACOLA',

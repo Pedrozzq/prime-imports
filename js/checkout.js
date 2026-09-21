@@ -1,5 +1,5 @@
 /**
- * Prime Imports — Checkout Mercado Pago (Checkout Pro)
+ * Prime Perfumes — Checkout Mercado Pago (Checkout Pro)
  * Incluir em checkout.html, depois de js/cart.js.
  *
  * O pagamento acontece na PÁGINA DO PRÓPRIO MERCADO PAGO. Normalmente a loja

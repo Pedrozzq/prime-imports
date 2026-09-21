@@ -1,5 +1,5 @@
 /**
- * Prime Imports — Gerador do catálogo do servidor.
+ * Prime Perfumes — Gerador do catálogo do servidor.
  *
  * Lê a constante PRODUTOS de index.html (a fonte única de verdade dos preços)
  * e escreve api/_lib/catalogo-dados.js com a tabela que a função de pagamento
@@ -73,7 +73,7 @@ const linhas = Object.keys(catalogo).sort().map(function (chave) {
 });
 
 const saida = `/**
- * Prime Imports — Tabela de preços do servidor. ARQUIVO GERADO.
+ * Prime Perfumes — Tabela de preços do servidor. ARQUIVO GERADO.
  *
  * Não edite à mão: rode "npm run catalogo" depois de alterar os preços no
  * index.html. A chave é "<id do produto>|<tamanho>", exatamente como o
