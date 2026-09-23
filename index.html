@@ -222,6 +222,30 @@ input,select{font:inherit}
 .produto__preco{margin:5px 0 0;font-size:17px;font-weight:500;color:var(--tinta)}
 .produto__parcela{margin:2px 0 12px;font-size:11px;color:var(--tinta-fraca)}
 .produto__info .btn-ouro{margin-top:auto}
+/* decants: o cartão desliza para o lado e revela 5 / 10 / 15 ml */
+.produto--decant{overflow:hidden;touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.carrossel__pista .produto--decant{touch-action:auto} /* no carrossel o arrasto no toque rola a vitrine; decants pela aba */
+.produto__trilho{flex:1;display:flex;transition:transform .45s cubic-bezier(.22,.8,.3,1)}
+.produto__face{flex:0 0 100%;min-width:0;display:flex;flex-direction:column}
+.produto--decant.virado .produto__trilho{transform:translateX(-100%)}
+.produto--decant.virado .produto__fita,.produto--decant.virado .produto__fav{opacity:0;pointer-events:none}
+.produto__decant-aba{margin:-4px 0 10px;padding:4px 2px;font-size:10.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ouro-fraco);border-bottom:1px dashed currentColor;transition:color .2s}
+.produto__decant-aba:hover{color:var(--tinta)}
+.produto__decants{justify-content:center;align-items:center;text-align:center;padding:22px 14px;background:linear-gradient(180deg,#141312,#0a0a0a);color:#f3e5ab}
+.produto__decants .produto__nome{color:#fff}
+.produto__decants .produto__sub{color:#b3a993}
+.produto__decants-rotulo{margin-bottom:10px;padding:4px 12px;border:1px solid var(--ouro);color:var(--ouro);font-size:10px;font-weight:600;letter-spacing:.3em;text-transform:uppercase}
+.produto__decants-lista{list-style:none;margin:18px 0 14px;padding:0;width:100%;display:grid;gap:8px}
+.produto__decants-lista li{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px;padding:8px 8px 8px 12px;border:1px solid rgba(217,179,108,.28);transition:border-color .2s}
+.produto__decants-lista li:hover{border-color:var(--ouro)}
+.produto__decants-ml{font-size:12px;font-weight:600;letter-spacing:.08em;color:#fff}
+.produto__decants-preco{text-align:right;font-size:13.5px;color:#f3e5ab}
+.produto__decants-add{width:30px;height:30px;display:grid;place-items:center;background:linear-gradient(180deg,#e2bf7f,#c79c4f);color:#241a08;transition:filter .2s}
+.produto__decants-add:hover{filter:brightness(1.1)}
+.produto__decants-add svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2.2}
+.produto__decant-aba--voltar{margin:0;color:#d9b36c}
+.produto__decant-aba--voltar:hover{color:#fff}
+@media(prefers-reduced-motion:reduce){.produto__trilho{transition:none}}
 .btn-ouro{position:relative;display:inline-block;padding:12px 26px;background:linear-gradient(135deg,#ecd29b 0%,#d3ab63 44%,#b8883f 100%);color:#2a1d06;font-size:10px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;border:1px solid #b8883f;box-shadow:inset 0 1px 0 rgba(255,255,255,.42),0 2px 10px -6px rgba(120,90,35,.5);transition:transform .25s ease,box-shadow .25s ease,background .25s ease}
 .btn-ouro:hover{background:linear-gradient(135deg,#f5deb0 0%,#e0bd78 44%,#cb9a4d 100%);transform:translateY(-1px);box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 12px 26px -12px rgba(120,90,35,.7)}
 .btn-ouro:active{transform:translateY(0);box-shadow:inset 0 2px 4px rgba(90,65,20,.4)}
@@ -687,19 +711,19 @@ const PRODUTOS = [
     preco:174.90, img:"img/khamrah.webp", tom:"claro", destaque:true,
     desc:"Um oriental cremoso e especiado, construído sobre canela, tâmara e baunilha. Rastro marcante e longa fixação — a escolha certa para noites frias e ocasiões memoráveis.",
     notas:{Topo:"Canela, noz-moscada, bergamota", Corpo:"Tâmara, praline, âmbar", Fundo:"Baunilha, tonka, madeiras"},
-    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 10 ml",mult:0.18}] },
+    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 5 ml",mult:0.099},{ml:"Decant 10 ml",mult:0.18},{ml:"Decant 15 ml",mult:0.252}] },
 
   { id:"oudforglory", nome:"Lattafa Oud For Glory", sub:"Bade'e Al Oud", marca:"Lattafa", cat:"masculino", familia:"Amadeirado",
     preco:154.90, img:"img/bade-al-oud.webp", tom:"claro", destaque:true,
     desc:"Oud esfumaçado com açafrão e couro. Presença densa, sofisticada e inconfundível — o clássico árabe que virou febre no Brasil.",
     notas:{Topo:"Açafrão, lavanda", Corpo:"Oud, couro, âmbar", Fundo:"Madeiras secas, musgo"},
-    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 10 ml",mult:0.18}] },
+    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 5 ml",mult:0.099},{ml:"Decant 10 ml",mult:0.18},{ml:"Decant 15 ml",mult:0.252}] },
 
   { id:"atheeri", nome:"Lattafa Atheeri", sub:"Eau de Parfum", marca:"Lattafa", cat:"feminino", familia:"Frutado",
     preco:354.90, precoAntigo:429.90, img:"img/atheeri.webp", tom:"claro",
     desc:"Frutado leve e luminoso, com pêssego e flor de laranjeira sobre almíscar branco. Delicado para o dia a dia sem perder assinatura.",
     notas:{Topo:"Pêssego, pera", Corpo:"Flor de laranjeira, peônia", Fundo:"Almíscar branco, cedro"},
-    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 10 ml",mult:0.2}] },
+    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 5 ml",mult:0.11},{ml:"Decant 10 ml",mult:0.2},{ml:"Decant 15 ml",mult:0.28}] },
 
   /* --- itens acrescentados (sem controle de estoque; preços de referência) --- */
   { id:"sebastian-dark-oil-kit", nome:"Sebastian Dark Oil Kit", sub:"Shampoo + Condicionador 1 L", marca:"Sebastian", cat:"cosmeticos", familia:"Cabelo",
@@ -736,97 +760,97 @@ const PRODUTOS = [
     preco:820.00, img:"img/onemillion-edp.webp", tom:"claro",
     desc:"A versão Eau de Parfum do ícone dourado: mais quente e resinosa, com canela, couro e âmbar de longa duração.",
     notas:{Topo:"Toranja, hortelã, canela", Corpo:"Rosa, especiarias, couro", Fundo:"Âmbar, mel, patchouli"},
-    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 10 ml",mult:0.2}] },
+    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 5 ml",mult:0.11},{ml:"Decant 10 ml",mult:0.2},{ml:"Decant 15 ml",mult:0.28}] },
 
   { id:"azzaro-wanted", nome:"Azzaro Wanted", sub:"Eau de Parfum 100 ml", marca:"Azzaro", cat:"masculino", familia:"Especiado",
     preco:890.00, img:"img/azzaro.webp", tom:"claro",
     desc:"Cítrico especiado com gengibre, cardamomo e vetiver. Energético, viril e versátil.",
     notas:{Topo:"Limão, gengibre, lavanda", Corpo:"Cardamomo, gerânio, sálvia", Fundo:"Vetiver, tonka, madeiras"},
-    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 10 ml",mult:0.2}] },
+    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 5 ml",mult:0.11},{ml:"Decant 10 ml",mult:0.2},{ml:"Decant 15 ml",mult:0.28}] },
 
   { id:"ch-212-black", nome:"Carolina Herrera 212 VIP Black", sub:"Eau de Parfum 100 ml", marca:"Carolina Herrera", cat:"masculino", familia:"Amadeirado",
     preco:590.00, img:"img/ch-212-black.webp", tom:"claro",
     desc:"Anis, lavanda preta e musk em um amadeirado noturno e magnético. Feito para a balada.",
     notas:{Topo:"Absinto, anis", Corpo:"Lavanda preta, especiarias", Fundo:"Musk, madeiras, baunilha"},
-    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 10 ml",mult:0.2}] },
+    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 5 ml",mult:0.11},{ml:"Decant 10 ml",mult:0.2},{ml:"Decant 15 ml",mult:0.28}] },
 
   { id:"invictus-edp", nome:"Paco Rabanne Invictus", sub:"Eau de Toilette 100 ml", marca:"Paco Rabanne", cat:"masculino", familia:"Aquático",
     preco:779.00, img:"img/invictus-toilette.webp", tom:"claro",
     desc:"Aquático amadeirado com toranja e ambroxan. Fresco, esportivo e com ótima projeção no calor.",
     notas:{Topo:"Toranja, notas marinhas", Corpo:"Folha de louro, jasmim", Fundo:"Âmbar cinza, guaíaco, patchouli"},
-    tamanhos:[{ml:"100 ml",mult:1}] },
+    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 5 ml",mult:0.11},{ml:"Decant 10 ml",mult:0.2},{ml:"Decant 15 ml",mult:0.28}] },
 
   { id:"sauvage-edp-200", nome:"Dior Sauvage", sub:"Eau de Parfum 200 ml", marca:"Dior", cat:"masculino", familia:"Cítrico",
     preco:1390.00, img:"img/sauvage-edp-200.webp", tom:"claro", destaque:true,
     desc:"O campeão de vendas em frasco de 200 ml: bergamota radiante, pimenta e ambroxan cremoso. Universal e potente.",
     notas:{Topo:"Bergamota da Calábria", Corpo:"Pimenta de Sichuan, lavanda", Fundo:"Ambroxan, baunilha, patchouli"},
-    tamanhos:[{ml:"200 ml",mult:1},{ml:"100 ml",mult:0.6}] },
+    tamanhos:[{ml:"200 ml",mult:1},{ml:"100 ml",mult:0.6},{ml:"Decant 5 ml",mult:0.055},{ml:"Decant 10 ml",mult:0.1},{ml:"Decant 15 ml",mult:0.14}] },
 
   { id:"le-male-edp", nome:"Jean Paul Gaultier Le Male", sub:"Eau de Parfum 200 ml", marca:"Jean Paul Gaultier", cat:"masculino", familia:"Aromático",
     preco:890.00, img:"img/le-male-edp.webp", tom:"claro", destaque:true,
     desc:"Lavanda e hortelã sobre baunilha e fava tonka. Doce, quente e inconfundível, no frasco-torso gigante.",
     notas:{Topo:"Hortelã, bergamota, cardamomo", Corpo:"Lavanda, flor de laranjeira, canela", Fundo:"Baunilha, tonka, âmbar"},
-    tamanhos:[{ml:"200 ml",mult:1},{ml:"125 ml",mult:0.72}] },
+    tamanhos:[{ml:"200 ml",mult:1},{ml:"125 ml",mult:0.72},{ml:"Decant 5 ml",mult:0.055},{ml:"Decant 10 ml",mult:0.1},{ml:"Decant 15 ml",mult:0.14}] },
 
   { id:"goodgirl-edp-100", nome:"Carolina Herrera Good Girl", sub:"Eau de Parfum 80 ml", marca:"Carolina Herrera", cat:"feminino", familia:"Doce",
     preco:729.00, img:"img/goodgirl-edp-100.webp", tom:"claro",
     desc:"O salto agulha azul: jasmim sambac e tuberosa contra cacau, café e tonka. Luz e sombra em 100 ml.",
     notas:{Topo:"Amêndoa, café, bergamota", Corpo:"Tuberosa, jasmim sambac", Fundo:"Cacau, tonka, sândalo"},
-    tamanhos:[{ml:"80 ml",mult:1},{ml:"Decant 10 ml",mult:0.2}] },
+    tamanhos:[{ml:"80 ml",mult:1},{ml:"Decant 5 ml",mult:0.11},{ml:"Decant 10 ml",mult:0.2},{ml:"Decant 15 ml",mult:0.28}] },
 
   { id:"scandal-intense", nome:"Jean Paul Gaultier Scandal Intense", sub:"Eau de Parfum 80 ml", marca:"Jean Paul Gaultier", cat:"feminino", familia:"Doce",
     preco:890.00, img:"img/scandal-intense.webp", tom:"claro", destaque:true,
     desc:"Mel, cera de abelha e tuberosa em versão intensa e envolvente. Gourmand floral de forte presença.",
     notas:{Topo:"Mandarina, laranja", Corpo:"Mel, cera de abelha, tuberosa", Fundo:"Baunilha, patchouli, âmbar"},
-    tamanhos:[{ml:"80 ml",mult:1},{ml:"Decant 10 ml",mult:0.2}] },
+    tamanhos:[{ml:"80 ml",mult:1},{ml:"Decant 5 ml",mult:0.11},{ml:"Decant 10 ml",mult:0.2},{ml:"Decant 15 ml",mult:0.28}] },
 
   { id:"miss-dior-edp", nome:"Dior Miss Dior", sub:"Eau de Parfum 100 ml", marca:"Dior", cat:"feminino", familia:"Floral",
     preco:990.00, img:"img/miss-dior-edp.webp", tom:"claro", destaque:true,
     desc:"Buquê floral moderno com rosa de Grasse e notas amadeiradas. Romântico, elegante e cheio de luz.",
     notas:{Topo:"Tangerina, rosa", Corpo:"Rosa de Grasse, peônia, lírio", Fundo:"Almíscar, sândalo"},
-    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 10 ml",mult:0.2}] },
+    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 5 ml",mult:0.11},{ml:"Decant 10 ml",mult:0.2},{ml:"Decant 15 ml",mult:0.28}] },
 
   { id:"la-vie-est-belle-200", nome:"Lancôme La Vie Est Belle", sub:"Eau de Parfum 100 ml", marca:"Lancôme", cat:"feminino", familia:"Doce",
     preco:849.00, img:"img/la-vie-est-belle-200.webp", tom:"claro",
     desc:"Íris, pralinê e baunilha em um gourmand floral doce e reconfortante. Frasco de 200 ml para durar.",
     notas:{Topo:"Cassis, pêra", Corpo:"Íris, jasmim, flor de laranjeira", Fundo:"Pralinê, baunilha, patchouli"},
-    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 10 ml",mult:0.2}] },
+    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 5 ml",mult:0.11},{ml:"Decant 10 ml",mult:0.2},{ml:"Decant 15 ml",mult:0.28}] },
 
   { id:"jadore-edp-200", nome:"Dior J'adore", sub:"Eau de Parfum 100 ml", marca:"Dior", cat:"feminino", familia:"Floral",
     preco:1090.00, img:"img/jadore-edp-200.webp", tom:"claro", destaque:true,
     desc:"Buquê solar de ylang-ylang, rosa damascena e jasmim. Feminino, opulento e atemporal.",
     notas:{Topo:"Pêra, melão, magnólia", Corpo:"Rosa damascena, jasmim, ylang-ylang", Fundo:"Almíscar, baunilha, cedro"},
-    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 10 ml",mult:0.2}] },
+    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 5 ml",mult:0.11},{ml:"Decant 10 ml",mult:0.2},{ml:"Decant 15 ml",mult:0.28}] },
 
   { id:"paradoxe-200", nome:"Prada Paradoxe", sub:"Eau de Parfum 100 ml", marca:"Prada", cat:"feminino", familia:"Floral",
     preco:989.00, img:"img/paradoxe-200.webp", tom:"claro",
     desc:"Âmbar-floral em constante transformação, com neroli e almíscar cremoso. Contemporâneo e viciante.",
     notas:{Topo:"Neroli, bergamota", Corpo:"Jasmim, flor de laranjeira", Fundo:"Âmbar branco, almíscar"},
-    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 10 ml",mult:0.2}] },
+    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 5 ml",mult:0.11},{ml:"Decant 10 ml",mult:0.2},{ml:"Decant 15 ml",mult:0.28}] },
 
   { id:"orientica-royal-amber-80", nome:"Orientica Royal Amber", sub:"Extrait de Parfum 80 ml", marca:"Orientica", cat:"feminino", familia:"Árabe",
     preco:439.00, img:"img/orientica-royal-amber-80.webp", tom:"claro", destaque:true,
     desc:"Âmbar resinoso com baunilha, incenso e madeiras. Rastro potente e doçura sofisticada de nicho árabe.",
     notas:{Topo:"Bergamota, açafrão", Corpo:"Âmbar, incenso, rosa", Fundo:"Baunilha, oud, madeiras"},
-    tamanhos:[{ml:"80 ml",mult:1},{ml:"Decant 10 ml",mult:0.22}] },
+    tamanhos:[{ml:"80 ml",mult:1},{ml:"Decant 5 ml",mult:0.121},{ml:"Decant 10 ml",mult:0.22},{ml:"Decant 15 ml",mult:0.308}] },
 
   { id:"orientica-royal-amber-150", nome:"Orientica Royal Amber", sub:"Extrait de Parfum 150 ml", marca:"Orientica", cat:"feminino", familia:"Árabe",
     preco:649.00, img:"img/orientica-royal-amber-150.webp", tom:"claro",
     desc:"O mesmo âmbar viciante da linha Royal, em frasco grande de 150 ml para quem já fez dele a assinatura.",
     notas:{Topo:"Bergamota, açafrão", Corpo:"Âmbar, incenso, rosa", Fundo:"Baunilha, oud, madeiras"},
-    tamanhos:[{ml:"150 ml",mult:1},{ml:"80 ml",mult:0.62}] },
+    tamanhos:[{ml:"150 ml",mult:1},{ml:"80 ml",mult:0.62},{ml:"Decant 5 ml",mult:0.073},{ml:"Decant 10 ml",mult:0.133},{ml:"Decant 15 ml",mult:0.186}] },
 
   { id:"hawas-black", nome:"Rasasi Hawas Black", sub:"Eau de Parfum 100 ml", marca:"Rasasi", cat:"masculino", familia:"Árabe",
     preco:219.90, img:"img/hawas-black.webp", tom:"claro", destaque:true,
     desc:"O Hawas Black segue a linha do homem moderno, mas com um toque escuro, aromático e fresco. Aquático amadeirado de excelente fixação e projeção.",
     notas:{Topo:"Maçã, bergamota, canela", Corpo:"Notas marinhas, lavanda, gengibre", Fundo:"Âmbar cinza, almíscar, madeiras"},
-    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 10 ml",mult:0.2}] },
+    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 5 ml",mult:0.11},{ml:"Decant 10 ml",mult:0.2},{ml:"Decant 15 ml",mult:0.28}] },
 
   { id:"fakhar-extrait", nome:"Lattafa Fakhar Extrait", sub:"Extrait de Parfum Women 100 ml", marca:"Lattafa", cat:"feminino", familia:"Floral",
     preco:219.90, img:"img/lattafa-fakar.jpeg", tom:"claro", destaque:true,
     desc:"Perfume floral doce marcante, feminino, sensual e chamativo, com aquele DNA de perfume árabe de alta fixação.",
     notas:{Topo:"Frutas vermelhas, bergamota", Corpo:"Floral doce, baunilha", Fundo:"Âmbar, almíscar, madeiras"},
-    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 10 ml",mult:0.2}] },
+    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 5 ml",mult:0.11},{ml:"Decant 10 ml",mult:0.2},{ml:"Decant 15 ml",mult:0.28}] },
 
   { id:"kit-hawas-oud-khamrah", nome:"Kit Promoção da Semana", sub:"Hawas Black + Bade\'e Al Oud + Khamrah", marca:"Prime Perfumes", cat:"unissex", familia:"Árabe",
     preco:486.90, precoAntigo:549.70, img:"img/kit-hawas-oud-khamrah.webp", tom:"claro", destaque:true,
@@ -838,7 +862,49 @@ const PRODUTOS = [
     preco:537.30, precoAntigo:614.70, img:"img/kit-khamrah-fakhar-hawas.webp", tom:"claro", destaque:true,
     desc:"01 Lattafa Khamrah 100 ml + 01 Lattafa Fakhar 100 ml + 01 Rasasi Hawas Black 100 ml. Combinação de best-sellers árabes com desconto da semana.",
     notas:{Kit:"3 frascos de 100 ml", Perfil:"Gourmand, floral e aquático", Indicação:"Presente ou coleção"},
-    tamanhos:[{ml:"Kit 3 x 100 ml",mult:1}] }
+    tamanhos:[{ml:"Kit 3 x 100 ml",mult:1}] },
+  /* --- novos: Sabah Al Ward Sugar, Sospiro Vibrato, 212 Men, Burberry Her, Baccarat Rouge 540, My Way (preços de referência de mercado) --- */
+  { id:"sabah-al-ward-sugar", nome:"Al Wataniah Sabah Al Ward Sugar", sub:"Eau de Parfum 100 ml", marca:"Al Wataniah", cat:"feminino", familia:"Árabe",
+    preco:229.90, img:"img/sabah-al-ward-sugar.webp", tom:"claro",
+    desc:"A versão doce do queridinho Sabah Al Ward: frutas vermelhas e cereja sobre violeta, baunilha e almíscar. Açucarado, alegre e viciante, com a fixação típica dos árabes.",
+    notas:{Topo:"Morango, framboesa, cereja, cassis", Corpo:"Violeta, jasmim", Fundo:"Baunilha, âmbar, almíscar, patchouli"},
+    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 5 ml",mult:0.11},{ml:"Decant 10 ml",mult:0.2},{ml:"Decant 15 ml",mult:0.28}] },
+
+  { id:"sospiro-vibrato", nome:"Sospiro Vibrato", sub:"Eau de Parfum 100 ml", marca:"Sospiro", cat:"masculino", familia:"Cítrico",
+    preco:1690.00, img:"img/sospiro-vibrato.webp", tom:"claro",
+    desc:"Nicho italiano de frasco aveludado: toranja e bergamota brilhantes sobre gengibre, íris e almíscar. Elegante, luminoso e de assinatura discreta e sofisticada.",
+    notas:{Topo:"Toranja, bergamota, magnólia", Corpo:"Gengibre, notas herbais, notas atalcadas", Fundo:"Almíscar, cedro, âmbar, íris"},
+    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 5 ml",mult:0.11},{ml:"Decant 10 ml",mult:0.2},{ml:"Decant 15 ml",mult:0.28}] },
+
+  { id:"ch-212-men-100", nome:"Carolina Herrera 212 Men", sub:"Eau de Toilette 100 ml", marca:"Carolina Herrera", cat:"masculino", familia:"Aromático",
+    preco:549.00, img:"img/ch-212-men.webp", tom:"claro",
+    desc:"O clássico urbano no frasco metálico: toranja, gengibre e folhas verdes sobre almíscar e sândalo. Fresco, limpo e versátil para o dia a dia.",
+    notas:{Topo:"Toranja, bergamota, folhas verdes", Corpo:"Gengibre, violeta, especiarias", Fundo:"Almíscar, sândalo, incenso"},
+    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 5 ml",mult:0.11},{ml:"Decant 10 ml",mult:0.2},{ml:"Decant 15 ml",mult:0.28}] },
+
+  { id:"ch-212-men-200", nome:"Carolina Herrera 212 Men", sub:"Eau de Toilette 200 ml", marca:"Carolina Herrera", cat:"masculino", familia:"Aromático",
+    preco:799.00, img:"img/ch-212-men.webp", tom:"claro",
+    desc:"O mesmo 212 Men fresco e urbano em frasco grande de 200 ml — melhor custo por ml para quem usa todo dia.",
+    notas:{Topo:"Toranja, bergamota, folhas verdes", Corpo:"Gengibre, violeta, especiarias", Fundo:"Almíscar, sândalo, incenso"},
+    tamanhos:[{ml:"200 ml",mult:1},{ml:"Decant 5 ml",mult:0.055},{ml:"Decant 10 ml",mult:0.1},{ml:"Decant 15 ml",mult:0.14}] },
+
+  { id:"burberry-her-100", nome:"Burberry Her", sub:"Eau de Parfum 100 ml", marca:"Burberry", cat:"feminino", familia:"Frutado",
+    preco:849.00, img:"img/burberry-her.webp", tom:"claro",
+    desc:"Explosão de frutas vermelhas e escuras sobre jasmim e violeta, com fundo cremoso de almíscar e âmbar. Jovem, doce e cheio de energia londrina.",
+    notas:{Topo:"Morango, framboesa, amora, cereja", Corpo:"Jasmim, violeta", Fundo:"Almíscar, âmbar, baunilha, musgo"},
+    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 5 ml",mult:0.11},{ml:"Decant 10 ml",mult:0.2},{ml:"Decant 15 ml",mult:0.28}] },
+
+  { id:"baccarat-rouge-540-30", nome:"Maison Francis Kurkdjian Baccarat Rouge 540", sub:"Eau de Parfum 30 ml", marca:"Maison Francis Kurkdjian", cat:"feminino", familia:"Amadeirado",
+    preco:1490.00, img:"img/baccarat-rouge-540.webp", tom:"claro",
+    desc:"O ícone do nicho: jasmim e açafrão sobre âmbar-gris e cedro, num rastro aéreo e mineral que não passa despercebido.",
+    notas:{Topo:"Açafrão, jasmim", Corpo:"Amberwood, âmbar-gris", Fundo:"Resina de abeto, cedro"},
+    tamanhos:[{ml:"30 ml",mult:1},{ml:"Decant 5 ml",mult:0.2},{ml:"Decant 10 ml",mult:0.38},{ml:"Decant 15 ml",mult:0.55}] },
+
+  { id:"armani-my-way-90", nome:"Giorgio Armani My Way", sub:"Eau de Parfum 90 ml", marca:"Giorgio Armani", cat:"feminino", familia:"Floral",
+    preco:899.00, img:"img/armani-my-way.webp", tom:"claro",
+    desc:"Flor de laranjeira e tuberosa sobre baunilha de Madagascar e almíscar branco. Floral luminoso, moderno e elegante.",
+    notas:{Topo:"Flor de laranjeira, bergamota", Corpo:"Tuberosa, jasmim sambac", Fundo:"Baunilha, almíscar branco, cedro"},
+    tamanhos:[{ml:"90 ml",mult:1},{ml:"Decant 5 ml",mult:0.11},{ml:"Decant 10 ml",mult:0.2},{ml:"Decant 15 ml",mult:0.28}] }
 ];
 
 /* Frascos em destaque na hero — mesmos produtos/imagens da home do index.html,
@@ -882,7 +948,7 @@ const estado = {
 };
 
 // casas árabes (para as subseções Importados x Árabes)
-const MARCAS_ARABES = ["Lattafa","Rasasi","Orientica","Al Haramain","Armaf","Maison Alhambra","Lattafa Perfumes"];
+const MARCAS_ARABES = ["Lattafa","Rasasi","Orientica","Al Haramain","Armaf","Maison Alhambra","Lattafa Perfumes","Al Wataniah"];
 // subseções de Cosméticos ainda sem catálogo — mostram bloco "Em breve"
 const COSMETICOS_EM_BREVE = ["Facial"];
 
@@ -1120,14 +1186,11 @@ function pintarCarrinho(){
 function cartaoProduto(p){
   const fav = estado.favoritos.has(p.id);
   const desconto = p.precoAntigo ? Math.round((1 - p.preco/p.precoAntigo)*100) : 0;
-  return `<article class="produto ${p.tom === "escuro" ? "produto--escuro" : ""}" data-produto="${p.id}">
-    ${desconto ? `<span class="produto__fita">-${desconto}%</span>` : ""}
-    <button class="produto__fav ${fav ? "ativo" : ""}" type="button" data-fav="${p.id}"
-      aria-label="${fav ? "Remover dos favoritos" : "Salvar nos favoritos"}" aria-pressed="${fav}">
-      <svg viewBox="0 0 24 24"><path d="M20.8 5.6a5 5 0 00-7.1 0L12 7.3l-1.7-1.7a5 5 0 10-7.1 7.1L12 21.5l8.8-8.8a5 5 0 000-7.1z"/></svg>
-    </button>
+  const decants = p.tamanhos.map((t,i) => ({ ml:t.ml.replace("Decant ",""), i, preco:Math.round(p.preco*t.mult*100)/100 }))
+    .filter((d,i) => p.tamanhos[i].ml.startsWith("Decant"));
+  const frente = `
     <div class="produto__midia">
-      <img src="${p.img}" alt="${p.nome}" loading="lazy">
+      <img src="${p.img}" alt="${p.nome}" loading="lazy" draggable="false">
       <button class="produto__espiar" type="button" data-espiar="${p.id}">Ver detalhes</button>
     </div>
     <div class="produto__info">
@@ -1136,7 +1199,36 @@ function cartaoProduto(p){
       ${p.precoAntigo ? `<p class="produto__antigo">${dinheiro(p.precoAntigo)}</p>` : ""}
       <p class="produto__preco">${dinheiro(p.preco)}</p>
       <p class="produto__parcela">${parcela(p.preco)}</p>
+      ${decants.length ? `<button class="produto__decant-aba" type="button" data-virar="${p.id}">Decants a partir de ${dinheiro(decants[0].preco)} <span aria-hidden="true">›</span></button>` : ""}
       <button class="btn-ouro" type="button" data-comprar="${p.id}">Comprar</button>
+    </div>`;
+  const selos = `
+    ${desconto ? `<span class="produto__fita">-${desconto}%</span>` : ""}
+    <button class="produto__fav ${fav ? "ativo" : ""}" type="button" data-fav="${p.id}"
+      aria-label="${fav ? "Remover dos favoritos" : "Salvar nos favoritos"}" aria-pressed="${fav}">
+      <svg viewBox="0 0 24 24"><path d="M20.8 5.6a5 5 0 00-7.1 0L12 7.3l-1.7-1.7a5 5 0 10-7.1 7.1L12 21.5l8.8-8.8a5 5 0 000-7.1z"/></svg>
+    </button>`;
+  if(!decants.length) return `<article class="produto ${p.tom === "escuro" ? "produto--escuro" : ""}" data-produto="${p.id}">${selos}${frente}
+  </article>`;
+  // com decant: arrastar o cartão para o lado (ou tocar na aba) mostra os decants de 5, 10 e 15 ml
+  return `<article class="produto produto--decant ${p.tom === "escuro" ? "produto--escuro" : ""}" data-produto="${p.id}">${selos}
+    <div class="produto__trilho">
+      <div class="produto__face">${frente}</div>
+      <div class="produto__face produto__decants" inert>
+        <span class="produto__decants-rotulo">Decants</span>
+        <h3 class="produto__nome">${p.nome}</h3>
+        <p class="produto__sub">Frasco original fracionado</p>
+        <ul class="produto__decants-lista">
+          ${decants.map(d => `<li>
+            <span class="produto__decants-ml">${d.ml}</span>
+            <span class="produto__decants-preco">${dinheiro(d.preco)}</span>
+            <button type="button" class="produto__decants-add" data-add-decant="${p.id}" data-decant-idx="${d.i}" aria-label="Adicionar decant ${d.ml} de ${p.nome} à sacola">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            </button>
+          </li>`).join("")}
+        </ul>
+        <button class="produto__decant-aba produto__decant-aba--voltar" type="button" data-virar="${p.id}"><span aria-hidden="true">‹</span> Voltar ao frasco</button>
+      </div>
     </div>
   </article>`;
 }
@@ -1566,8 +1658,40 @@ function buscar(){
 /* ============================================================
    13. EVENTOS GLOBAIS
    ============================================================ */
+/* Cartão com decants: arrastar para a esquerda mostra os decants, para a direita volta ao frasco */
+function virarCartao(card, virado){
+  card.classList.toggle("virado", virado);
+  const [frente, verso] = card.querySelectorAll(".produto__face");
+  frente.inert = virado; verso.inert = !virado;
+}
+let arrasto = null, acabouDeArrastar = false;
+document.addEventListener("pointerdown", e => {
+  const card = e.target.closest(".produto--decant");
+  if(!card || (e.pointerType === "mouse" && e.button !== 0)) return;
+  arrasto = { card, x:e.clientX, y:e.clientY };
+});
+document.addEventListener("pointerup", e => {
+  if(!arrasto) return;
+  const { card, x, y } = arrasto; arrasto = null;
+  const dx = e.clientX - x, dy = e.clientY - y;
+  if(Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)*1.5) return;
+  acabouDeArrastar = true; setTimeout(() => acabouDeArrastar = false, 0);
+  virarCartao(card, dx < 0);
+});
+document.addEventListener("pointercancel", () => { arrasto = null; });
+// um arrasto não deve contar como clique em "Comprar" / "Ver detalhes"
+document.addEventListener("click", e => {
+  if(acabouDeArrastar){ e.preventDefault(); e.stopImmediatePropagation(); acabouDeArrastar = false; }
+}, true);
+
 document.addEventListener("click", e => {
   const alvo = e.target;
+
+  // decants no cartão
+  const virar = alvo.closest("[data-virar]");
+  if(virar){ const card = virar.closest(".produto--decant"); virarCartao(card, !card.classList.contains("virado")); return; }
+  const addDecant = alvo.closest("[data-add-decant]");
+  if(addDecant){ adicionar(addDecant.dataset.addDecant, Number(addDecant.dataset.decantIdx)); abrirSobreposicao("gavetaCarrinho"); return; }
 
   // fechar sobreposições
   if(alvo.closest("[data-fechar]") || alvo.id === "veu"){ fecharTudo(); return; }
