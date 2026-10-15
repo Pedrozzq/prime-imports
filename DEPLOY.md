@@ -91,6 +91,7 @@ Preset (fica *Other*) nem em Build Command.
 | `RESEND_API_KEY` | a chave `re_...` do passo 1 |
 | `ORDER_EMAIL_TO` | `lojaprimeimportsbr@gmail.com` |
 | `ORDER_EMAIL_FROM` | `Prime Imports BR <onboarding@resend.dev>` |
+| `MP_WEBHOOK_SECRET` | a **Assinatura secreta** do webhook — você pega no passo 7 |
 
 Opcionalmente, uma quinta: `CHECKOUT_EMAIL_TO`, para mandar o aviso de
 "cliente chegou ao checkout" para um endereço diferente dos pedidos. Sem
@@ -124,7 +125,39 @@ passe a enxergar as variáveis.
 
 ---
 
-## Os dois e-mails que você recebe
+## 7. Ativar o webhook do Mercado Pago (Pix/boleto pagos depois)
+
+Sem isto, a loja só é avisada quando o cliente **volta para o site** depois de
+pagar. Quem paga um **Pix ou boleto depois de fechar a aba** aprova o pagamento
+sem a loja receber nada. O webhook (`api/webhook-mercadopago.js`, já pronto) é a
+notificação que o Mercado Pago manda direto para o servidor, sem depender do
+navegador do cliente.
+
+1. Painel do Mercado Pago → **Suas integrações** → sua aplicação →
+   **Webhooks / Notificações** (menu *Configurações → Notificações webhook*).
+2. Em **URL de produção**, coloque:
+   `https://SEU_DOMINIO/api/webhook-mercadopago`
+   (o mesmo domínio de produção da Vercel; ex.:
+   `https://primeimportsbr.com.br/api/webhook-mercadopago`).
+3. Em **Eventos**, marque **Pagamentos** (`payment`). Não precisa de mais nada.
+4. Salve. O painel gera uma **Assinatura secreta** — copie.
+5. Na Vercel, crie/edite a variável `MP_WEBHOOK_SECRET` com esse valor
+   (Production, Preview e Development) e faça **Redeploy**.
+6. De volta ao painel do Mercado Pago, use **Simular** / **Testar** apontando
+   para um pagamento real: a resposta deve ser **HTTP 200/201**. Nos logs da
+   Vercel (`Functions → webhook-mercadopago`) aparece
+   `e-mail enviado (pagamento ... status approved)`.
+
+> Se `MP_WEBHOOK_SECRET` ficar em branco, o webhook **ainda funciona**, mas
+> aceita qualquer POST na URL. Preencher é rápido e fecha essa porta.
+
+A URL do webhook também é enviada automaticamente em cada pagamento
+(`notification_url` na preference, em `api/create-preference.js`) — o cadastro no
+painel é o que garante as **retentativas** e o **teste manual**.
+
+---
+
+## Os e-mails que você recebe
 
 ### 1. `[CHECKOUT]` — cliente chegou ao pagamento
 
@@ -153,6 +186,19 @@ completo de entrega, forma de pagamento e parcelas, e-mail e CPF do
 pagador, e o número do pagamento para procurar no painel do Mercado Pago.
 Responder ao e-mail responde direto para o cliente (`reply-to`).
 
+### 3. `[PAGO]` pelo webhook — pagamento confirmado depois
+
+Vem de `api/webhook-mercadopago.js` (passo 7). É o que garante o aviso quando
+o **Pix/boleto é pago depois** que o cliente saiu do site: chega um `[PAGO]`
+com o mesmo formato do e-mail 2, disparado pela notificação do Mercado Pago —
+sem depender de o cliente voltar.
+
+O webhook só manda e-mail para `approved`, `refunded` (estorno) e
+`charged_back` (chargeback). Como o retorno no site (e-mail 2) e o webhook são
+caminhos independentes, um **cartão aprovado pode gerar dois `[PAGO]`** (um de
+cada caminho) — é esperado e inofensivo. Pix/boleto normalmente chegam como
+`[AGUARDANDO PAGAMENTO]` (e-mail 2) e depois `[PAGO]` (webhook).
+
 ---
 
 ## Como os preços são cobrados
@@ -174,9 +220,10 @@ npm run catalogo
 
 ## Pontos de atenção
 
-- **Pix pago depois não gera um segundo e-mail.** O aviso sai na criação do
-  pagamento. Para ser avisado quando o Pix cair, é preciso configurar o
-  webhook do Mercado Pago — dá para fazer depois, é meia hora de trabalho.
+- **Pix/boleto pago depois:** o aviso de `[PAGO]` só chega se o webhook do
+  passo 7 estiver cadastrado no painel do Mercado Pago. Sem ele, o pagamento
+  compensado não gera e-mail nenhum (a loja fica só com o `[CHECKOUT]` e, se o
+  cliente tiver voltado ao site, o `[AGUARDANDO PAGAMENTO]`).
 - **Mexeu em preço no `index.html`? Rode `npm run catalogo`.** Quem cobra é o
   servidor, a partir da tabela em `api/_lib/catalogo-dados.js`, que é gerada
   do `index.html`. Sem rodar o comando e commitar o arquivo gerado, a loja
