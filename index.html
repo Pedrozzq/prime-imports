@@ -684,22 +684,22 @@ input,select{font:inherit}
 
 const PRODUTOS = [
   { id:"khamrah", nome:"Lattafa Khamrah", sub:"Parfum", marca:"Lattafa", cat:"feminino", familia:"Árabe",
-    preco:174.90, img:"img/khamrah.webp", tom:"claro", destaque:true,
+    preco:215.00, img:"img/khamrah.webp", tom:"claro", destaque:true,
     desc:"Um oriental cremoso e especiado, construído sobre canela, tâmara e baunilha. Rastro marcante e longa fixação — a escolha certa para noites frias e ocasiões memoráveis.",
     notas:{Topo:"Canela, noz-moscada, bergamota", Corpo:"Tâmara, praline, âmbar", Fundo:"Baunilha, tonka, madeiras"},
-    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 10 ml",mult:0.18}] },
+    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 5 ml",preco:54.00},{ml:"Decant 10 ml",preco:90.00},{ml:"Decant 15 ml",preco:180.00}] },
 
   { id:"oudforglory", nome:"Lattafa Oud For Glory", sub:"Bade'e Al Oud", marca:"Lattafa", cat:"masculino", familia:"Amadeirado",
-    preco:154.90, img:"img/bade-al-oud.webp", tom:"claro", destaque:true,
+    preco:215.00, img:"img/bade-al-oud.webp", tom:"claro", destaque:true,
     desc:"Oud esfumaçado com açafrão e couro. Presença densa, sofisticada e inconfundível — o clássico árabe que virou febre no Brasil.",
     notas:{Topo:"Açafrão, lavanda", Corpo:"Oud, couro, âmbar", Fundo:"Madeiras secas, musgo"},
-    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 10 ml",mult:0.18}] },
+    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 5 ml",preco:44.00},{ml:"Decant 10 ml",preco:72.00},{ml:"Decant 15 ml",preco:108.00}] },
 
   { id:"atheeri", nome:"Lattafa Atheeri", sub:"Eau de Parfum", marca:"Lattafa", cat:"feminino", familia:"Frutado",
-    preco:354.90, precoAntigo:429.90, img:"img/atheeri.webp", tom:"claro",
+    preco:468.00, img:"img/atheeri.webp", tom:"claro",
     desc:"Frutado leve e luminoso, com pêssego e flor de laranjeira sobre almíscar branco. Delicado para o dia a dia sem perder assinatura.",
     notas:{Topo:"Pêssego, pera", Corpo:"Flor de laranjeira, peônia", Fundo:"Almíscar branco, cedro"},
-    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 10 ml",mult:0.2}] },
+    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 5 ml",preco:54.00},{ml:"Decant 10 ml",preco:90.00},{ml:"Decant 15 ml",preco:135.00}] },
 
   /* --- itens acrescentados (sem controle de estoque; preços de referência) --- */
   { id:"sebastian-dark-oil-kit", nome:"Sebastian Dark Oil Kit", sub:"Shampoo + Condicionador 1 L", marca:"Sebastian", cat:"cosmeticos", familia:"Cabelo",
@@ -793,40 +793,40 @@ const PRODUTOS = [
     tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 10 ml",mult:0.2}] },
 
   { id:"jadore-edp-200", nome:"Dior J'adore", sub:"Eau de Parfum 100 ml", marca:"Dior", cat:"feminino", familia:"Floral",
-    preco:1090.00, img:"img/jadore-edp-200.webp", tom:"claro", destaque:true,
+    preco:990.00, img:"img/jadore-edp-200.webp", tom:"claro", destaque:true,
     desc:"Buquê solar de ylang-ylang, rosa damascena e jasmim. Feminino, opulento e atemporal.",
     notas:{Topo:"Pêra, melão, magnólia", Corpo:"Rosa damascena, jasmim, ylang-ylang", Fundo:"Almíscar, baunilha, cedro"},
-    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 10 ml",mult:0.2}] },
+    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 5 ml",preco:72.00},{ml:"Decant 10 ml",preco:120.00},{ml:"Decant 15 ml",preco:180.00}] },
 
-  { id:"paradoxe-200", nome:"Prada Paradoxe", sub:"Eau de Parfum 100 ml", marca:"Prada", cat:"feminino", familia:"Floral",
-    preco:989.00, img:"img/paradoxe-200.webp", tom:"claro",
+  { id:"paradoxe-200", nome:"Prada Paradoxe", sub:"Eau de Parfum 90 ml", marca:"Prada", cat:"feminino", familia:"Floral",
+    preco:1070.00, img:"img/paradoxe-200.webp", tom:"claro",
     desc:"Âmbar-floral em constante transformação, com neroli e almíscar cremoso. Contemporâneo e viciante.",
     notas:{Topo:"Neroli, bergamota", Corpo:"Jasmim, flor de laranjeira", Fundo:"Âmbar branco, almíscar"},
-    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 10 ml",mult:0.2}] },
+    tamanhos:[{ml:"90 ml",mult:1},{ml:"Decant 5 ml",preco:108.00},{ml:"Decant 10 ml",preco:180.00},{ml:"Decant 15 ml",preco:270.00}] },
 
   { id:"orientica-royal-amber-80", nome:"Orientica Royal Amber", sub:"Extrait de Parfum 80 ml", marca:"Orientica", cat:"feminino", familia:"Árabe",
     preco:439.00, img:"img/orientica-royal-amber-80.webp", tom:"claro", destaque:true,
     desc:"Âmbar resinoso com baunilha, incenso e madeiras. Rastro potente e doçura sofisticada de nicho árabe.",
     notas:{Topo:"Bergamota, açafrão", Corpo:"Âmbar, incenso, rosa", Fundo:"Baunilha, oud, madeiras"},
-    tamanhos:[{ml:"80 ml",mult:1},{ml:"Decant 10 ml",mult:0.22}] },
+    tamanhos:[{ml:"80 ml",mult:1},{ml:"Decant 5 ml",preco:66.00},{ml:"Decant 10 ml",preco:110.00},{ml:"Decant 15 ml",preco:165.00}] },
 
   { id:"orientica-royal-amber-150", nome:"Orientica Royal Amber", sub:"Extrait de Parfum 150 ml", marca:"Orientica", cat:"feminino", familia:"Árabe",
-    preco:649.00, img:"img/orientica-royal-amber-150.webp", tom:"claro",
+    preco:709.00, img:"img/orientica-royal-amber-150.webp", tom:"claro",
     desc:"O mesmo âmbar viciante da linha Royal, em frasco grande de 150 ml para quem já fez dele a assinatura.",
     notas:{Topo:"Bergamota, açafrão", Corpo:"Âmbar, incenso, rosa", Fundo:"Baunilha, oud, madeiras"},
-    tamanhos:[{ml:"150 ml",mult:1},{ml:"80 ml",mult:0.62}] },
+    tamanhos:[{ml:"150 ml",mult:1},{ml:"80 ml",preco:439.00},{ml:"Decant 5 ml",preco:66.00},{ml:"Decant 10 ml",preco:110.00},{ml:"Decant 15 ml",preco:165.00}] },
 
   { id:"hawas-black", nome:"Rasasi Hawas Black", sub:"Eau de Parfum 100 ml", marca:"Rasasi", cat:"masculino", familia:"Árabe",
-    preco:219.90, img:"img/hawas-black.webp", tom:"claro", destaque:true,
+    preco:290.00, img:"img/hawas-black.webp", tom:"claro", destaque:true,
     desc:"O Hawas Black segue a linha do homem moderno, mas com um toque escuro, aromático e fresco. Aquático amadeirado de excelente fixação e projeção.",
     notas:{Topo:"Maçã, bergamota, canela", Corpo:"Notas marinhas, lavanda, gengibre", Fundo:"Âmbar cinza, almíscar, madeiras"},
-    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 10 ml",mult:0.2}] },
+    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 5 ml",preco:49.00},{ml:"Decant 10 ml",preco:80.00},{ml:"Decant 15 ml",preco:120.00}] },
 
   { id:"fakhar-extrait", nome:"Lattafa Fakhar Extrait", sub:"Extrait de Parfum Women 100 ml", marca:"Lattafa", cat:"feminino", familia:"Floral",
-    preco:219.90, img:"img/lattafa-fakar.jpeg", tom:"claro", destaque:true,
+    preco:229.00, img:"img/lattafa-fakar.jpeg", tom:"claro", destaque:true,
     desc:"Perfume floral doce marcante, feminino, sensual e chamativo, com aquele DNA de perfume árabe de alta fixação.",
     notas:{Topo:"Frutas vermelhas, bergamota", Corpo:"Floral doce, baunilha", Fundo:"Âmbar, almíscar, madeiras"},
-    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 10 ml",mult:0.2}] },
+    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 5 ml",preco:54.00},{ml:"Decant 10 ml",preco:90.00},{ml:"Decant 15 ml",preco:135.00}] },
 
   { id:"kit-hawas-oud-khamrah", nome:"Kit Promoção da Semana", sub:"Hawas Black + Bade\'e Al Oud + Khamrah", marca:"Prime Perfumes", cat:"unissex", familia:"Árabe",
     preco:486.90, precoAntigo:549.70, img:"img/kit-hawas-oud-khamrah.webp", tom:"claro", destaque:true,
@@ -840,6 +840,9 @@ const PRODUTOS = [
     notas:{Kit:"3 frascos de 100 ml", Perfil:"Gourmand, floral e aquático", Indicação:"Presente ou coleção"},
     tamanhos:[{ml:"Kit 3 x 100 ml",mult:1}] }
 ];
+
+/* Preço de um tamanho: valor fixo (t.preco, ex.: decants) ou preço do frasco x mult. */
+const precoTamanho = (p,t) => t.preco != null ? t.preco : Math.round(p.preco*t.mult*100)/100;
 
 /* Frascos em destaque na hero — mesmos produtos/imagens da home do index.html,
    apresentados em crossfade automatico ("alternando"). */
@@ -913,7 +916,7 @@ function adicionar(id, tamanhoIdx = 0, qtd = 1){
   const chave = id + "|" + t.ml;
   const existente = estado.carrinho.find(i => i.chave === chave);
   if(existente) existente.qtd += qtd;
-  else estado.carrinho.push({ chave, id, ml:t.ml, preco:Math.round(p.preco*t.mult*100)/100, qtd });
+  else estado.carrinho.push({ chave, id, ml:t.ml, preco:precoTamanho(p,t), qtd });
   pintarCarrinho();
   avisar(`${p.nome} (${t.ml}) na sacola`);
 }
@@ -1155,7 +1158,7 @@ function abrirProduto(id){
 function pintarProduto(){
   const p = produtoAtual;
   const t = p.tamanhos[tamanhoAtual];
-  const preco = Math.round(p.preco*t.mult*100)/100;
+  const preco = precoTamanho(p,t);
   const fav = estado.favoritos.has(p.id);
   document.getElementById("painelProduto").innerHTML = `
     <button class="modal__fechar" type="button" data-fechar aria-label="Fechar"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>

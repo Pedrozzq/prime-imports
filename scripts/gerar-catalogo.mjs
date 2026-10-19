@@ -55,7 +55,7 @@ for (const p of PRODUTOS) {
         // Mesma chave e mesmo arredondamento que o carrinho do index.html usa,
         // para que o item enviado pelo navegador case exatamente com a tabela.
         const chave = p.id + '|' + t.ml;
-        const preco = Math.round(p.preco * t.mult * 100) / 100;
+        const preco = t.preco != null ? t.preco : Math.round(p.preco * t.mult * 100) / 100;
 
         catalogo[chave] = {
             nome: p.nome + ' (' + t.ml + ')',
