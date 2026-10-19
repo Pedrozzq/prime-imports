@@ -222,6 +222,30 @@ input,select{font:inherit}
 .produto__preco{margin:5px 0 0;font-size:17px;font-weight:500;color:var(--tinta)}
 .produto__parcela{margin:2px 0 12px;font-size:11px;color:var(--tinta-fraca)}
 .produto__info .btn-ouro{margin-top:auto}
+/* decants: o cartão desliza para o lado e revela 5 / 10 / 15 ml */
+.produto--decant{overflow:hidden;touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.carrossel__pista .produto--decant{touch-action:auto} /* no carrossel o arrasto no toque rola a vitrine; decants pela aba */
+.produto__trilho{flex:1;display:flex;transition:transform .45s cubic-bezier(.22,.8,.3,1)}
+.produto__face{flex:0 0 100%;min-width:0;display:flex;flex-direction:column}
+.produto--decant.virado .produto__trilho{transform:translateX(-100%)}
+.produto--decant.virado .produto__fita,.produto--decant.virado .produto__fav{opacity:0;pointer-events:none}
+.produto__decant-aba{margin:-4px 0 10px;padding:4px 2px;font-size:10.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ouro-fraco);border-bottom:1px dashed currentColor;transition:color .2s}
+.produto__decant-aba:hover{color:var(--tinta)}
+.produto__decants{justify-content:center;align-items:center;text-align:center;padding:22px 14px;background:linear-gradient(180deg,#141312,#0a0a0a);color:#f3e5ab}
+.produto__decants .produto__nome{color:#fff}
+.produto__decants .produto__sub{color:#b3a993}
+.produto__decants-rotulo{margin-bottom:10px;padding:4px 12px;border:1px solid var(--ouro);color:var(--ouro);font-size:10px;font-weight:600;letter-spacing:.3em;text-transform:uppercase}
+.produto__decants-lista{list-style:none;margin:18px 0 14px;padding:0;width:100%;display:grid;gap:8px}
+.produto__decants-lista li{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px;padding:8px 8px 8px 12px;border:1px solid rgba(217,179,108,.28);transition:border-color .2s}
+.produto__decants-lista li:hover{border-color:var(--ouro)}
+.produto__decants-ml{font-size:12px;font-weight:600;letter-spacing:.08em;color:#fff}
+.produto__decants-preco{text-align:right;font-size:13.5px;color:#f3e5ab}
+.produto__decants-add{width:30px;height:30px;display:grid;place-items:center;background:linear-gradient(180deg,#e2bf7f,#c79c4f);color:#241a08;transition:filter .2s}
+.produto__decants-add:hover{filter:brightness(1.1)}
+.produto__decants-add svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2.2}
+.produto__decant-aba--voltar{margin:0;color:#d9b36c}
+.produto__decant-aba--voltar:hover{color:#fff}
+@media(prefers-reduced-motion:reduce){.produto__trilho{transition:none}}
 .btn-ouro{position:relative;display:inline-block;padding:12px 26px;background:linear-gradient(135deg,#ecd29b 0%,#d3ab63 44%,#b8883f 100%);color:#2a1d06;font-size:10px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;border:1px solid #b8883f;box-shadow:inset 0 1px 0 rgba(255,255,255,.42),0 2px 10px -6px rgba(120,90,35,.5);transition:transform .25s ease,box-shadow .25s ease,background .25s ease}
 .btn-ouro:hover{background:linear-gradient(135deg,#f5deb0 0%,#e0bd78 44%,#cb9a4d 100%);transform:translateY(-1px);box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 12px 26px -12px rgba(120,90,35,.7)}
 .btn-ouro:active{transform:translateY(0);box-shadow:inset 0 2px 4px rgba(90,65,20,.4)}
@@ -684,22 +708,22 @@ input,select{font:inherit}
 
 const PRODUTOS = [
   { id:"khamrah", nome:"Lattafa Khamrah", sub:"Parfum", marca:"Lattafa", cat:"feminino", familia:"Árabe",
-    preco:174.90, img:"img/khamrah.webp", tom:"claro", destaque:true,
+    preco:215.00, img:"img/khamrah.webp", tom:"claro", destaque:true,
     desc:"Um oriental cremoso e especiado, construído sobre canela, tâmara e baunilha. Rastro marcante e longa fixação — a escolha certa para noites frias e ocasiões memoráveis.",
     notas:{Topo:"Canela, noz-moscada, bergamota", Corpo:"Tâmara, praline, âmbar", Fundo:"Baunilha, tonka, madeiras"},
-    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 10 ml",mult:0.18}] },
+    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 5 ml",preco:54.00},{ml:"Decant 10 ml",preco:90.00},{ml:"Decant 15 ml",preco:180.00}] },
 
   { id:"oudforglory", nome:"Lattafa Oud For Glory", sub:"Bade'e Al Oud", marca:"Lattafa", cat:"masculino", familia:"Amadeirado",
-    preco:154.90, img:"img/bade-al-oud.webp", tom:"claro", destaque:true,
+    preco:215.00, img:"img/bade-al-oud.webp", tom:"claro", destaque:true,
     desc:"Oud esfumaçado com açafrão e couro. Presença densa, sofisticada e inconfundível — o clássico árabe que virou febre no Brasil.",
     notas:{Topo:"Açafrão, lavanda", Corpo:"Oud, couro, âmbar", Fundo:"Madeiras secas, musgo"},
-    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 10 ml",mult:0.18}] },
+    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 5 ml",preco:44.00},{ml:"Decant 10 ml",preco:72.00},{ml:"Decant 15 ml",preco:108.00}] },
 
   { id:"atheeri", nome:"Lattafa Atheeri", sub:"Eau de Parfum", marca:"Lattafa", cat:"feminino", familia:"Frutado",
-    preco:354.90, precoAntigo:429.90, img:"img/atheeri.webp", tom:"claro",
+    preco:468.00, img:"img/atheeri.webp", tom:"claro",
     desc:"Frutado leve e luminoso, com pêssego e flor de laranjeira sobre almíscar branco. Delicado para o dia a dia sem perder assinatura.",
     notas:{Topo:"Pêssego, pera", Corpo:"Flor de laranjeira, peônia", Fundo:"Almíscar branco, cedro"},
-    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 10 ml",mult:0.2}] },
+    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 5 ml",preco:54.00},{ml:"Decant 10 ml",preco:90.00},{ml:"Decant 15 ml",preco:135.00}] },
 
   /* --- itens acrescentados (sem controle de estoque; preços de referência) --- */
   { id:"sebastian-dark-oil-kit", nome:"Sebastian Dark Oil Kit", sub:"Shampoo + Condicionador 1 L", marca:"Sebastian", cat:"cosmeticos", familia:"Cabelo",
@@ -793,40 +817,40 @@ const PRODUTOS = [
     tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 10 ml",mult:0.2}] },
 
   { id:"jadore-edp-200", nome:"Dior J'adore", sub:"Eau de Parfum 100 ml", marca:"Dior", cat:"feminino", familia:"Floral",
-    preco:1090.00, img:"img/jadore-edp-200.webp", tom:"claro", destaque:true,
+    preco:990.00, img:"img/jadore-edp-200.webp", tom:"claro", destaque:true,
     desc:"Buquê solar de ylang-ylang, rosa damascena e jasmim. Feminino, opulento e atemporal.",
     notas:{Topo:"Pêra, melão, magnólia", Corpo:"Rosa damascena, jasmim, ylang-ylang", Fundo:"Almíscar, baunilha, cedro"},
-    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 10 ml",mult:0.2}] },
+    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 5 ml",preco:72.00},{ml:"Decant 10 ml",preco:120.00},{ml:"Decant 15 ml",preco:180.00}] },
 
-  { id:"paradoxe-200", nome:"Prada Paradoxe", sub:"Eau de Parfum 100 ml", marca:"Prada", cat:"feminino", familia:"Floral",
-    preco:989.00, img:"img/paradoxe-200.webp", tom:"claro",
+  { id:"paradoxe-200", nome:"Prada Paradoxe", sub:"Eau de Parfum 90 ml", marca:"Prada", cat:"feminino", familia:"Floral",
+    preco:1070.00, img:"img/paradoxe-200.webp", tom:"claro",
     desc:"Âmbar-floral em constante transformação, com neroli e almíscar cremoso. Contemporâneo e viciante.",
     notas:{Topo:"Neroli, bergamota", Corpo:"Jasmim, flor de laranjeira", Fundo:"Âmbar branco, almíscar"},
-    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 10 ml",mult:0.2}] },
+    tamanhos:[{ml:"90 ml",mult:1},{ml:"Decant 5 ml",preco:108.00},{ml:"Decant 10 ml",preco:180.00},{ml:"Decant 15 ml",preco:270.00}] },
 
   { id:"orientica-royal-amber-80", nome:"Orientica Royal Amber", sub:"Extrait de Parfum 80 ml", marca:"Orientica", cat:"feminino", familia:"Árabe",
     preco:439.00, img:"img/orientica-royal-amber-80.webp", tom:"claro", destaque:true,
     desc:"Âmbar resinoso com baunilha, incenso e madeiras. Rastro potente e doçura sofisticada de nicho árabe.",
     notas:{Topo:"Bergamota, açafrão", Corpo:"Âmbar, incenso, rosa", Fundo:"Baunilha, oud, madeiras"},
-    tamanhos:[{ml:"80 ml",mult:1},{ml:"Decant 10 ml",mult:0.22}] },
+    tamanhos:[{ml:"80 ml",mult:1},{ml:"Decant 5 ml",preco:66.00},{ml:"Decant 10 ml",preco:110.00},{ml:"Decant 15 ml",preco:165.00}] },
 
   { id:"orientica-royal-amber-150", nome:"Orientica Royal Amber", sub:"Extrait de Parfum 150 ml", marca:"Orientica", cat:"feminino", familia:"Árabe",
-    preco:649.00, img:"img/orientica-royal-amber-150.webp", tom:"claro",
+    preco:709.00, img:"img/orientica-royal-amber-150.webp", tom:"claro",
     desc:"O mesmo âmbar viciante da linha Royal, em frasco grande de 150 ml para quem já fez dele a assinatura.",
     notas:{Topo:"Bergamota, açafrão", Corpo:"Âmbar, incenso, rosa", Fundo:"Baunilha, oud, madeiras"},
-    tamanhos:[{ml:"150 ml",mult:1},{ml:"80 ml",mult:0.62}] },
+    tamanhos:[{ml:"150 ml",mult:1},{ml:"80 ml",preco:439.00},{ml:"Decant 5 ml",preco:66.00},{ml:"Decant 10 ml",preco:110.00},{ml:"Decant 15 ml",preco:165.00}] },
 
   { id:"hawas-black", nome:"Rasasi Hawas Black", sub:"Eau de Parfum 100 ml", marca:"Rasasi", cat:"masculino", familia:"Árabe",
-    preco:219.90, img:"img/hawas-black.webp", tom:"claro", destaque:true,
+    preco:290.00, img:"img/hawas-black.webp", tom:"claro", destaque:true,
     desc:"O Hawas Black segue a linha do homem moderno, mas com um toque escuro, aromático e fresco. Aquático amadeirado de excelente fixação e projeção.",
     notas:{Topo:"Maçã, bergamota, canela", Corpo:"Notas marinhas, lavanda, gengibre", Fundo:"Âmbar cinza, almíscar, madeiras"},
-    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 10 ml",mult:0.2}] },
+    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 5 ml",preco:49.00},{ml:"Decant 10 ml",preco:80.00},{ml:"Decant 15 ml",preco:120.00}] },
 
   { id:"fakhar-extrait", nome:"Lattafa Fakhar Extrait", sub:"Extrait de Parfum Women 100 ml", marca:"Lattafa", cat:"feminino", familia:"Floral",
-    preco:219.90, img:"img/lattafa-fakar.jpeg", tom:"claro", destaque:true,
+    preco:229.00, img:"img/lattafa-fakar.jpeg", tom:"claro", destaque:true,
     desc:"Perfume floral doce marcante, feminino, sensual e chamativo, com aquele DNA de perfume árabe de alta fixação.",
     notas:{Topo:"Frutas vermelhas, bergamota", Corpo:"Floral doce, baunilha", Fundo:"Âmbar, almíscar, madeiras"},
-    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 10 ml",mult:0.2}] },
+    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 5 ml",preco:54.00},{ml:"Decant 10 ml",preco:90.00},{ml:"Decant 15 ml",preco:135.00}] },
 
   { id:"kit-hawas-oud-khamrah", nome:"Kit Promoção da Semana", sub:"Hawas Black + Bade\'e Al Oud + Khamrah", marca:"Prime Perfumes", cat:"unissex", familia:"Árabe",
     preco:486.90, precoAntigo:549.70, img:"img/kit-hawas-oud-khamrah.webp", tom:"claro", destaque:true,
@@ -840,6 +864,9 @@ const PRODUTOS = [
     notas:{Kit:"3 frascos de 100 ml", Perfil:"Gourmand, floral e aquático", Indicação:"Presente ou coleção"},
     tamanhos:[{ml:"Kit 3 x 100 ml",mult:1}] }
 ];
+
+/* Preço de um tamanho: valor fixo (t.preco, ex.: decants) ou preço do frasco x mult. */
+const precoTamanho = (p,t) => t.preco != null ? t.preco : Math.round(p.preco*t.mult*100)/100;
 
 /* Frascos em destaque na hero — mesmos produtos/imagens da home do index.html,
    apresentados em crossfade automatico ("alternando"). */
@@ -913,7 +940,7 @@ function adicionar(id, tamanhoIdx = 0, qtd = 1){
   const chave = id + "|" + t.ml;
   const existente = estado.carrinho.find(i => i.chave === chave);
   if(existente) existente.qtd += qtd;
-  else estado.carrinho.push({ chave, id, ml:t.ml, preco:Math.round(p.preco*t.mult*100)/100, qtd });
+  else estado.carrinho.push({ chave, id, ml:t.ml, preco:precoTamanho(p,t), qtd });
   pintarCarrinho();
   avisar(`${p.nome} (${t.ml}) na sacola`);
 }
@@ -1120,14 +1147,11 @@ function pintarCarrinho(){
 function cartaoProduto(p){
   const fav = estado.favoritos.has(p.id);
   const desconto = p.precoAntigo ? Math.round((1 - p.preco/p.precoAntigo)*100) : 0;
-  return `<article class="produto ${p.tom === "escuro" ? "produto--escuro" : ""}" data-produto="${p.id}">
-    ${desconto ? `<span class="produto__fita">-${desconto}%</span>` : ""}
-    <button class="produto__fav ${fav ? "ativo" : ""}" type="button" data-fav="${p.id}"
-      aria-label="${fav ? "Remover dos favoritos" : "Salvar nos favoritos"}" aria-pressed="${fav}">
-      <svg viewBox="0 0 24 24"><path d="M20.8 5.6a5 5 0 00-7.1 0L12 7.3l-1.7-1.7a5 5 0 10-7.1 7.1L12 21.5l8.8-8.8a5 5 0 000-7.1z"/></svg>
-    </button>
+  const decants = p.tamanhos.map((t,i) => ({ ml:t.ml.replace("Decant ",""), i, preco:precoTamanho(p,t) }))
+    .filter((d,i) => p.tamanhos[i].ml.startsWith("Decant"));
+  const frente = `
     <div class="produto__midia">
-      <img src="${p.img}" alt="${p.nome}" loading="lazy">
+      <img src="${p.img}" alt="${p.nome}" loading="lazy" draggable="false">
       <button class="produto__espiar" type="button" data-espiar="${p.id}">Ver detalhes</button>
     </div>
     <div class="produto__info">
@@ -1136,7 +1160,36 @@ function cartaoProduto(p){
       ${p.precoAntigo ? `<p class="produto__antigo">${dinheiro(p.precoAntigo)}</p>` : ""}
       <p class="produto__preco">${dinheiro(p.preco)}</p>
       <p class="produto__parcela">${parcela(p.preco)}</p>
+      ${decants.length ? `<button class="produto__decant-aba" type="button" data-virar="${p.id}">Decants a partir de ${dinheiro(decants[0].preco)} <span aria-hidden="true">›</span></button>` : ""}
       <button class="btn-ouro" type="button" data-comprar="${p.id}">Comprar</button>
+    </div>`;
+  const selos = `
+    ${desconto ? `<span class="produto__fita">-${desconto}%</span>` : ""}
+    <button class="produto__fav ${fav ? "ativo" : ""}" type="button" data-fav="${p.id}"
+      aria-label="${fav ? "Remover dos favoritos" : "Salvar nos favoritos"}" aria-pressed="${fav}">
+      <svg viewBox="0 0 24 24"><path d="M20.8 5.6a5 5 0 00-7.1 0L12 7.3l-1.7-1.7a5 5 0 10-7.1 7.1L12 21.5l8.8-8.8a5 5 0 000-7.1z"/></svg>
+    </button>`;
+  if(!decants.length) return `<article class="produto ${p.tom === "escuro" ? "produto--escuro" : ""}" data-produto="${p.id}">${selos}${frente}
+  </article>`;
+  // com decant: arrastar o cartão para o lado (ou tocar na aba) mostra os decants de 5, 10 e 15 ml
+  return `<article class="produto produto--decant ${p.tom === "escuro" ? "produto--escuro" : ""}" data-produto="${p.id}">${selos}
+    <div class="produto__trilho">
+      <div class="produto__face">${frente}</div>
+      <div class="produto__face produto__decants" inert>
+        <span class="produto__decants-rotulo">Decants</span>
+        <h3 class="produto__nome">${p.nome}</h3>
+        <p class="produto__sub">Frasco original fracionado</p>
+        <ul class="produto__decants-lista">
+          ${decants.map(d => `<li>
+            <span class="produto__decants-ml">${d.ml}</span>
+            <span class="produto__decants-preco">${dinheiro(d.preco)}</span>
+            <button type="button" class="produto__decants-add" data-add-decant="${p.id}" data-decant-idx="${d.i}" aria-label="Adicionar decant ${d.ml} de ${p.nome} à sacola">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            </button>
+          </li>`).join("")}
+        </ul>
+        <button class="produto__decant-aba produto__decant-aba--voltar" type="button" data-virar="${p.id}"><span aria-hidden="true">‹</span> Voltar ao frasco</button>
+      </div>
     </div>
   </article>`;
 }
@@ -1155,7 +1208,7 @@ function abrirProduto(id){
 function pintarProduto(){
   const p = produtoAtual;
   const t = p.tamanhos[tamanhoAtual];
-  const preco = Math.round(p.preco*t.mult*100)/100;
+  const preco = precoTamanho(p,t);
   const fav = estado.favoritos.has(p.id);
   document.getElementById("painelProduto").innerHTML = `
     <button class="modal__fechar" type="button" data-fechar aria-label="Fechar"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
@@ -1566,8 +1619,41 @@ function buscar(){
 /* ============================================================
    13. EVENTOS GLOBAIS
    ============================================================ */
+/* Cartão com decants: arrastar para a esquerda mostra os decants, para a direita volta ao frasco */
+function virarCartao(card, virado){
+  card.classList.toggle("virado", virado);
+  const [frente, verso] = card.querySelectorAll(".produto__face");
+  frente.inert = virado; verso.inert = !virado;
+}
+let arrasto = null, acabouDeArrastar = false;
+document.addEventListener("pointerdown", e => {
+  const card = e.target.closest(".produto--decant");
+  if(!card || (e.pointerType === "mouse" && e.button !== 0)) return;
+  arrasto = { card, x:e.clientX, y:e.clientY };
+});
+document.addEventListener("pointerup", e => {
+  if(!arrasto) return;
+  const { card, x, y } = arrasto; arrasto = null;
+  const dx = e.clientX - x, dy = e.clientY - y;
+  if(Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)*1.5) return;
+  acabouDeArrastar = true; setTimeout(() => acabouDeArrastar = false, 0);
+  virarCartao(card, dx < 0);
+});
+document.addEventListener("pointercancel", () => { arrasto = null; });
+// um arrasto não deve contar como clique em "Comprar" / "Ver detalhes"
+document.addEventListener("click", e => {
+  if(acabouDeArrastar){ e.preventDefault(); e.stopImmediatePropagation(); acabouDeArrastar = false; }
+}, true);
+
 document.addEventListener("click", e => {
   const alvo = e.target;
+
+  // decants no cartão
+  const virar = alvo.closest("[data-virar]");
+  if(virar){ const card = virar.closest(".produto--decant"); virarCartao(card, !card.classList.contains("virado")); return; }
+  const addDecant = alvo.closest("[data-add-decant]");
+  if(addDecant){ adicionar(addDecant.dataset.addDecant, Number(addDecant.dataset.decantIdx)); abrirSobreposicao("gavetaCarrinho"); return; }
+
 
   // fechar sobreposições
   if(alvo.closest("[data-fechar]") || alvo.id === "veu"){ fecharTudo(); return; }
