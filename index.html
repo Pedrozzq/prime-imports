@@ -383,8 +383,6 @@ input,select{font:inherit}
 .sugestoes-sacola__lista{display:flex;flex-direction:column;gap:8px}
 .mini-prod{display:grid;grid-template-columns:44px 1fr auto;align-items:center;gap:10px;padding:8px;background:transparent;border:1px solid rgba(25,24,23,.12)}
 .mini-prod img{width:44px;height:44px;object-fit:cover}
-.mini-prod__foto{position:relative;display:block;width:44px;height:44px}
-.mini-prod img.mini-prod__decant{position:absolute;right:-6px;bottom:-4px;width:22px;height:22px;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(0,0,0,.45))}
 .mini-prod__info{display:flex;flex-direction:column;min-width:0}
 .mini-prod__nome{font-size:11.5px;font-weight:500;letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mini-prod__marca{font-size:10px;color:var(--tinta-fraca);text-transform:uppercase;letter-spacing:.1em}
@@ -1125,7 +1123,7 @@ function pintarCarrinho(){
       <div class="sugestoes-sacola__lista">
         ${relacionados.map(({p, idx, t, decant}) => `
           <div class="mini-prod">
-            <span class="mini-prod__foto"><img src="${p.img}" alt="${p.nome}" loading="lazy">${decant ? `<img class="mini-prod__decant" src="${IMG_DECANT}" alt="">` : ""}</span>
+            <img src="${imgDoTamanho(p, t.ml)}" alt="${decant ? t.ml + " de " : ""}${p.nome}" loading="lazy">
             <div class="mini-prod__info">
               <span class="mini-prod__nome">${p.nome}</span>
               <span class="mini-prod__marca">${decant ? `${t.ml} · ${p.marca}` : p.marca}</span>
