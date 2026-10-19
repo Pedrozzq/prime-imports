@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Prime Perfumes — Em manutenção</title>
+<meta name="description" content="Estamos preparando novidades. Enquanto isso, fale com a Prime Perfumes pelo WhatsApp.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#03070e">
+<link rel="icon" href="img/logo-mark.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   PRIME PERFUMES — página de manutenção (mesma identidade da links.html)
+   ============================================================ */
+:root{
+  --breu:#03070e;
+  --ouro:#d9b36c;
+  --ouro-fraco:#8a6d3c;
+  --ouro-claro:#f0dcae;
+  --creme:#f5e8d8;
+  --linha:rgba(217,179,108,.28);
+  --serif:"Cormorant Garamond",Georgia,serif;
+  --sans:"Jost","Segoe UI",system-ui,sans-serif;
+  --dourado:linear-gradient(135deg,#f5deb0 0%,#e0bd78 30%,#c39a4e 60%,#f0dcae 100%);
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0}
+body{min-height:100vh;min-height:100dvh;display:grid;place-items:center;background:var(--breu);color:var(--creme);font-family:var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+img{display:block;max-width:100%}
+
+/* fundo */
+.fundo{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.fundo::before{content:"";position:absolute;inset:-20%;
+  background:radial-gradient(40% 30% at 50% 20%,rgba(217,179,108,.2),transparent 70%),radial-gradient(35% 35% at 85% 70%,rgba(2,60,95,.35),transparent 70%),radial-gradient(35% 35% at 10% 85%,rgba(195,154,78,.12),transparent 70%);
+  animation:respira 12s ease-in-out infinite alternate}
+@keyframes respira{from{transform:scale(1)}to{transform:scale(1.08) translateY(-2%)}}
+.particula{position:absolute;bottom:-10px;border-radius:50%;background:var(--ouro-claro);box-shadow:0 0 8px 2px rgba(240,220,174,.55);opacity:0;animation:sobe linear infinite}
+@keyframes sobe{0%{transform:translateY(0);opacity:0}10%{opacity:.9}90%{opacity:.5}100%{transform:translateY(-105vh) translateX(30px);opacity:0}}
+
+/* conteúdo */
+.caixa{position:relative;z-index:1;width:100%;max-width:520px;padding:40px 20px;text-align:center}
+.entra{opacity:0;transform:translateY(16px);animation:entra .9s cubic-bezier(.2,.8,.2,1) forwards;animation-delay:calc(var(--i,0) * 110ms + 150ms)}
+@keyframes entra{to{opacity:1;transform:none}}
+
+.selo{position:relative;width:200px;height:200px;margin:0 auto 26px;display:grid;place-items:center}
+.selo__anel{position:absolute;inset:0;width:100%;height:100%;animation:gira 14s linear infinite}
+.selo__anel circle{fill:none;stroke-width:1.2}
+.selo__anel .a{stroke:rgba(217,179,108,.16)}
+.selo__anel .b{stroke:url(#gOuro);stroke-linecap:round;stroke-dasharray:120 460}
+@keyframes gira{to{transform:rotate(360deg)}}
+.selo__halo{position:absolute;inset:18px;border-radius:50%;background:radial-gradient(circle,rgba(217,179,108,.22),transparent 70%);animation:pulsa 3.2s ease-in-out infinite}
+@keyframes pulsa{50%{transform:scale(1.08);opacity:.7}}
+.selo__logo{position:relative;width:176px;filter:drop-shadow(0 10px 26px rgba(0,0,0,.6))}
+
+.etiqueta{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border:1px solid var(--linha);font-size:10px;font-weight:600;letter-spacing:.32em;text-transform:uppercase;color:var(--ouro)}
+.etiqueta i{width:7px;height:7px;border-radius:50%;background:var(--ouro);box-shadow:0 0 0 0 rgba(217,179,108,.7);animation:ponto 1.8s infinite}
+@keyframes ponto{70%{box-shadow:0 0 0 8px rgba(217,179,108,0)}100%{box-shadow:0 0 0 0 rgba(217,179,108,0)}}
+h1{margin:18px 0 0;font-family:var(--serif);font-weight:600;font-size:clamp(34px,8vw,48px);line-height:1.05;
+  background:var(--dourado);-webkit-background-clip:text;background-clip:text;color:transparent}
+.texto{margin:14px auto 0;max-width:400px;font-size:15px;line-height:1.65;color:rgba(245,232,216,.78)}
+
+/* barra de progresso decorativa */
+.progresso{position:relative;height:2px;margin:28px auto 0;max-width:280px;background:rgba(217,179,108,.15);overflow:hidden}
+.progresso::after{content:"";position:absolute;top:0;bottom:0;left:-40%;width:40%;background:linear-gradient(90deg,transparent,var(--ouro-claro),transparent);animation:corre 2.2s ease-in-out infinite}
+@keyframes corre{to{left:100%}}
+
+/* botões */
+.acoes{display:grid;gap:12px;margin-top:30px}
+.botao{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;gap:12px;min-height:58px;padding:12px 20px;
+  font-size:12.5px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;border:1px solid var(--linha);
+  background:linear-gradient(180deg,rgba(18,26,36,.92),rgba(7,12,19,.92));color:#fff;transition:transform .3s ease,box-shadow .3s ease,border-color .3s ease}
+.botao svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.botao:hover{transform:translateY(-3px);border-color:rgba(217,179,108,.7)}
+.botao--zap{border-color:rgba(37,211,102,.75);background:linear-gradient(120deg,#0b6b4f 0%,#128c7e 25%,#25d366 50%,#128c7e 75%,#0b6b4f 100%);background-size:300% 100%;
+  box-shadow:0 18px 38px -14px rgba(37,211,102,.6);animation:zapFundo 6s ease-in-out infinite}
+@keyframes zapFundo{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+.botao--zap svg{animation:balanca 2.6s ease-in-out infinite;transform-origin:50% 60%}
+@keyframes balanca{0%,62%,100%{transform:rotate(0)}66%{transform:rotate(-14deg)}72%{transform:rotate(12deg)}78%{transform:rotate(-8deg)}84%{transform:rotate(5deg)}90%{transform:rotate(0)}}
+.botao--zap:hover{border-color:#fff;box-shadow:0 24px 46px -14px rgba(37,211,102,.85)}
+.botao::after{content:"";position:absolute;top:0;bottom:0;left:-60%;width:40%;pointer-events:none;
+  background:linear-gradient(105deg,transparent,rgba(255,255,255,.25),transparent);transform:skewX(-18deg);animation:reflexo 4.5s ease-in-out infinite}
+@keyframes reflexo{0%,65%{left:-60%}100%{left:130%}}
+.dupla{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+.rodape{margin-top:34px;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:rgba(245,232,216,.4);line-height:1.8}
+.rodape b{font-weight:500;color:var(--ouro-fraco)}
+</style>
+</head>
+<body>
+
+<div class="fundo" id="fundo"></div>
+
+<main class="caixa">
+  <div class="selo entra" style="--i:0" aria-hidden="true">
+    <svg class="selo__anel" viewBox="0 0 200 200">
+      <defs><linearGradient id="gOuro" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f5deb0"/><stop offset=".5" stop-color="#c39a4e"/><stop offset="1" stop-color="#f0dcae"/></linearGradient></defs>
+      <circle class="a" cx="100" cy="100" r="96"/>
+      <circle class="b" cx="100" cy="100" r="96"/>
+    </svg>
+    <span class="selo__halo"></span>
+    <img class="selo__logo" src="img/logo-mark.webp" alt="">
+  </div>
+
+  <span class="etiqueta entra" style="--i:1"><i></i>Em manutenção</span>
+  <h1 class="entra" style="--i:2">Estamos preparando novidades</h1>
+  <p class="texto entra" style="--i:3">Nossa loja online volta em breve. Enquanto isso, a consultoria continua atendendo pelo WhatsApp: perfumes 100% originais, decants e cosméticos.</p>
+  <div class="progresso entra" style="--i:4" aria-hidden="true"></div>
+
+  <div class="acoes">
+    <div class="entra" style="--i:5"><a class="botao botao--zap" href="https://wa.me/5521996931199?text=Ol%C3%A1!%20Vi%20que%20o%20site%20est%C3%A1%20em%20manuten%C3%A7%C3%A3o%20e%20quero%20fazer%20um%20pedido." target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 01-13.3 7.9L3 21l1.2-4.5A9 9 0 1121 12z"/><path d="M9 9.5c0 3 2.5 5.5 5.5 5.5l1.2-1.4-1.9-.9-.8.8c-1-.4-2-1.4-2.4-2.4l.8-.8-.9-1.9L9 9.5z"/></svg>
+      Comprar pelo WhatsApp
+    </a></div>
+    <div class="dupla entra" style="--i:6">
+      <a class="botao" href="https://www.whatsapp.com/catalog/5521996931199/?app_absent=0&amp;utm_source=ig" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24"><path d="M4 7h16l-1.5 12.5a1.5 1.5 0 01-1.5 1.5H7a1.5 1.5 0 01-1.5-1.5L4 7z"/><path d="M8.5 7V5.5a3.5 3.5 0 017 0V7"/></svg>Catálogo
+      </a>
+      <a class="botao" href="https://www.instagram.com/primeperfumes.imp/" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".6"/></svg>Instagram
+      </a>
+    </div>
+  </div>
+
+  <p class="rodape entra" style="--i:7"><b>Prime Perfumes</b><br>Comodidade, confiança e segurança</p>
+</main>
+
+<script>
+/* partículas douradas subindo no fundo */
+(function(){
+  var fundo = document.getElementById("fundo");
+  for (var i = 0; i < 22; i++) {
+    var p = document.createElement("span"), t = 1.5 + Math.random() * 2.5;
+    p.className = "particula";
+    p.style.left = (Math.random() * 100) + "%";
+    p.style.width = p.style.height = t + "px";
+    p.style.animationDuration = (9 + Math.random() * 10) + "s";
+    p.style.animationDelay = (-Math.random() * 18) + "s";
+    fundo.appendChild(p);
+  }
+})();
+</script>
+</body>
+</html>
