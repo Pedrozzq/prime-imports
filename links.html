@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Prime Perfumes — Links</title>
+<meta name="description" content="Perfumes importados 100% originais, decants e cosméticos. Fale com a Prime Perfumes no WhatsApp, veja o catálogo e siga no Instagram.">
+<meta name="theme-color" content="#03070e">
+<meta property="og:title" content="Prime Perfumes — Perfumes importados originais">
+<meta property="og:description" content="O melhor lugar para encontrar seus perfumes e cosméticos.">
+<meta property="og:image" content="img/logo.webp">
+<link rel="icon" href="img/logo-mark.webp">
+<link rel="preload" as="image" href="img/logo-mark.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   PRIME PERFUMES — página de links (estilo linktree)
+   mesma identidade do site: preto profundo + dourado + creme
+   ============================================================ */
+:root{
+  --breu:#03070e;
+  --breu-2:#07101a;
+  --noite:#021523;
+  --ouro:#d9b36c;
+  --ouro-forte:#c39a4e;
+  --ouro-fraco:#8a6d3c;
+  --ouro-claro:#f0dcae;
+  --creme:#f5e8d8;
+  --linha:rgba(217,179,108,.28);
+  --serif:"Cormorant Garamond",Georgia,serif;
+  --sans:"Jost","Segoe UI",system-ui,sans-serif;
+  --dourado:linear-gradient(135deg,#f5deb0 0%,#e0bd78 30%,#c39a4e 60%,#f0dcae 100%);
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0}
+body{
+  min-height:100vh;min-height:100dvh;
+  background:var(--breu);color:var(--creme);
+  font-family:var(--sans);font-weight:400;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+body.carregando{overflow:hidden}
+a{color:inherit;text-decoration:none}
+img{display:block;max-width:100%}
+
+/* ---------- fundo: brilho dourado, grão e partículas ---------- */
+.fundo{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.fundo::before{
+  content:"";position:absolute;inset:-20%;
+  background:
+    radial-gradient(40% 30% at 50% 8%,rgba(217,179,108,.22),transparent 70%),
+    radial-gradient(35% 35% at 85% 60%,rgba(2,60,95,.35),transparent 70%),
+    radial-gradient(35% 35% at 10% 85%,rgba(195,154,78,.14),transparent 70%);
+  animation:respira 12s ease-in-out infinite alternate;
+}
+.fundo::after{
+  content:"";position:absolute;inset:0;opacity:.07;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+@keyframes respira{from{transform:scale(1) translateY(0)}to{transform:scale(1.08) translateY(-2%)}}
+.particula{position:absolute;bottom:-10px;width:3px;height:3px;border-radius:50%;background:var(--ouro-claro);box-shadow:0 0 8px 2px rgba(240,220,174,.55);opacity:0;animation:sobe linear infinite}
+@keyframes sobe{0%{transform:translateY(0) translateX(0);opacity:0}10%{opacity:.9}90%{opacity:.6}100%{transform:translateY(-105vh) translateX(30px);opacity:0}}
+
+/* ---------- pré-carregamento ---------- */
+.pre{
+  position:fixed;inset:0;z-index:50;display:grid;place-items:center;
+  background:radial-gradient(60% 50% at 50% 45%,#0b1724 0%,var(--breu) 70%);
+  transition:opacity .8s ease,visibility .8s ease;
+}
+.pre.sai{opacity:0;visibility:hidden}
+.pre__centro{position:relative;display:grid;place-items:center;width:190px;height:190px}
+.pre__anel{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
+.pre__anel circle{fill:none;stroke-width:1.4}
+.pre__anel .trilha{stroke:rgba(217,179,108,.14)}
+.pre__anel .traco{stroke:url(#gradOuro);stroke-linecap:round;stroke-dasharray:578;stroke-dashoffset:578;animation:desenha 1.8s cubic-bezier(.65,0,.35,1) forwards}
+@keyframes desenha{to{stroke-dashoffset:0}}
+.pre__giro{position:absolute;inset:-14px;border-radius:50%;border:1px solid transparent;border-top-color:rgba(240,220,174,.55);animation:gira 1.6s linear infinite}
+@keyframes gira{to{transform:rotate(360deg)}}
+.pre__logo{width:118px;opacity:0;transform:scale(.86);filter:drop-shadow(0 0 22px rgba(217,179,108,.35));animation:aparece 1s .25s cubic-bezier(.2,.8,.2,1) forwards}
+@keyframes aparece{to{opacity:1;transform:scale(1)}}
+.pre__nome{
+  position:absolute;top:calc(100% + 26px);left:50%;transform:translateX(-50%);white-space:nowrap;
+  font-family:var(--serif);font-size:22px;font-weight:600;letter-spacing:.42em;text-indent:.42em;text-transform:uppercase;
+  background:linear-gradient(90deg,var(--ouro-fraco) 0%,var(--ouro-claro) 45%,#fff7e3 50%,var(--ouro-claro) 55%,var(--ouro-fraco) 100%);
+  background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;
+  opacity:0;animation:aparece 1s .6s forwards,brilho 2.4s 1s linear infinite;
+}
+.pre__frase{position:absolute;top:calc(100% + 64px);left:50%;transform:translateX(-50%);white-space:nowrap;font-size:10px;letter-spacing:.38em;text-transform:uppercase;color:var(--ouro-fraco);opacity:0;animation:aparece 1s .9s forwards}
+@keyframes brilho{from{background-position:120% 0}to{background-position:-120% 0}}
+
+/* ---------- página ---------- */
+.pagina{position:relative;z-index:1;width:100%;max-width:480px;margin:0 auto;padding:34px 18px 40px}
+.entra{opacity:0;transform:translateY(18px)}
+body.pronto .entra{animation:entra .9s cubic-bezier(.2,.8,.2,1) forwards;animation-delay:calc(var(--i,0) * 90ms + 120ms)}
+@keyframes entra{to{opacity:1;transform:none}}
+
+/* topo: logo com perfumes flutuando em volta */
+.topo{position:relative;text-align:center;padding-top:8px}
+.palco{position:relative;height:250px;margin:0 auto 4px;max-width:420px}
+.palco__halo{position:absolute;left:50%;top:50%;width:210px;height:210px;transform:translate(-50%,-50%);border-radius:50%;
+  background:radial-gradient(circle,rgba(217,179,108,.28) 0%,rgba(217,179,108,.06) 45%,transparent 70%)}
+.palco__aro{position:absolute;left:50%;top:50%;width:172px;height:172px;transform:translate(-50%,-50%);border-radius:50%;
+  border:1px solid var(--linha);box-shadow:inset 0 0 40px rgba(217,179,108,.08)}
+.palco__aro::before{content:"";position:absolute;inset:-9px;border-radius:50%;border:1px dashed rgba(217,179,108,.22);animation:gira 40s linear infinite}
+.palco__logo{position:absolute;left:50%;top:50%;width:226px;max-width:none;transform:translate(-50%,-50%);filter:drop-shadow(0 10px 30px rgba(0,0,0,.6)) drop-shadow(0 0 18px rgba(217,179,108,.25))}
+/* perfume que cai no palco: um por vez, alternando os lados; a cada 5 s cai outro */
+.frasco{position:absolute;z-index:2;top:34px;width:128px;pointer-events:none;filter:drop-shadow(0 18px 18px rgba(0,0,0,.55))}
+.frasco--esq{left:-4px}.frasco--dir{right:-4px}
+.frasco img{width:100%;animation:flutua 5s ease-in-out .9s infinite}
+.frasco--esq img{--r:-7deg}.frasco--dir img{--r:7deg}
+.frasco::after{content:"";position:absolute;left:18%;right:18%;bottom:-6px;height:14px;border-radius:50%;background:radial-gradient(closest-side,rgba(217,179,108,.45),transparent);opacity:0;animation:pouso .9s ease-out forwards}
+.frasco.cai{animation:cai .95s cubic-bezier(.3,.05,.4,1) both}
+.frasco.vai{animation:vai .7s cubic-bezier(.5,0,.8,.4) forwards}
+@keyframes cai{
+  0%{transform:translateY(-420px) rotate(var(--g,-14deg));opacity:0}
+  15%{opacity:1}
+  62%{transform:translateY(0) rotate(0)}
+  74%{transform:translateY(-22px) rotate(calc(var(--g,-14deg) * -.25))}
+  86%{transform:translateY(0) rotate(0)}
+  93%{transform:translateY(-6px)}
+  100%{transform:translateY(0)}}
+@keyframes vai{to{transform:translateY(90px) scale(.85) rotate(var(--g,-14deg));opacity:0}}
+@keyframes pouso{0%,55%{opacity:0;transform:scaleX(.4)}70%{opacity:1;transform:scaleX(1.15)}100%{opacity:.7;transform:scaleX(1)}}
+@keyframes flutua{0%,100%{transform:translateY(0) rotate(var(--r,0deg))}50%{transform:translateY(-12px) rotate(calc(var(--r,0deg) * -1))}}
+
+.nome{margin:0;font-family:var(--serif);font-weight:600;font-size:34px;line-height:1;letter-spacing:.24em;text-indent:.24em;text-transform:uppercase;
+  background:var(--dourado);-webkit-background-clip:text;background-clip:text;color:transparent}
+.nome-sub{display:flex;align-items:center;justify-content:center;gap:12px;margin:10px 0 0;font-size:11px;letter-spacing:.5em;text-indent:.5em;text-transform:uppercase;color:var(--ouro)}
+.nome-sub::before,.nome-sub::after{content:"";width:34px;height:1px;background:linear-gradient(90deg,transparent,var(--ouro))}
+.nome-sub::after{transform:scaleX(-1)}
+.bio{margin:16px auto 0;max-width:330px;font-family:var(--serif);font-style:italic;font-size:19px;line-height:1.35;color:var(--creme)}
+.arroba{margin:8px 0 0;font-size:12px;letter-spacing:.12em;color:rgba(245,232,216,.55)}
+
+/* selos de confiança */
+.selos{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:18px 0 0}
+.selo{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 6px;border:1px solid rgba(217,179,108,.18);background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.01));text-align:center}
+.selo svg{width:20px;height:20px;stroke:var(--ouro);fill:none;stroke-width:1.5}
+.selo span{font-size:9.5px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;line-height:1.35;color:var(--ouro-claro)}
+
+/* ---------- botões ---------- */
+.links{display:grid;gap:12px;margin-top:24px}
+.botao{
+  position:relative;isolation:isolate;overflow:hidden;
+  display:grid;grid-template-columns:46px 1fr 22px;align-items:center;gap:14px;
+  min-height:68px;padding:10px 18px 10px 12px;
+  border:1px solid var(--linha);
+  background:linear-gradient(180deg,rgba(18,26,36,.92),rgba(7,12,19,.92));
+  box-shadow:0 14px 30px -18px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,255,255,.04);
+  transition:transform .35s cubic-bezier(.2,.8,.2,1),border-color .35s ease,box-shadow .35s ease;
+  -webkit-tap-highlight-color:transparent;
+}
+/* cantos dourados */
+.botao::before{content:"";position:absolute;inset:4px;z-index:-1;pointer-events:none;
+  background:
+    linear-gradient(var(--ouro),var(--ouro)) top left/10px 1px no-repeat,
+    linear-gradient(var(--ouro),var(--ouro)) top left/1px 10px no-repeat,
+    linear-gradient(var(--ouro),var(--ouro)) bottom right/10px 1px no-repeat,
+    linear-gradient(var(--ouro),var(--ouro)) bottom right/1px 10px no-repeat;
+  opacity:.55;transition:opacity .35s ease}
+/* reflexo que atravessa o botão */
+.botao::after{content:"";position:absolute;top:0;bottom:0;left:-60%;width:45%;z-index:-1;pointer-events:none;
+  background:linear-gradient(105deg,transparent 0%,rgba(240,220,174,.13) 45%,rgba(255,247,227,.22) 50%,rgba(240,220,174,.13) 55%,transparent 100%);
+  transform:skewX(-18deg);animation:reflexo 5.5s ease-in-out infinite;animation-delay:var(--d,0s)}
+@keyframes reflexo{0%,62%{left:-60%}100%{left:130%}}
+.botao:hover,.botao:focus-visible{transform:translateY(-3px);border-color:rgba(217,179,108,.7);box-shadow:0 20px 38px -18px rgba(217,179,108,.35),inset 0 1px 0 rgba(255,255,255,.06);outline:none}
+.botao:hover::before,.botao:focus-visible::before{opacity:1}
+.botao:active{transform:translateY(-1px) scale(.99)}
+.botao__icone{display:grid;place-items:center;width:46px;height:46px;border-radius:50%;border:1px solid rgba(217,179,108,.4);background:radial-gradient(circle at 30% 25%,rgba(240,220,174,.16),rgba(217,179,108,.04) 70%)}
+.botao__icone svg{width:21px;height:21px;stroke:var(--ouro-claro);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.botao__icone img{width:40px;height:40px;object-fit:contain;filter:drop-shadow(0 4px 6px rgba(0,0,0,.5))}
+.botao__texto{min-width:0}
+.botao__titulo{display:block;font-size:13.5px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:#fff}
+.botao__desc{display:block;margin-top:3px;font-size:12px;color:rgba(245,232,216,.6);letter-spacing:.02em}
+.botao__seta{width:18px;height:18px;stroke:var(--ouro);fill:none;stroke-width:1.6;transition:transform .35s ease}
+.botao:hover .botao__seta{transform:translateX(4px)}
+
+/* destaque: WhatsApp em verde, com gradiente em movimento, anel pulsando e ícone balançando */
+.botao--zap{border-color:rgba(37,211,102,.75);
+  background:linear-gradient(120deg,#0b6b4f 0%,#128c7e 25%,#25d366 50%,#128c7e 75%,#0b6b4f 100%);background-size:300% 100%;
+  box-shadow:0 18px 38px -14px rgba(37,211,102,.6),inset 0 1px 0 rgba(255,255,255,.35);
+  animation:zapFundo 6s ease-in-out infinite,zapBrilho 2.4s ease-in-out infinite}
+@keyframes zapFundo{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+@keyframes zapBrilho{0%,100%{box-shadow:0 18px 38px -14px rgba(37,211,102,.55),0 0 0 0 rgba(37,211,102,.45),inset 0 1px 0 rgba(255,255,255,.35)}
+  50%{box-shadow:0 22px 46px -12px rgba(37,211,102,.8),0 0 0 7px rgba(37,211,102,0),inset 0 1px 0 rgba(255,255,255,.45)}}
+.botao--zap::before{background:
+    linear-gradient(#fff,#fff) top left/10px 1px no-repeat,linear-gradient(#fff,#fff) top left/1px 10px no-repeat,
+    linear-gradient(#fff,#fff) bottom right/10px 1px no-repeat,linear-gradient(#fff,#fff) bottom right/1px 10px no-repeat;opacity:.6}
+.botao--zap::after{background:linear-gradient(105deg,transparent 0%,rgba(255,255,255,.2) 45%,rgba(255,255,255,.5) 50%,rgba(255,255,255,.2) 55%,transparent 100%);animation-duration:3.2s}
+.botao--zap:hover,.botao--zap:focus-visible{border-color:#fff;box-shadow:0 26px 50px -14px rgba(37,211,102,.9),inset 0 1px 0 rgba(255,255,255,.5)}
+.botao--zap .botao__icone{position:relative;border-color:rgba(255,255,255,.55);background:rgba(255,255,255,.14)}
+.botao--zap .botao__icone::before,.botao--zap .botao__icone::after{content:"";position:absolute;inset:-1px;border-radius:50%;border:2px solid rgba(255,255,255,.7);animation:onda 2.2s ease-out infinite}
+.botao--zap .botao__icone::after{animation-delay:1.1s}
+@keyframes onda{from{transform:scale(1);opacity:.8}to{transform:scale(1.7);opacity:0}}
+.botao--zap .botao__icone svg{stroke:#fff;animation:balanca 2.6s ease-in-out infinite;transform-origin:50% 60%}
+@keyframes balanca{0%,62%,100%{transform:rotate(0)}66%{transform:rotate(-14deg)}72%{transform:rotate(12deg)}78%{transform:rotate(-8deg)}84%{transform:rotate(5deg)}90%{transform:rotate(0)}}
+.botao--zap .botao__titulo{color:#fff;font-weight:600;text-shadow:0 1px 8px rgba(0,0,0,.25)}
+.botao--zap .botao__desc{color:rgba(255,255,255,.88)}
+.botao--zap .botao__seta{stroke:#fff;animation:seta 1.6s ease-in-out infinite}
+@keyframes seta{0%,100%{transform:translateX(0)}50%{transform:translateX(5px)}}
+.pulso{position:absolute;right:14px;top:10px;display:flex;align-items:center;gap:5px;font-size:8.5px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#eafff2}
+.pulso::before{content:"";width:7px;height:7px;border-radius:50%;background:#b8ffcf;box-shadow:0 0 0 0 rgba(184,255,207,.8);animation:pulso 1.8s infinite}
+@keyframes pulso{70%{box-shadow:0 0 0 8px rgba(184,255,207,0)}100%{box-shadow:0 0 0 0 rgba(184,255,207,0)}}
+
+/* ---------- vitrine ---------- */
+.secao-titulo{display:flex;align-items:center;gap:12px;margin:34px 0 14px;font-family:var(--serif);font-size:21px;font-weight:600;letter-spacing:.08em;color:var(--ouro-claro)}
+.secao-titulo::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--linha),transparent)}
+.secao-titulo small{font-family:var(--sans);font-size:10px;font-weight:500;letter-spacing:.24em;text-transform:uppercase;color:var(--ouro-fraco)}
+.vitrine{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.peca{position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;padding:16px 10px 14px;text-align:center;
+  border:1px solid rgba(217,179,108,.18);background:radial-gradient(90% 70% at 50% 30%,rgba(217,179,108,.14),transparent 70%),linear-gradient(180deg,#0d1620,#060b12);
+  transition:transform .35s cubic-bezier(.2,.8,.2,1),border-color .35s ease}
+.peca:hover{transform:translateY(-4px);border-color:rgba(217,179,108,.6)}
+.peca img{height:132px;width:100%;object-fit:contain;filter:drop-shadow(0 16px 16px rgba(0,0,0,.6));transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+.peca:hover img{transform:scale(1.06) translateY(-4px)}
+.peca__marca{margin-top:10px;font-size:9.5px;font-weight:500;letter-spacing:.26em;text-transform:uppercase;color:var(--ouro)}
+.peca__nome{margin-top:3px;font-family:var(--serif);font-size:17px;font-weight:600;line-height:1.15;color:#fff}
+.peca__fita{position:absolute;top:10px;left:10px;padding:3px 8px;font-size:8.5px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:#2a1d06;background:var(--dourado)}
+
+/* faixa decants */
+.decant{position:relative;overflow:hidden;display:grid;grid-template-columns:110px 1fr;align-items:center;gap:6px;margin-top:10px;padding:14px 16px 14px 6px;
+  border:1px solid rgba(217,179,108,.35);background:linear-gradient(120deg,#0f1b28 0%,#071019 60%,#120e07 100%)}
+.decant img{width:110px;height:130px;object-fit:contain;filter:drop-shadow(0 14px 16px rgba(0,0,0,.6));animation:flutua 6s ease-in-out infinite}
+.decant__rotulo{display:inline-block;padding:3px 9px;border:1px solid var(--ouro);font-size:9px;font-weight:600;letter-spacing:.3em;text-transform:uppercase;color:var(--ouro)}
+.decant h3{margin:8px 0 4px;font-family:var(--serif);font-size:23px;font-weight:600;line-height:1.1;color:#fff}
+.decant p{margin:0 0 10px;font-size:12.5px;line-height:1.5;color:rgba(245,232,216,.7)}
+.decant__cta{display:inline-flex;align-items:center;gap:8px;font-size:10.5px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--ouro-claro)}
+.decant__cta::after{content:"→";transition:transform .3s ease}
+.decant:hover .decant__cta::after{transform:translateX(4px)}
+
+/* marcas */
+.marcas{position:relative;overflow:hidden;margin:30px -18px 0;padding:14px 0;border-top:1px solid rgba(217,179,108,.14);border-bottom:1px solid rgba(217,179,108,.14);
+  -webkit-mask:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);mask:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
+.marcas__fita{display:flex;width:max-content;gap:34px;animation:corre 26s linear infinite}
+.marcas__fita span{font-family:var(--serif);font-size:18px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:rgba(240,220,174,.7);white-space:nowrap}
+.marcas__fita span::after{content:"✦";margin-left:34px;font-size:10px;color:var(--ouro-fraco)}
+@keyframes corre{to{transform:translateX(-50%)}}
+
+/* redes + rodapé */
+.redes{display:flex;justify-content:center;gap:14px;margin-top:30px}
+.rede{display:grid;place-items:center;width:46px;height:46px;border-radius:50%;border:1px solid var(--linha);transition:background .3s ease,transform .3s ease,border-color .3s ease}
+.rede svg{width:20px;height:20px;stroke:var(--ouro-claro);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.rede:hover{transform:translateY(-3px);border-color:var(--ouro);background:rgba(217,179,108,.12)}
+.rodape{margin-top:22px;text-align:center;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:rgba(245,232,216,.4);line-height:1.8}
+.rodape b{font-weight:500;color:var(--ouro-fraco)}
+
+@media(max-width:380px){
+  .palco{height:220px}.frasco{width:96px;top:44px}.palco__logo{width:206px}.palco__aro{width:158px;height:158px}
+  .nome{font-size:29px}.botao__titulo{font-size:12.5px;letter-spacing:.1em}.peca img{height:112px}
+}
+/* ---------- barra inferior (celular): site · WhatsApp · Instagram ---------- */
+.barra{display:none}
+@media(max-width:899px){
+  .pagina{padding-bottom:calc(120px + env(safe-area-inset-bottom))}
+  .barra{position:fixed;left:0;right:0;bottom:0;z-index:20;display:grid;grid-template-columns:1fr 92px 1fr;align-items:end;
+    padding:0 14px calc(10px + env(safe-area-inset-bottom));
+    background:linear-gradient(180deg,rgba(3,7,14,0) 0%,rgba(3,7,14,.85) 38%,rgba(3,7,14,.97) 100%);
+    transform:translateY(110%);transition:transform .7s cubic-bezier(.2,.8,.2,1) .9s}
+  body.pronto .barra{transform:none}
+  .barra::before{content:"";position:absolute;left:14px;right:14px;bottom:calc(8px + env(safe-area-inset-bottom));height:58px;z-index:-1;
+    border:1px solid var(--linha);background:linear-gradient(180deg,rgba(18,26,36,.95),rgba(7,12,19,.97));box-shadow:0 -10px 30px -12px rgba(0,0,0,.8);
+    -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+  .barra__item{display:flex;flex-direction:column;align-items:center;gap:4px;height:58px;justify-content:center;margin-bottom:-2px;
+    font-size:9.5px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--ouro-claro);-webkit-tap-highlight-color:transparent}
+  .barra__item svg{width:21px;height:21px;stroke:var(--ouro);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;transition:transform .3s ease}
+  .barra__item:active svg{transform:scale(.88)}
+  .barra__zap{position:relative;justify-self:center;display:flex;flex-direction:column;align-items:center;gap:5px;margin-bottom:6px;
+    font-size:9.5px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:#b8ffcf;-webkit-tap-highlight-color:transparent}
+  .barra__zap span.bola{position:relative;display:grid;place-items:center;width:68px;height:68px;border-radius:50%;
+    border:3px solid var(--breu);
+    background:linear-gradient(120deg,#0b6b4f 0%,#128c7e 25%,#25d366 50%,#128c7e 75%,#0b6b4f 100%);background-size:300% 100%;
+    box-shadow:0 10px 26px -6px rgba(37,211,102,.75),inset 0 1px 0 rgba(255,255,255,.4);
+    animation:zapFundo 6s ease-in-out infinite,zapBrilho 2.4s ease-in-out infinite}
+  .barra__zap span.bola::before,.barra__zap span.bola::after{content:"";position:absolute;inset:-3px;border-radius:50%;border:2px solid rgba(37,211,102,.75);animation:onda 2.2s ease-out infinite}
+  .barra__zap span.bola::after{animation-delay:1.1s}
+  .barra__zap svg{width:30px;height:30px;stroke:#fff;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;animation:balanca 2.6s ease-in-out infinite;transform-origin:50% 60%}
+  .barra__zap:active span.bola{transform:scale(.94)}
+}
+
+/* ---------- desktop: perfumes grandes flutuando nas laterais, com parallax do mouse ---------- */
+.lateral{display:none}
+.luz{display:none}
+@media(min-width:900px){
+  .lateral{display:block;position:fixed;z-index:0;pointer-events:none;width:clamp(170px,15vw,250px);filter:drop-shadow(0 30px 30px rgba(0,0,0,.6));opacity:0;transition:opacity 1.2s ease}
+  body.pronto .lateral{opacity:.9}
+  .lateral img{width:100%;animation:flutua 7s ease-in-out infinite}
+  .lateral--1{left:7vw;top:12vh;--r:-10deg}
+  .lateral--2{left:13vw;bottom:8vh;width:clamp(140px,12vw,200px)}
+  .lateral--3{right:7vw;top:14vh}
+  .lateral--4{right:13vw;bottom:6vh;width:clamp(140px,12vw,200px)}
+  .lateral--2 img{animation-delay:-2s}.lateral--3 img{animation-delay:-4s}.lateral--4 img{animation-delay:-5.5s}
+  .lateral::after{content:"";position:absolute;left:10%;right:10%;bottom:-18px;height:18px;border-radius:50%;background:radial-gradient(closest-side,rgba(217,179,108,.25),transparent)}
+  .luz{display:block;position:fixed;z-index:0;left:0;top:0;width:520px;height:520px;margin:-260px 0 0 -260px;border-radius:50%;pointer-events:none;
+    background:radial-gradient(closest-side,rgba(217,179,108,.13),transparent);transition:opacity .4s ease;will-change:transform}
+  .pagina{padding-top:48px}
+  .botao{transform-style:preserve-3d;will-change:transform}
+}
+</style>
+</head>
+<body class="carregando">
+
+<!-- pré-carregamento -->
+<div class="pre" id="pre" aria-hidden="true">
+  <div class="pre__centro">
+    <svg class="pre__anel" viewBox="0 0 190 190">
+      <defs><linearGradient id="gradOuro" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f5deb0"/><stop offset=".5" stop-color="#c39a4e"/><stop offset="1" stop-color="#f0dcae"/></linearGradient></defs>
+      <circle class="trilha" cx="95" cy="95" r="92"/>
+      <circle class="traco" cx="95" cy="95" r="92"/>
+    </svg>
+    <span class="pre__giro"></span>
+    <img class="pre__logo" src="img/logo-mark.webp" alt="">
+    <span class="pre__nome">Prime</span>
+    <span class="pre__frase">Perfumes importados</span>
+  </div>
+</div>
+
+<div class="fundo" id="fundo"></div>
+<div class="luz" id="luz" aria-hidden="true"></div>
+<div class="lateral lateral--1" data-prof="28" aria-hidden="true"><img src="img/miss-dior-edp.webp" alt=""></div>
+<div class="lateral lateral--2" data-prof="16" aria-hidden="true"><img src="img/bade-al-oud.webp" alt=""></div>
+<div class="lateral lateral--3" data-prof="32" aria-hidden="true"><img src="img/onemillion-edp.webp" alt=""></div>
+<div class="lateral lateral--4" data-prof="18" aria-hidden="true"><img src="img/orientica-royal-amber-80.webp" alt=""></div>
+
+<main class="pagina">
+  <header class="topo">
+    <div class="palco entra" style="--i:0">
+      <div class="palco__halo"></div>
+      <div class="palco__aro"></div>
+      <div id="queda" aria-hidden="true"></div>
+      <img class="palco__logo" src="img/logo-mark.webp" alt="Prime Perfumes">
+    </div>
+    <h1 class="nome entra" style="--i:1">Prime</h1>
+    <p class="nome-sub entra" style="--i:2">Perfumes</p>
+    <p class="bio entra" style="--i:3">O melhor lugar para encontrar seus perfumes e cosméticos.</p>
+    <p class="arroba entra" style="--i:3">@primeimportsperfumes</p>
+  </header>
+
+
+  <nav class="links" aria-label="Links principais">
+    <a class="botao botao--zap entra" style="--i:5;--d:.4s" href="https://wa.me/5521996931199?text=Ol%C3%A1!%20Vim%20pelo%20Instagram%20e%20quero%20conhecer%20os%20perfumes." target="_blank" rel="noopener">
+      <span class="pulso" aria-hidden="true">Online</span>
+      <span class="botao__icone"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 01-13.3 7.9L3 21l1.2-4.5A9 9 0 1121 12z"/><path d="M9 9.5c0 3 2.5 5.5 5.5 5.5l1.2-1.4-1.9-.9-.8.8c-1-.4-2-1.4-2.4-2.4l.8-.8-.9-1.9L9 9.5z"/></svg></span>
+      <span class="botao__texto"><span class="botao__titulo">Fale conosco no WhatsApp</span><span class="botao__desc">Consultoria para escolher seu perfume</span></span>
+      <svg class="botao__seta" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </a>
+
+    <a class="botao entra" style="--i:6;--d:1.1s" href="index.html">
+      <span class="botao__icone"><img src="img/jadore-edp-200.webp" alt=""></span>
+      <span class="botao__texto"><span class="botao__titulo">Compre pelo site</span><span class="botao__desc">Loja online · Dior, Prada, Lattafa e mais</span></span>
+      <svg class="botao__seta" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </a>
+
+    <a class="botao entra" style="--i:7;--d:1.8s" href="index.html#/decants">
+      <span class="botao__icone"><img src="img/decant/decant.webp" alt=""></span>
+      <span class="botao__texto"><span class="botao__titulo">Decants 5 · 10 · 15 ml</span><span class="botao__desc">Prove o original antes do frasco</span></span>
+      <svg class="botao__seta" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </a>
+
+    <a class="botao entra" style="--i:8;--d:2.5s" href="https://www.whatsapp.com/catalog/5521996931199/?app_absent=0&amp;utm_source=ig" target="_blank" rel="noopener">
+      <span class="botao__icone"><svg viewBox="0 0 24 24"><path d="M4 7h16l-1.5 12.5a1.5 1.5 0 01-1.5 1.5H7a1.5 1.5 0 01-1.5-1.5L4 7z"/><path d="M8.5 7V5.5a3.5 3.5 0 017 0V7"/></svg></span>
+      <span class="botao__texto"><span class="botao__titulo">Catálogo no WhatsApp</span><span class="botao__desc">Veja e peça direto pelo app</span></span>
+      <svg class="botao__seta" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </a>
+
+    <a class="botao entra" style="--i:9;--d:3.2s" href="https://www.instagram.com/primeperfumes.imp/" target="_blank" rel="noopener">
+      <span class="botao__icone"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".6"/></svg></span>
+      <span class="botao__texto"><span class="botao__titulo">Instagram Prime Perfumes</span><span class="botao__desc">Lançamentos, novidades e promoções</span></span>
+      <svg class="botao__seta" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </a>
+  </nav>
+
+  <div class="selos entra" style="--i:10">
+    <div class="selo"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4.5-3 8.3-7 9.5-4-1.2-7-5-7-9.5V6l7-3z"/><path d="M8.8 12.2l2.2 2.2 4.3-4.6"/></svg><span>100%<br>originais</span></div>
+    <div class="selo"><svg viewBox="0 0 24 24"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="17.5" r="1.6"/><circle cx="17" cy="17.5" r="1.6"/></svg><span>Envio<br>rápido</span></div>
+    <div class="selo"><svg viewBox="0 0 24 24"><path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.4 6.8 19.1l1-5.8L3.5 9.2l5.9-.9z"/></svg><span>Atendimento<br>exclusivo</span></div>
+  </div>
+
+  <h2 class="secao-titulo entra" style="--i:10">Mais desejados <small>Originais</small></h2>
+  <div class="vitrine">
+    <a class="peca entra" style="--i:11" href="index.html#/feminino"><span class="peca__fita">Best-seller</span><img src="img/khamrah.webp" alt="Lattafa Khamrah" loading="lazy"><span class="peca__marca">Lattafa</span><span class="peca__nome">Khamrah</span></a>
+    <a class="peca entra" style="--i:12" href="index.html#/masculino"><img src="img/sauvage-edp-200.webp" alt="Dior Sauvage" loading="lazy"><span class="peca__marca">Dior</span><span class="peca__nome">Sauvage</span></a>
+    <a class="peca entra" style="--i:13" href="index.html#/feminino"><img src="img/paradoxe-200.webp" alt="Prada Paradoxe" loading="lazy"><span class="peca__marca">Prada</span><span class="peca__nome">Paradoxe</span></a>
+    <a class="peca entra" style="--i:14" href="index.html#/masculino"><span class="peca__fita">Árabe</span><img src="img/hawas-black.webp" alt="Rasasi Hawas Black" loading="lazy"><span class="peca__marca">Rasasi</span><span class="peca__nome">Hawas Black</span></a>
+  </div>
+
+  <a class="decant entra" style="--i:15" href="index.html#/decants">
+    <img src="img/decant/decant.webp" alt="Frasco de decant Prime Perfumes" loading="lazy">
+    <div>
+      <span class="decant__rotulo">Decants</span>
+      <h3>Prove antes de levar o frasco</h3>
+      <p>Perfumes originais fracionados em 5, 10 e 15 ml.</p>
+      <span class="decant__cta">Ver decants</span>
+    </div>
+  </a>
+
+  <div class="marcas entra" style="--i:16" aria-label="Marcas">
+    <div class="marcas__fita">
+      <span>Dior</span><span>Prada</span><span>Lattafa</span><span>Carolina Herrera</span><span>Paco Rabanne</span><span>Jean Paul Gaultier</span><span>Lancôme</span><span>Orientica</span><span>Rasasi</span><span>Azzaro</span>
+      <span aria-hidden="true">Dior</span><span aria-hidden="true">Prada</span><span aria-hidden="true">Lattafa</span><span aria-hidden="true">Carolina Herrera</span><span aria-hidden="true">Paco Rabanne</span><span aria-hidden="true">Jean Paul Gaultier</span><span aria-hidden="true">Lancôme</span><span aria-hidden="true">Orientica</span><span aria-hidden="true">Rasasi</span><span aria-hidden="true">Azzaro</span>
+    </div>
+  </div>
+
+  <div class="redes entra" style="--i:17">
+    <a class="rede" href="https://www.instagram.com/primeperfumes.imp/" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".6"/></svg></a>
+    <a class="rede" href="https://wa.me/5521996931199" target="_blank" rel="noopener" aria-label="WhatsApp"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 01-13.3 7.9L3 21l1.2-4.5A9 9 0 1121 12z"/></svg></a>
+    <a class="rede" href="index.html" aria-label="Site"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 010 18M12 3a14 14 0 000 18"/></svg></a>
+  </div>
+
+  <p class="rodape entra" style="--i:18"><b>Prime Perfumes</b><br>Comodidade, confiança e segurança</p>
+</main>
+
+<!-- barra inferior (celular) -->
+<nav class="barra" aria-label="Atalhos">
+  <a class="barra__item" href="index.html">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 010 18M12 3a14 14 0 000 18"/></svg>Site
+  </a>
+  <a class="barra__zap" href="https://wa.me/5521996931199?text=Ol%C3%A1!%20Vim%20pelo%20Instagram%20e%20quero%20conhecer%20os%20perfumes." target="_blank" rel="noopener" aria-label="Falar no WhatsApp">
+    <span class="bola"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 01-13.3 7.9L3 21l1.2-4.5A9 9 0 1121 12z"/><path d="M9 9.5c0 3 2.5 5.5 5.5 5.5l1.2-1.4-1.9-.9-.8.8c-1-.4-2-1.4-2.4-2.4l.8-.8-.9-1.9L9 9.5z"/></svg></span>WhatsApp
+  </a>
+  <a class="barra__item" href="https://www.instagram.com/primeperfumes.imp/" target="_blank" rel="noopener">
+    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".6"/></svg>Instagram
+  </a>
+</nav>
+
+<script>
+/* partículas douradas subindo no fundo */
+(function(){
+  var fundo = document.getElementById("fundo");
+  for (var i = 0; i < 22; i++) {
+    var p = document.createElement("span");
+    p.className = "particula";
+    p.style.left = (Math.random() * 100) + "%";
+    p.style.animationDuration = (9 + Math.random() * 10) + "s";
+    p.style.animationDelay = (-Math.random() * 18) + "s";
+    var t = 1.5 + Math.random() * 2.5; p.style.width = p.style.height = t + "px";
+    fundo.appendChild(p);
+  }
+})();
+
+/* pré-carregamento: fica pelo menos 1,6 s (anel desenhado) e sai quando a página termina de carregar */
+(function(){
+  var inicio = Date.now(), saiu = false;
+  function sair(){
+    if (saiu) return; saiu = true;
+    var espera = Math.max(0, 1600 - (Date.now() - inicio));
+    setTimeout(function(){
+      document.getElementById("pre").classList.add("sai");
+      document.body.classList.remove("carregando");
+      document.body.classList.add("pronto");
+    }, espera);
+  }
+  if (document.readyState === "complete") sair(); else window.addEventListener("load", sair);
+  setTimeout(sair, 4000); // garantia: nunca prende a pessoa no carregamento
+})();
+
+/* perfumes caindo no topo: um por vez, alternando os lados, a cada 5 s */
+(function(){
+  var lista = [
+    ["img/jadore-edp-200.webp","Dior J'adore"], ["img/sauvage-edp-200.webp","Dior Sauvage"], ["img/khamrah.webp","Lattafa Khamrah"],
+    ["img/paradoxe-200.webp","Prada Paradoxe"], ["img/hawas-black.webp","Rasasi Hawas Black"], ["img/miss-dior-edp.webp","Dior Miss Dior"],
+    ["img/onemillion-edp.webp","Paco Rabanne 1 Million"], ["img/orientica-royal-amber-80.webp","Orientica Royal Amber"],
+    ["img/goodgirl-edp-100.webp","Carolina Herrera Good Girl"], ["img/bade-al-oud.webp","Lattafa Bade'e Al Oud"]
+  ];
+  lista.forEach(function(p){ new Image().src = p[0]; });   // pré-carrega para a queda não piscar
+  var palco = document.getElementById("queda").parentNode, i = 0, atual = null;
+  function cair(){
+    if (atual) { var velho = atual; velho.classList.remove("cai"); velho.classList.add("vai"); setTimeout(function(){ velho.remove(); }, 700); }
+    var lado = i % 2 ? "dir" : "esq", p = lista[i % lista.length];
+    var el = document.createElement("div");
+    el.className = "frasco frasco--" + lado + " cai";
+    el.style.setProperty("--g", (lado === "esq" ? -1 : 1) * (10 + Math.random() * 10) + "deg");
+    el.innerHTML = '<img src="' + p[0] + '" alt="' + p[1] + '">';
+    palco.insertBefore(el, palco.querySelector(".palco__logo"));
+    atual = el; i++;
+  }
+  function comecar(){ cair(); setInterval(cair, 5000); }
+  // o primeiro cai junto com a entrada da página
+  if (document.body.classList.contains("pronto")) comecar();
+  else new MutationObserver(function(m, o){ if (document.body.classList.contains("pronto")) { o.disconnect(); setTimeout(comecar, 450); } })
+    .observe(document.body, {attributes: true, attributeFilter: ["class"]});
+})();
+
+/* terminada a entrada, tira a classe: libera o hover, a inclinação 3D e as animações próprias (ex.: botão verde) */
+document.querySelectorAll(".entra").forEach(function(el){
+  el.addEventListener("animationend", function(e){ if (e.animationName === "entra") el.classList.remove("entra"); });
+});
+
+/* desktop: luz que segue o mouse, parallax dos perfumes e botões inclinando em 3D */
+(function(){
+  if (!matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+  var luz = document.getElementById("luz"), laterais = document.querySelectorAll("[data-prof]");
+  var mx = innerWidth / 2, my = innerHeight / 2, pedido = false;
+  addEventListener("mousemove", function(e){
+    mx = e.clientX; my = e.clientY;
+    if (pedido) return; pedido = true;
+    requestAnimationFrame(function(){
+      pedido = false;
+      luz.style.transform = "translate(" + mx + "px," + my + "px)";
+      var dx = mx / innerWidth - .5, dy = my / innerHeight - .5;
+      laterais.forEach(function(el){
+        var p = +el.dataset.prof;
+        el.style.transform = "translate(" + (-dx * p) + "px," + (-dy * p) + "px)";
+      });
+    });
+  });
+  document.querySelectorAll(".botao, .peca, .decant").forEach(function(el){
+    el.addEventListener("mousemove", function(e){
+      var r = el.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
+      el.style.transform = "perspective(700px) rotateX(" + (-y * 7) + "deg) rotateY(" + (x * 9) + "deg) translateY(-3px)";
+    });
+    el.addEventListener("mouseleave", function(){ el.style.transform = ""; });
+  });
+})();
+</script>
+</body>
+</html>
