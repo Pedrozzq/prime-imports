@@ -247,6 +247,18 @@ input,select{font:inherit}
 .produto__decants-add{width:30px;height:30px;display:grid;place-items:center;background:linear-gradient(180deg,#e2bf7f,#c79c4f);color:#241a08;transition:filter .2s}
 .produto__decants-add:hover{filter:brightness(1.1)}
 .produto__decants-add svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2.2}
+/* chamada "Decants a partir de" na frente do cartão: selo escuro com borda dourada, foto do decant e reflexo */
+.produto__decant-aba--destaque{position:relative;overflow:hidden;display:inline-flex;align-items:center;gap:8px;margin:-2px 0 12px;padding:5px 12px 5px 6px;
+  border:1px solid var(--ouro);border-radius:999px;background:linear-gradient(135deg,#0d1620,#03070e);color:#f0dcae;
+  font-size:10px;letter-spacing:.1em;box-shadow:0 6px 16px -8px rgba(217,179,108,.7);transition:transform .25s ease,box-shadow .25s ease}
+.produto__decant-aba--destaque img{width:22px;height:22px;object-fit:contain;flex-shrink:0}
+.produto__decant-aba--destaque b{font-size:12.5px;font-weight:600;letter-spacing:.02em;color:#fff}
+.produto__decant-aba--destaque .produto__decant-seta{font-size:14px;line-height:1;color:var(--ouro);transition:transform .25s ease}
+.produto__decant-aba--destaque::after{content:"";position:absolute;top:0;bottom:0;left:-60%;width:40%;pointer-events:none;
+  background:linear-gradient(105deg,transparent,rgba(240,220,174,.35),transparent);transform:skewX(-18deg);animation:decantReflexo 4s ease-in-out infinite}
+@keyframes decantReflexo{0%,65%{left:-60%}100%{left:130%}}
+.produto__decant-aba--destaque:hover{color:#fff;transform:translateY(-1px);box-shadow:0 10px 22px -8px rgba(217,179,108,.9)}
+.produto__decant-aba--destaque:hover .produto__decant-seta{transform:translateX(3px)}
 .produto__decant-aba--voltar{margin:0;color:#d9b36c}
 .produto__decant-aba--voltar:hover{color:#fff}
 @media(prefers-reduced-motion:reduce){.produto__trilho{transition:none}}
@@ -1174,7 +1186,7 @@ function cartaoProduto(p, virado = false){
       ${p.precoAntigo ? `<p class="produto__antigo">${dinheiro(p.precoAntigo)}</p>` : ""}
       <p class="produto__preco">${dinheiro(p.preco)}</p>
       <p class="produto__parcela">${parcela(p.preco)}</p>
-      ${decants.length ? `<button class="produto__decant-aba" type="button" data-virar="${p.id}">Decants a partir de ${dinheiro(decants[0].preco)} <span aria-hidden="true">›</span></button>` : ""}
+      ${decants.length ? `<button class="produto__decant-aba produto__decant-aba--destaque" type="button" data-virar="${p.id}"><img src="${IMG_DECANT}" alt="" draggable="false"><span>Decants a partir de <b>${dinheiro(Math.min(...decants.map(d => d.preco)))}</b></span><span aria-hidden="true" class="produto__decant-seta">›</span></button>` : ""}
       <button class="btn-ouro" type="button" data-comprar="${p.id}">Comprar</button>
     </div>`;
   const selos = `
