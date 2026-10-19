@@ -173,6 +173,9 @@ input,select{font:inherit}
 .categoria:hover .categoria__cta{letter-spacing:.28em}
 .categoria:hover .categoria__cta::after{transform:translateX(3px)}
 .categoria--escura{background:var(--noite);color:#f0e7d7}
+.categoria--larga{grid-column:1/-1;grid-template-columns:minmax(0,1fr) minmax(0,2fr);min-height:210px}
+.categoria--larga .categoria__texto{padding-left:28px}
+.categoria--larga img{object-fit:contain;padding:16px 0}
 .categoria--escura .categoria__nome{color:#fff}
 .categoria--escura .categoria__cta{color:var(--ouro);border-color:var(--ouro)}
 .categoria--escura:hover .categoria__cta{background:var(--ouro);color:var(--noite);border-color:var(--ouro)}
@@ -235,6 +238,7 @@ input,select{font:inherit}
 .produto__decants .produto__nome{color:#fff}
 .produto__decants .produto__sub{color:#b3a993}
 .produto__decants-rotulo{margin-bottom:10px;padding:4px 12px;border:1px solid var(--ouro);color:var(--ouro);font-size:10px;font-weight:600;letter-spacing:.3em;text-transform:uppercase}
+.produto__decants-img{width:88px;height:auto;margin:2px 0 8px;filter:drop-shadow(0 8px 14px rgba(0,0,0,.5))}
 .produto__decants-lista{list-style:none;margin:18px 0 14px;padding:0;width:100%;display:grid;gap:8px}
 .produto__decants-lista li{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px;padding:8px 8px 8px 12px;border:1px solid rgba(217,179,108,.28);transition:border-color .2s}
 .produto__decants-lista li:hover{border-color:var(--ouro)}
@@ -529,6 +533,7 @@ input,select{font:inherit}
         <div class="nav__item"><a class="nav__link" href="#/masculino" data-rota="masculino">Masculino</a></div>
         <div class="nav__item"><a class="nav__link" href="#/feminino" data-rota="feminino">Feminino</a></div>
         <div class="nav__item"><a class="nav__link" href="#/cosmeticos" data-rota="cosmeticos">Cosméticos</a></div>
+        <div class="nav__item"><a class="nav__link" href="#/decants" data-rota="decants">Decants</a></div>
         <div class="nav__item"><a class="nav__link" href="#/bodysplash" data-rota="bodysplash">Body Splash</a></div>
         <div class="nav__item"><a class="nav__link" href="#/promocoes" data-rota="promocoes">Promoções</a></div>
       </nav>
@@ -640,6 +645,7 @@ input,select{font:inherit}
       <a href="#/masculino">Masculino</a>
       <a href="#/feminino">Feminino</a>
       <a href="#/cosmeticos">Cosméticos</a>
+      <a href="#/decants">Decants</a>
       <a href="#/bodysplash">Body Splash</a>
       <a href="#/promocoes">Promoções</a>
       <a href="#/favoritos">Meus favoritos</a>
@@ -868,6 +874,12 @@ const PRODUTOS = [
 /* Preço de um tamanho: valor fixo (t.preco, ex.: decants) ou preço do frasco x mult. */
 const precoTamanho = (p,t) => t.preco != null ? t.preco : Math.round(p.preco*t.mult*100)/100;
 
+/* Decants: produto com tamanho "Decant ..." e o menor preço entre eles */
+const IMG_DECANT = "img/decant/decant.webp";
+const imgDoTamanho = (p, ml) => String(ml || "").startsWith("Decant") ? IMG_DECANT : p.img;
+const temDecant = p => p.tamanhos.some(t => t.ml.startsWith("Decant"));
+const menorDecant = p => Math.min(...p.tamanhos.filter(t => t.ml.startsWith("Decant")).map(t => precoTamanho(p,t)));
+
 /* Frascos em destaque na hero — mesmos produtos/imagens da home do index.html,
    apresentados em crossfade automatico ("alternando"). */
 
@@ -890,6 +902,8 @@ const CATEGORIAS = {
     texto:"Árabes e nichos de alta fixação, criados sem gênero definido." },
   cosmeticos:{ nome:"Cosméticos", frase:"Cuide-se. Realce-se. Seja sua melhor versão.",
     texto:"Séruns e hidratantes para completar o ritual de beleza." },
+  decants:{ nome:"Decants", frase:"Prove antes do frasco.",
+    texto:"Frascos originais fracionados em 5, 10 e 15 ml. Conheça a fragrância no dia a dia antes de levar o frasco inteiro." },
   bodysplash:{ nome:"Body Splash", frase:"Perfume leve, rastro que fica.",
     texto:"Fragrance mists e body splash importados para camadas de cheiro no dia a dia." },
   promocoes:{ nome:"Promoções", frase:"Preços exclusivos por tempo limitado.",
@@ -1059,7 +1073,7 @@ function pintarCarrinho(){
   const itensHtml = estado.carrinho.map(i => {
     const p = acharProduto(i.id);
     return `<div class="item">
-      <img src="${p.img}" alt="${p.nome}">
+      <img src="${imgDoTamanho(p, i.ml)}" alt="${p.nome}">
       <div>
         <h3 class="item__nome">${p.nome}</h3>
         <p class="item__var">${i.ml} · ${p.marca}</p>
@@ -1144,7 +1158,7 @@ function pintarCarrinho(){
 /* ============================================================
    5. CARTÃO DE PRODUTO
    ============================================================ */
-function cartaoProduto(p){
+function cartaoProduto(p, virado = false){
   const fav = estado.favoritos.has(p.id);
   const desconto = p.precoAntigo ? Math.round((1 - p.preco/p.precoAntigo)*100) : 0;
   const decants = p.tamanhos.map((t,i) => ({ ml:t.ml.replace("Decant ",""), i, preco:precoTamanho(p,t) }))
@@ -1172,11 +1186,12 @@ function cartaoProduto(p){
   if(!decants.length) return `<article class="produto ${p.tom === "escuro" ? "produto--escuro" : ""}" data-produto="${p.id}">${selos}${frente}
   </article>`;
   // com decant: arrastar o cartão para o lado (ou tocar na aba) mostra os decants de 5, 10 e 15 ml
-  return `<article class="produto produto--decant ${p.tom === "escuro" ? "produto--escuro" : ""}" data-produto="${p.id}">${selos}
+  return `<article class="produto produto--decant ${virado ? "virado" : ""} ${p.tom === "escuro" ? "produto--escuro" : ""}" data-produto="${p.id}">${selos}
     <div class="produto__trilho">
-      <div class="produto__face">${frente}</div>
-      <div class="produto__face produto__decants" inert>
+      <div class="produto__face" ${virado ? "inert" : ""}>${frente}</div>
+      <div class="produto__face produto__decants" ${virado ? "" : "inert"}>
         <span class="produto__decants-rotulo">Decants</span>
+        <img class="produto__decants-img" src="${IMG_DECANT}" alt="Decant ${p.nome}" loading="lazy" draggable="false">
         <h3 class="produto__nome">${p.nome}</h3>
         <p class="produto__sub">Frasco original fracionado</p>
         <ul class="produto__decants-lista">
@@ -1212,7 +1227,7 @@ function pintarProduto(){
   const fav = estado.favoritos.has(p.id);
   document.getElementById("painelProduto").innerHTML = `
     <button class="modal__fechar" type="button" data-fechar aria-label="Fechar"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
-    <div class="modal__img"><img src="${p.img}" alt="${p.nome}"></div>
+    <div class="modal__img"><img src="${imgDoTamanho(p, t.ml)}" alt="${p.nome}${t.ml.startsWith("Decant") ? ` — ${t.ml}` : ""}"></div>
     <div class="modal__corpo">
       <span class="modal__marca">${p.marca} · ${p.familia}</span>
       <h2 class="modal__nome">${p.nome}</h2>
@@ -1279,17 +1294,19 @@ function listarProdutos(){
     const q = semAcento(params.q || "");
     lista = lista.filter(p => semAcento(p.nome+" "+p.marca+" "+p.familia+" "+p.sub+" "+p.desc).includes(q));
   }
+  else if(rota === "decants") lista = lista.filter(temDecant);
   else if(["masculino","feminino","unissex","cosmeticos","bodysplash"].includes(rota)) lista = lista.filter(p => p.cat === rota || (p.extra && p.extra.includes(rota)));
 
-  if(params.familia === "importados") lista = lista.filter(p => p.cat === rota && !MARCAS_ARABES.includes(p.marca));
+  if(rota === "decants" && params.familia) lista = lista.filter(p => p.cat === params.familia || (p.extra && p.extra.includes(params.familia)));
+  else if(params.familia === "importados") lista = lista.filter(p => p.cat === rota && !MARCAS_ARABES.includes(p.marca));
   else if(params.familia === "arabes") lista = lista.filter(p => p.cat === rota && MARCAS_ARABES.includes(p.marca));
   else if(params.familia === "bodysplash") lista = lista.filter(p => p.familia === "Corpo");
   else if(params.familia) lista = lista.filter(p => p.familia === params.familia);
   if(params.marca) lista = lista.filter(p => p.marca === params.marca);
 
-  const o = estado.ordem;
-  if(o === "menor") lista.sort((a,b) => a.preco - b.preco);
-  else if(o === "maior") lista.sort((a,b) => b.preco - a.preco);
+  const o = estado.ordem, valor = rota === "decants" ? menorDecant : (p => p.preco);
+  if(o === "menor") lista.sort((a,b) => valor(a) - valor(b));
+  else if(o === "maior") lista.sort((a,b) => valor(b) - valor(a));
   else if(o === "nome") lista.sort((a,b) => a.nome.localeCompare(b.nome,"pt-BR"));
   else lista.sort((a,b) => (b.destaque?1:0) - (a.destaque?1:0));
   return lista;
@@ -1362,6 +1379,14 @@ function vistaInicio(){
             <span class="categoria__cta">Ver mais</span>
           </div>
         </a>
+        <a class="categoria categoria--escura categoria--larga" href="#/decants">
+          <img src="img/decant/decant.webp" alt="Decants de perfumes originais" loading="lazy">
+          <div class="categoria__texto">
+            <h2 class="categoria__nome">Decants</h2>
+            <p class="categoria__frase">Prove antes do frasco.<br>Originais fracionados em 5, 10 e 15 ml.</p>
+            <span class="categoria__cta">Ver decants</span>
+          </div>
+        </a>
       </div>
     </div>
   </section>
@@ -1372,7 +1397,7 @@ function vistaInicio(){
         <h2 class="secao__titulo">Promoção da Semana</h2>
         <p class="secao__sub">Kits selecionados com preço especial por tempo limitado</p>
       </div>
-      <div class="grade grade--promo">${promos.map(cartaoProduto).join("")}</div>
+      <div class="grade grade--promo">${promos.map(p => cartaoProduto(p)).join("")}</div>
     </div>
   </section>` : ""}
 
@@ -1384,7 +1409,7 @@ function vistaInicio(){
       </div>
       <div class="carrossel">
         <button class="seta seta--ant" type="button" id="setaAnt" aria-label="Anterior"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
-        <div class="carrossel__pista" id="pista">${destaques.map(cartaoProduto).join("")}</div>
+        <div class="carrossel__pista" id="pista">${destaques.map(p => cartaoProduto(p)).join("")}</div>
         <button class="seta seta--prox" type="button" id="setaProx" aria-label="Próximo"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button>
       </div>
     </div>
@@ -1396,7 +1421,7 @@ function vistaInicio(){
         <h2 class="secao__titulo">Nossa coleção</h2>
         <p class="secao__sub">Todos os ${catalogo.length} produtos disponíveis, com pronta entrega</p>
       </div>
-      <div class="grade">${catalogo.map(cartaoProduto).join("")}</div>
+      <div class="grade">${catalogo.map(p => cartaoProduto(p)).join("")}</div>
     </div>
   </section>`;
 }
@@ -1408,7 +1433,8 @@ function vistaCatalogo(){
   const mostrarFamilias = ["unissex","cosmeticos"].includes(estado.rota);
   const chipsCustom = {
     masculino: [["","Todos"],["importados","Importados"],["arabes","Árabes"]],
-    feminino:  [["","Todos"],["importados","Importados"],["arabes","Árabes"],["bodysplash","Body Splash"]]
+    feminino:  [["","Todos"],["importados","Importados"],["arabes","Árabes"],["bodysplash","Body Splash"]],
+    decants:   [["","Todos"],["masculino","Masculino"],["feminino","Feminino"]]
   }[estado.rota];
   const emBreve = estado.rota === "cosmeticos" && COSMETICOS_EM_BREVE.includes(estado.params.familia);
 
@@ -1448,7 +1474,7 @@ function vistaCatalogo(){
         ? `<div class="vazio"><h3>Em breve</h3><p>A linha ${estado.params.familia} de cosméticos está chegando. Fique de olho — novidades em breve.</p>
            <p style="margin-top:16px"><a class="btn-vazado" href="#/cosmeticos">Ver o catálogo atual</a></p></div>`
         : lista.length
-        ? `<div class="grade">${lista.map(cartaoProduto).join("")}</div>`
+        ? `<div class="grade">${lista.map(p => cartaoProduto(p, estado.rota === "decants")).join("")}</div>`
         : `<div class="vazio"><h3>Nada por aqui</h3><p>Não encontramos produtos com esses filtros. Tente outra família olfativa ou fale com a consultoria.</p>
            <p style="margin-top:16px"><a class="btn-vazado" href="#/inicio">Voltar ao início</a></p></div>`}
     </div>
@@ -1753,7 +1779,7 @@ document.addEventListener("click", e => {
         name: p ? `${p.nome} (${i.ml})` : i.chave,
         brand: p ? p.marca : "",
         price: i.preco,
-        image: p ? p.img : "",
+        image: p ? imgDoTamanho(p, i.ml) : "",
         qty: i.qtd
       };
     });
