@@ -383,6 +383,8 @@ input,select{font:inherit}
 .sugestoes-sacola__lista{display:flex;flex-direction:column;gap:8px}
 .mini-prod{display:grid;grid-template-columns:44px 1fr auto;align-items:center;gap:10px;padding:8px;background:transparent;border:1px solid rgba(25,24,23,.12)}
 .mini-prod img{width:44px;height:44px;object-fit:cover}
+.mini-prod__foto{position:relative;display:block;width:44px;height:44px}
+.mini-prod img.mini-prod__decant{position:absolute;right:-6px;bottom:-4px;width:22px;height:22px;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(0,0,0,.45))}
 .mini-prod__info{display:flex;flex-direction:column;min-width:0}
 .mini-prod__nome{font-size:11.5px;font-weight:500;letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mini-prod__marca{font-size:10px;color:var(--tinta-fraca);text-transform:uppercase;letter-spacing:.1em}
@@ -1045,28 +1047,42 @@ function removerCupom(){
   pintarCarrinho();
 }
 
-/* ---------- Produtos relacionados na sacola ---------- */
+/* ---------- Produtos relacionados na sacola ----------
+   Com decant na sacola, sugere outros decants parecidos (mesma família, marca ou categoria),
+   no mesmo tamanho do último decant escolhido. Sem decant, sugere frascos. */
 function relacionadosSacola(limite = 3){
   if(!estado.carrinho.length) return [];
   const naSacola = new Set(estado.carrinho.map(i => i.id));
-  const base = estado.carrinho.map(i => acharProduto(i.id)).filter(Boolean);
+  const nomesSacola = new Set(estado.carrinho.map(i => acharProduto(i.id)?.nome));
+  const decantsSacola = estado.carrinho.filter(i => String(i.ml).startsWith("Decant"));
+  const modoDecant = decantsSacola.length > 0;
+  const base = (modoDecant ? decantsSacola : estado.carrinho).map(i => acharProduto(i.id)).filter(Boolean);
   const marcas = new Set(base.map(p => p.marca));
   const familias = new Set(base.map(p => p.familia));
   const cats = new Set(base.map(p => p.cat));
+  const mlAlvo = modoDecant ? decantsSacola[decantsSacola.length - 1].ml : null;
   return PRODUTOS
-    .filter(p => !naSacola.has(p.id))
+    .filter(p => !naSacola.has(p.id) && !nomesSacola.has(p.nome) && (!modoDecant || temDecant(p)))
     .map(p => {
       let score = 0;
       if(familias.has(p.familia)) score += 3;
       if(marcas.has(p.marca))     score += 2;
       if(cats.has(p.cat))         score += 2;
       if(p.destaque)              score += 0.5;
-      return { p, score };
+      // tamanho sugerido: o mesmo do decant da sacola (ou o primeiro decant do produto); frasco = tamanho principal
+      let idx = 0;
+      if(modoDecant){
+        idx = p.tamanhos.findIndex(t => t.ml === mlAlvo);
+        if(idx < 0) idx = p.tamanhos.findIndex(t => t.ml.startsWith("Decant"));
+      }
+      return { p, idx, score };
     })
-    .filter(x => x.score > 0)
-    .sort((a,b) => b.score - a.score || a.p.preco - b.p.preco)
+    .filter(x => x.score > 0 || modoDecant)
+    .sort((a,b) => b.score - a.score || precoTamanho(a.p, a.p.tamanhos[a.idx]) - precoTamanho(b.p, b.p.tamanhos[b.idx]))
+    // o mesmo perfume em frascos diferentes (ex.: Royal Amber 80 e 150 ml) entra uma vez só
+    .filter((x, i, arr) => arr.findIndex(y => y.p.nome === x.p.nome) === i)
     .slice(0, limite)
-    .map(x => x.p);
+    .map(({p, idx}) => ({ p, idx, t: p.tamanhos[idx], decant: modoDecant }));
 }
 
 function pintarCarrinho(){
@@ -1105,17 +1121,17 @@ function pintarCarrinho(){
   const relacionados = relacionadosSacola(3);
   const relHtml = relacionados.length ? `
     <div class="sugestoes-sacola">
-      <p class="sugestoes-sacola__titulo">Combina com a sua sacola</p>
+      <p class="sugestoes-sacola__titulo">${relacionados[0].decant ? "Outros decants para provar" : "Combina com a sua sacola"}</p>
       <div class="sugestoes-sacola__lista">
-        ${relacionados.map(p => `
+        ${relacionados.map(({p, idx, t, decant}) => `
           <div class="mini-prod">
-            <img src="${p.img}" alt="${p.nome}" loading="lazy">
+            <span class="mini-prod__foto"><img src="${p.img}" alt="${p.nome}" loading="lazy">${decant ? `<img class="mini-prod__decant" src="${IMG_DECANT}" alt="">` : ""}</span>
             <div class="mini-prod__info">
               <span class="mini-prod__nome">${p.nome}</span>
-              <span class="mini-prod__marca">${p.marca}</span>
-              <span class="mini-prod__preco">${dinheiro(p.preco)}</span>
+              <span class="mini-prod__marca">${decant ? `${t.ml} · ${p.marca}` : p.marca}</span>
+              <span class="mini-prod__preco">${dinheiro(precoTamanho(p, t))}</span>
             </div>
-            <button type="button" class="mini-prod__add" data-add-relacionado="${p.id}" aria-label="Adicionar ${p.nome} à sacola">
+            <button type="button" class="mini-prod__add" data-add-relacionado="${p.id}" data-rel-idx="${idx}" aria-label="Adicionar ${decant ? t.ml + " de " : ""}${p.nome} à sacola">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
             </button>
           </div>`).join("")}
@@ -1747,7 +1763,7 @@ document.addEventListener("click", e => {
 
   // produtos relacionados dentro da sacola
   const rel = alvo.closest("[data-add-relacionado]");
-  if(rel){ adicionar(rel.dataset.addRelacionado); return; }
+  if(rel){ adicionar(rel.dataset.addRelacionado, Number(rel.dataset.relIdx) || 0); return; }
 
   // cupom de desconto
   if(alvo.closest("#btnAplicarCupom")){
