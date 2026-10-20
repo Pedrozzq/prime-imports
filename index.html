@@ -359,6 +359,22 @@ input,select{font:inherit}
 .fechar:hover{background:rgba(217,179,108,.16)}
 .fechar svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8}
 .gaveta__corpo{flex:1;overflow-y:auto;padding:16px 20px}
+/* meta de frete grátis no topo da sacola: barra estilo carregamento */
+.frete-meta{position:sticky;top:-16px;z-index:3;margin:-16px -20px 6px;padding:14px 20px 12px;background:linear-gradient(180deg,var(--breu) 75%,rgba(3,7,14,.94));border-bottom:1px solid rgba(217,179,108,.16)}
+.frete-meta__texto{margin:0 0 9px;font-size:12px;letter-spacing:.02em;color:#c9c2b6}
+.frete-meta__texto b{color:#fff;font-weight:600}
+.frete-meta__texto strong{color:#f0dcae;font-weight:600}
+.frete-meta__trilho{position:relative;height:6px;border-radius:99px;overflow:hidden;background:rgba(255,255,255,.08);box-shadow:inset 0 1px 2px rgba(0,0,0,.4)}
+.frete-meta__barra{position:relative;display:block;height:100%;border-radius:inherit;min-width:6px;
+  background:linear-gradient(90deg,#8a6d3c,#d9b36c 55%,#f5deb0);box-shadow:0 0 12px rgba(217,179,108,.55);
+  transition:width 1s cubic-bezier(.2,.8,.2,1)}
+.frete-meta__barra::after{content:"";position:absolute;inset:0;border-radius:inherit;
+  background:repeating-linear-gradient(-45deg,rgba(255,255,255,.28) 0 6px,transparent 6px 12px);background-size:17px 17px;animation:frete-listras .9s linear infinite}
+@keyframes frete-listras{to{background-position:17px 0}}
+.frete-meta--ok .frete-meta__barra{background:linear-gradient(90deg,#16a34a,#34d399 60%,#bbf7d0);box-shadow:0 0 14px rgba(52,211,153,.6)}
+.frete-meta--ok .frete-meta__texto strong{color:#6ee7b7}
+.frete-meta--ok .frete-meta__trilho{animation:frete-pulso 1.6s ease 1}
+@keyframes frete-pulso{30%{box-shadow:0 0 0 3px rgba(52,211,153,.35)}}
 .item{display:grid;grid-template-columns:66px 1fr;gap:12px;padding:14px 0;border-bottom:1px solid rgba(25,24,23,.1)}
 .item img{width:66px;height:66px;object-fit:cover}
 .item__nome{margin:0;font-size:12.5px;font-weight:500;letter-spacing:.06em;text-transform:uppercase}
@@ -1109,6 +1125,9 @@ function relacionadosSacola(limite = 3){
     .map(({p, idx}) => ({ p, idx, t: p.tamanhos[idx], decant: modoDecant }));
 }
 
+const FRETE_GRATIS_A_PARTIR = 500;   // frete grátis a partir deste valor em produtos
+let ultimoPctFrete = 0;
+
 function pintarCarrinho(){
   document.getElementById("seloCarrinho").textContent = pecasSacola();
   const corpo = document.getElementById("corpoCarrinho");
@@ -1161,10 +1180,25 @@ function pintarCarrinho(){
           </div>`).join("")}
       </div>
     </div>` : "";
-  corpo.innerHTML = itensHtml + relHtml;
+  // barra de progresso para o frete grátis (fica fixa no topo da sacola)
+  const subtotalAtual = totalSacola();
+  const faltaFrete = Math.max(0, FRETE_GRATIS_A_PARTIR - subtotalAtual);
+  const pctFrete = Math.min(100, (subtotalAtual / FRETE_GRATIS_A_PARTIR) * 100);
+  const freteHtml = `
+    <div class="frete-meta ${faltaFrete === 0 ? "frete-meta--ok" : ""}" role="status">
+      <p class="frete-meta__texto">${faltaFrete === 0
+        ? `<b>Parabéns!</b> Você ganhou <strong>frete grátis</strong> 🎉`
+        : `Faltam <b>${dinheiro(faltaFrete)}</b> para <strong>frete grátis</strong>`}</p>
+      <div class="frete-meta__trilho" aria-hidden="true"><span class="frete-meta__barra" style="width:${ultimoPctFrete}%"></span></div>
+    </div>`;
+  corpo.innerHTML = freteHtml + itensHtml + relHtml;
+  // anima do valor anterior até o novo (efeito de carregamento)
+  const barraFrete = corpo.querySelector(".frete-meta__barra");
+  requestAnimationFrame(() => requestAnimationFrame(() => { barraFrete.style.width = pctFrete + "%"; }));
+  ultimoPctFrete = pctFrete;
 
   const total = totalSacola();
-  const frete = total >= 500 ? 0 : 29.9;
+  const frete = total >= FRETE_GRATIS_A_PARTIR ? 0 : 29.9;
   const cup = cupomAtivo();
   const desconto = cup ? cup.desconto : 0;
   const totalFinal = Math.max(0, total - desconto) + frete;
