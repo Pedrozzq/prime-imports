@@ -68,8 +68,20 @@ export function montarPayer(entrega) {
  * cobra exatamente `total` (o Checkout Pro não tem campo de desconto e não
  * aceita preço negativo, então distribuir centavos por item só traria erro de
  * arredondamento). O detalhamento continua no e-mail do pedido.
+ *
+ * Frete maior que zero vira uma linha "Frete" no fim, nos dois casos — assim o
+ * Mercado Pago cobra produtos + frete. `total` aqui é só o valor dos produtos.
  */
-export function itensPreferencia(itens, total, descontoReais, cupomCodigo) {
+export function itensPreferencia(itens, total, descontoReais, cupomCodigo, freteReais) {
+    var linhas = linhasProdutos(itens, total, descontoReais, cupomCodigo);
+    var frete = Math.round((Number(freteReais) || 0) * 100) / 100;
+    if (frete > 0) {
+        linhas.push({ id: 'frete', title: 'Frete', quantity: 1, currency_id: 'BRL', unit_price: frete });
+    }
+    return linhas;
+}
+
+function linhasProdutos(itens, total, descontoReais, cupomCodigo) {
     var desconto = Number(descontoReais) || 0;
 
     if (desconto > 0) {

@@ -81,6 +81,13 @@
         return items.reduce(function (sum, it) { return sum + it.qty * it.price; }, 0);
     }
 
+    /** Mesma regra de api/_lib/frete.js (quem cobra é o servidor; aqui é só exibição). */
+    var FRETE_VALOR = 29.9;
+    var FRETE_GRATIS_A_PARTIR = 500;
+    function getFrete(items) {
+        return getSubtotal(items) >= FRETE_GRATIS_A_PARTIR ? 0 : FRETE_VALOR;
+    }
+
     /* ------------------------------------------------------------------ *
      *  Utilidades de exibição                                           *
      * ------------------------------------------------------------------ */
@@ -120,10 +127,16 @@
                         '<span class="whitespace-nowrap">-' + formatBRL(cupom.desconto) + '</span>' +
                     '</div>';
             }
+            var frete = getFrete(items);
+            linhas += '<div class="flex justify-between items-center gap-4 text-sm ' + (cupom ? 'py-1' : 'pt-3') + '">' +
+                    '<span class="text-brand-gray">Frete</span>' +
+                    '<span class="whitespace-nowrap ' + (frete > 0 ? 'text-brand-gray' : 'text-green-400') + '">' + (frete > 0 ? formatBRL(frete) : 'Grátis') + '</span>' +
+                '</div>';
             listEl.innerHTML = linhas;
         }
 
         var total = getSubtotal(items) - (cupom ? cupom.desconto : 0);
+        if (items.length && total > 0) total += getFrete(items);
         if (totalEl) totalEl.textContent = formatBRL(total > 0 ? total : 0);
     }
 

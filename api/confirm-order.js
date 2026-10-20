@@ -24,6 +24,7 @@ import { MercadoPagoConfig, Payment } from 'mercadopago';
 import { enviarEmailPedido } from './_lib/order-email.js';
 import { validarSacola } from './_lib/catalogo.js';
 import { validarCupom } from './_lib/cupons.js';
+import { calcularFrete } from './_lib/frete.js';
 
 const ACCESS_TOKEN = process.env.MP_ACCESS_TOKEN;
 
@@ -79,6 +80,8 @@ export default async function handler(req, res) {
         if (cupomAplicado) {
             total = Math.round((subtotal - cupomAplicado.desconto) * 100) / 100;
         }
+        var frete = calcularFrete(subtotal);
+        total = Math.round((total + frete) * 100) / 100;
 
         var pagamentoParaEmail = {
             id: payment.id != null ? payment.id : (paymentId || body.external_reference || 's/ id'),
@@ -110,6 +113,7 @@ export default async function handler(req, res) {
             entrega: entrega,
             subtotal: subtotal,
             cupom: cupomAplicado,
+            frete: frete,
             total: total
         });
 

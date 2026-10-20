@@ -16,6 +16,7 @@
 import { enviarEmailCheckout } from './_lib/checkout-email.js';
 import { validarSacola } from './_lib/catalogo.js';
 import { validarCupom } from './_lib/cupons.js';
+import { calcularFrete } from './_lib/frete.js';
 
 const MAX_ITENS = 50;
 const CAMPOS_ENTREGA = ['nome', 'fone', 'cep', 'rua', 'numero', 'complemento', 'bairro', 'cidade', 'uf'];
@@ -81,13 +82,15 @@ export default async function handler(req, res) {
         // Cupom é só informativo aqui — mostra no e-mail o total que o cliente vê.
         var cupom = validarCupom(body.cupom, subtotal);
         var aplicado = cupom.ok && cupom.desconto > 0 ? cupom : null;
-        var total = aplicado ? Math.round((subtotal - aplicado.desconto) * 100) / 100 : subtotal;
+        var frete = calcularFrete(subtotal);
+        var total = Math.round(((aplicado ? subtotal - aplicado.desconto : subtotal) + frete) * 100) / 100;
 
         var resultado = await enviarEmailCheckout({
             items: items,
             entrega: entrega,
             subtotal: subtotal,
             cupom: aplicado,
+            frete: frete,
             total: total
         });
 

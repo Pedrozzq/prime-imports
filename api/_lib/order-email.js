@@ -88,7 +88,8 @@ export function montarEmailPedido(dados) {
     var entrega = dados.entrega || {};
     var total = Number(dados.total) || 0;
     var cupom = dados.cupom && dados.cupom.desconto > 0 ? dados.cupom : null;
-    var subtotal = Number(dados.subtotal) || (cupom ? total + cupom.desconto : total);
+    var frete = Number(dados.frete) || 0;
+    var subtotal = Number(dados.subtotal) || (cupom ? total + cupom.desconto : total) - frete;
 
     var status = payment.status || 'desconhecido';
     var pedidoId = payment.id != null ? String(payment.id) : 's/ id';
@@ -110,6 +111,8 @@ export function montarEmailPedido(dados) {
           (cupom.rotulo ? ' <span style="color:#888">(' + escapeHtml(cupom.rotulo) + ')</span>' : '') + '</td>' +
           '<td style="padding:6px 8px;text-align:right;color:#15803d">-' + brl(cupom.desconto) + '</td></tr>'
         : '';
+    linhasCupomHtml += '<tr><td colspan="2" style="padding:6px 8px;color:#555">Frete</td>' +
+        '<td style="padding:6px 8px;text-align:right;color:#555">' + (frete > 0 ? brl(frete) : 'Grátis') + '</td></tr>';
 
     var linhasHtml = items.length
         ? items.map(function (it) {
@@ -171,6 +174,7 @@ export function montarEmailPedido(dados) {
         '',
         cupom ? 'Subtotal: ' + brl(subtotal) : null,
         cupom ? 'Cupom ' + cupom.code + (cupom.rotulo ? ' (' + cupom.rotulo + ')' : '') + ': -' + brl(cupom.desconto) : null,
+        'Frete: ' + (frete > 0 ? brl(frete) : 'Grátis'),
         'TOTAL: ' + brl(total),
         '',
         'ENTREGA',

@@ -11,6 +11,8 @@
  * (cartão, Pix, boleto), para onde o navegador (js/checkout.js) redireciona.
  * Ao concluir, o cliente volta para checkout.html pelas `back_urls`.
  *
+ * O frete (api/_lib/frete.js) entra como uma linha própria na preference.
+ *
  * O valor e o desconto NUNCA vêm do navegador: são reconstruídos aqui, igual
  * ao fluxo antigo do Payment Brick.
  *
@@ -23,6 +25,7 @@
 import { MercadoPagoConfig, Preference } from 'mercadopago';
 import { validarSacola } from './_lib/catalogo.js';
 import { validarCupom } from './_lib/cupons.js';
+import { calcularFrete } from './_lib/frete.js';
 import { baseUrlDeRequest, montarPayer, itensPreferencia } from './_lib/checkout-pro.js';
 
 const ACCESS_TOKEN = process.env.MP_ACCESS_TOKEN;
@@ -85,12 +88,17 @@ export default async function handler(req, res) {
             return res.status(400).json({ error: 'Valor do pedido inválido.' });
         }
 
+        // Frete: decidido aqui pelo subtotal dos produtos (grátis a partir de R$ 500).
+        var frete = calcularFrete(subtotal);
+        var totalProdutos = total;
+        total = Math.round((totalProdutos + frete) * 100) / 100;
+
         var base = baseUrlDeRequest(req);
         var ehHttps = base.indexOf('https://') === 0;
         var referencia = 'PRIME-' + Date.now().toString(36).toUpperCase();
 
         var prefBody = {
-            items: itensPreferencia(sacola.itens, total, descontoAplicado, cupom.code),
+            items: itensPreferencia(sacola.itens, totalProdutos, descontoAplicado, cupom.code, frete),
             payer: montarPayer(entrega),
             back_urls: {
                 success: base + '/checkout.html?mp=success',
@@ -111,6 +119,7 @@ export default async function handler(req, res) {
                 referencia: referencia,
                 cupom: descontoAplicado > 0 ? cupom.code : null,
                 subtotal: subtotal,
+                frete: frete,
                 total: total
             }
         };
