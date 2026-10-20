@@ -10,7 +10,7 @@
  * A página links.html fica sempre no ar (é a do Instagram).
  */
 (function () {
-    var MANUTENCAO = true;
+    var MANUTENCAO = false;
 
     var busca = location.search;
     try {
