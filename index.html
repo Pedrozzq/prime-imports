@@ -863,10 +863,10 @@ const PRODUTOS = [
     tamanhos:[{ml:"100 ml",mult:1}] },
 
   { id:"la-vie-est-belle-200", nome:"Lancôme La Vie Est Belle", sub:"Eau de Parfum 100 ml", marca:"Lancôme", cat:"feminino", familia:"Doce",
-    preco:849.00, img:"img/la-vie-est-belle-200.webp", tom:"claro",
+    preco:726.00, img:"img/la-vie-est-belle-200.webp", tom:"claro",
     desc:"Íris, pralinê e baunilha em um gourmand floral doce e reconfortante. Frasco de 200 ml para durar.",
     notas:{Topo:"Cassis, pêra", Corpo:"Íris, jasmim, flor de laranjeira", Fundo:"Pralinê, baunilha, patchouli"},
-    tamanhos:[{ml:"100 ml",mult:1}] },
+    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 5 ml",preco:59.00},{ml:"Decant 10 ml",preco:99.00},{ml:"Decant 15 ml",preco:148.00}] },
 
   { id:"jadore-edp-200", nome:"Dior J'adore", sub:"Eau de Parfum 100 ml", marca:"Dior", cat:"feminino", familia:"Floral",
     preco:990.00, img:"img/jadore-edp-200.webp", tom:"claro", destaque:true,
@@ -880,17 +880,11 @@ const PRODUTOS = [
     notas:{Topo:"Neroli, bergamota", Corpo:"Jasmim, flor de laranjeira", Fundo:"Âmbar branco, almíscar"},
     tamanhos:[{ml:"90 ml",mult:1},{ml:"Decant 5 ml",preco:108.00},{ml:"Decant 10 ml",preco:180.00},{ml:"Decant 15 ml",preco:270.00}] },
 
-  { id:"orientica-royal-amber-80", nome:"Orientica Royal Amber", sub:"Extrait de Parfum 80 ml", marca:"Orientica", cat:"feminino", familia:"Árabe",
-    preco:439.00, img:"img/orientica-royal-amber-80.webp", tom:"claro", destaque:true,
-    desc:"Âmbar resinoso com baunilha, incenso e madeiras. Rastro potente e doçura sofisticada de nicho árabe.",
-    notas:{Topo:"Bergamota, açafrão", Corpo:"Âmbar, incenso, rosa", Fundo:"Baunilha, oud, madeiras"},
-    tamanhos:[{ml:"80 ml",mult:1}] },
-
   { id:"orientica-royal-amber-150", nome:"Orientica Royal Amber", sub:"Extrait de Parfum 150 ml", marca:"Orientica", cat:"feminino", familia:"Árabe",
     preco:709.00, img:"img/orientica-royal-amber-150.webp", tom:"claro",
     desc:"O mesmo âmbar viciante da linha Royal, em frasco grande de 150 ml para quem já fez dele a assinatura.",
     notas:{Topo:"Bergamota, açafrão", Corpo:"Âmbar, incenso, rosa", Fundo:"Baunilha, oud, madeiras"},
-    tamanhos:[{ml:"150 ml",mult:1},{ml:"80 ml",preco:439.00},{ml:"Decant 5 ml",preco:66.00},{ml:"Decant 10 ml",preco:110.00},{ml:"Decant 15 ml",preco:165.00}] },
+    tamanhos:[{ml:"150 ml",mult:1},{ml:"Decant 5 ml",preco:66.00},{ml:"Decant 10 ml",preco:110.00},{ml:"Decant 15 ml",preco:165.00}] },
 
   { id:"hawas-black", nome:"Rasasi Hawas Black", sub:"Eau de Parfum 100 ml", marca:"Rasasi", cat:"masculino", familia:"Árabe",
     preco:290.00, img:"img/hawas-black.webp", tom:"claro", destaque:true,
@@ -903,6 +897,49 @@ const PRODUTOS = [
     desc:"Perfume floral doce marcante, feminino, sensual e chamativo, com aquele DNA de perfume árabe de alta fixação.",
     notas:{Topo:"Frutas vermelhas, bergamota", Corpo:"Floral doce, baunilha", Fundo:"Âmbar, almíscar, madeiras"},
     tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 5 ml",preco:54.00},{ml:"Decant 10 ml",preco:90.00},{ml:"Decant 15 ml",preco:135.00}] },
+
+  /* --- decants acrescentados (preços enviados pela loja) --- */
+  { id:"sospiro-vibrato", nome:"Sospiro Vibrato", sub:"Eau de Parfum 100 ml", marca:"Sospiro", cat:"unissex", familia:"Cítrico",
+    preco:1748.00, img:"img/sospiro-vibrato.webp", tom:"claro",
+    desc:"Cítrico luminoso de toranja e bergamota, com coração de gengibre e ervas e fundo de íris, âmbar e cedro. Fresco, elegante e com assinatura de nicho italiano.",
+    notas:{Topo:"Bergamota, toranja, jasmim, magnólia", Corpo:"Gengibre, notas herbais, notas atalcadas", Fundo:"Íris, âmbar, cedro, almíscar, patchouli"},
+    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 5 ml",preco:174.00},{ml:"Decant 10 ml",preco:319.00},{ml:"Decant 15 ml",preco:473.00}] },
+
+  { id:"sabah-al-ward", nome:"Al Wataniah Sabah Al Ward", sub:"Eau de Parfum Women 100 ml", marca:"Al Wataniah", cat:"feminino", familia:"Árabe",
+    preco:178.00, img:"img/sabah-al-ward.webp", tom:"claro",
+    desc:"Floral doce árabe com abertura de tangerina e pimenta-rosa, coração de cacau, flor de laranjeira e jasmim, e fundo cremoso de baunilha e fava tonka.",
+    notas:{Topo:"Tangerina, pimenta-rosa", Corpo:"Cacau, flor de laranjeira, jasmim sambac", Fundo:"Baunilha, fava tonka, patchouli"},
+    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 5 ml",preco:32.00},{ml:"Decant 10 ml",preco:54.00},{ml:"Decant 15 ml",preco:81.00}] },
+
+  { id:"baccarat-rouge-540", nome:"Maison Francis Kurkdjian Baccarat Rouge 540", sub:"Eau de Parfum 35 ml", marca:"Maison Francis Kurkdjian", cat:"unissex", familia:"Amadeirado",
+    preco:1990.00, img:"img/baccarat-rouge-540.webp", tom:"claro", destaque:true,
+    desc:"O ícone de nicho: açafrão e jasmim sobre âmbar-gris e cedro, num rastro aéreo, adocicado e mineral que se reconhece de longe.",
+    notas:{Topo:"Açafrão, jasmim", Corpo:"Âmbar-gris, cedro", Fundo:"Resina de abeto, âmbar amadeirado"},
+    tamanhos:[{ml:"35 ml",mult:1},{ml:"Decant 5 ml",preco:333.00},{ml:"Decant 10 ml",preco:660.00},{ml:"Decant 15 ml",preco:990.00}] },
+
+  { id:"coco-mademoiselle", nome:"Chanel Coco Mademoiselle", sub:"Eau de Parfum 100 ml", marca:"Chanel", cat:"feminino", familia:"Floral",
+    preco:1573.00, img:"img/coco-mademoiselle.webp", tom:"claro", destaque:true,
+    desc:"Chipre floral moderno e sofisticado: cítricos frescos, rosa e jasmim sobre patchouli e vetiver. A elegância atemporal da Chanel.",
+    notas:{Topo:"Laranja, bergamota, toranja", Corpo:"Rosa, jasmim, lichia", Fundo:"Patchouli, vetiver, baunilha, almíscar branco"},
+    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 5 ml",preco:129.00},{ml:"Decant 10 ml",preco:209.00},{ml:"Decant 15 ml",preco:314.00}] },
+
+  { id:"xerjoff-torino21", nome:"Xerjoff Torino21", sub:"Eau de Parfum 50 ml", marca:"Xerjoff", cat:"unissex", familia:"Aromático",
+    preco:1199.00, img:"img/xerjoff-torino21.webp", tom:"claro",
+    desc:"Fresco, verde e vibrante, com hortelã e limão em destaque. Criado em homenagem às finais de tênis de Turim, cidade natal da Xerjoff.",
+    notas:{Topo:"Hortelã, limão, tomilho, manjericão", Corpo:"Jasmim, alecrim, cassis, lavanda", Fundo:"Verbena, almíscar"},
+    tamanhos:[{ml:"50 ml",mult:1},{ml:"Decant 5 ml",preco:210.00},{ml:"Decant 10 ml",preco:382.00},{ml:"Decant 15 ml",preco:573.00}] },
+
+  { id:"armani-my-way", nome:"Giorgio Armani My Way", sub:"Eau de Parfum 100 ml", marca:"Giorgio Armani", cat:"feminino", familia:"Floral",
+    preco:954.00, img:"img/armani-my-way.webp", tom:"claro",
+    desc:"Floral luminoso de flor de laranjeira e tuberosa sobre baunilha e almíscar branco. Feminino, moderno e envolvente.",
+    notas:{Topo:"Bergamota, flor de laranjeira", Corpo:"Tuberosa, jasmim", Fundo:"Baunilha, cedro, almíscar branco"},
+    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 5 ml",preco:64.00},{ml:"Decant 10 ml",preco:106.00},{ml:"Decant 15 ml",preco:159.00}] },
+
+  { id:"burberry-her", nome:"Burberry Her", sub:"Eau de Parfum 100 ml", marca:"Burberry", cat:"feminino", familia:"Frutado",
+    preco:858.00, img:"img/burberry-her.webp", tom:"claro",
+    desc:"Frutado gourmand de frutas vermelhas sobre jasmim e violeta, com fundo de almíscar e âmbar. Jovem, alegre e muito marcante.",
+    notas:{Topo:"Morango, framboesa, amora, cereja, limão", Corpo:"Jasmim, violeta", Fundo:"Almíscar, baunilha, âmbar, cashmeran"},
+    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 5 ml",preco:57.00},{ml:"Decant 10 ml",preco:95.00},{ml:"Decant 15 ml",preco:142.00}] },
 
   { id:"kit-hawas-oud-khamrah", nome:"Kit Promoção da Semana", sub:"Hawas Black + Bade\'e Al Oud + Khamrah", marca:"Prime Perfumes", cat:"unissex", familia:"Árabe",
     preco:486.90, precoAntigo:549.70, img:"img/kit-hawas-oud-khamrah.webp", tom:"claro", destaque:true,
@@ -977,7 +1014,7 @@ const estado = {
 };
 
 // casas árabes (para as subseções Importados x Árabes)
-const MARCAS_ARABES = ["Lattafa","Rasasi","Orientica","Al Haramain","Armaf","Maison Alhambra","Lattafa Perfumes"];
+const MARCAS_ARABES = ["Lattafa","Rasasi","Orientica","Al Haramain","Armaf","Maison Alhambra","Lattafa Perfumes","Al Wataniah"];
 // subseções de Cosméticos ainda sem catálogo — mostram bloco "Em breve"
 const COSMETICOS_EM_BREVE = ["Facial"];
 
