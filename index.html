@@ -205,6 +205,8 @@ input,select{font:inherit}
 /* ---------- cartão de produto ---------- */
 .grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:16px}
 .grade--promo{max-width:560px;margin-inline:auto}
+.sem-promocoes [href="#/promocoes"]{display:none} /* links do menu e do rodapé */
+.sem-promocoes .nav__item:has(> [href="#/promocoes"]){display:none}
 @media(max-width:520px){.grade--promo{max-width:none}}
 .produto{position:relative;display:flex;flex-direction:column;background:var(--creme-2);border:1px solid rgba(25,24,23,.06);transition:transform .3s,box-shadow .3s}
 .produto:hover{transform:translateY(-5px);box-shadow:var(--sombra)}
@@ -808,23 +810,11 @@ const PRODUTOS = [
     notas:{Topo:"Ameixa vermelha, frésia", Corpo:"Lírio, pêssego", Fundo:"Âmbar claro"},
     tamanhos:[{ml:"250 ml",mult:1}] },
 
-  { id:"onemillion-edp", nome:"Paco Rabanne 1 Million", sub:"Eau de Parfum 100 ml", marca:"Paco Rabanne", cat:"masculino", familia:"Amadeirado",
-    preco:820.00, img:"img/onemillion-edp.webp", tom:"claro",
-    desc:"A versão Eau de Parfum do ícone dourado: mais quente e resinosa, com canela, couro e âmbar de longa duração.",
-    notas:{Topo:"Toranja, hortelã, canela", Corpo:"Rosa, especiarias, couro", Fundo:"Âmbar, mel, patchouli"},
-    tamanhos:[{ml:"100 ml",mult:1}] },
-
   { id:"onemillion-edt", nome:"Paco Rabanne 1 Million", sub:"Eau de Toilette 100 ml", marca:"Paco Rabanne", cat:"masculino", familia:"Especiado",
     preco:545.00, img:"img/onemillion-edt.webp", tom:"claro",
     desc:"O lingote dourado original: toranja e hortelã frescas, canela e rosa no coração e um fundo de couro e âmbar. Sedutor e marcante.",
     notas:{Topo:"Toranja, hortelã, tangerina", Corpo:"Canela, rosa, especiarias", Fundo:"Couro, âmbar, madeiras"},
     tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 5 ml",preco:39.00},{ml:"Decant 10 ml",preco:64.00},{ml:"Decant 15 ml",preco:96.00}] },
-
-  { id:"azzaro-wanted", nome:"Azzaro Wanted", sub:"Eau de Parfum 100 ml", marca:"Azzaro", cat:"masculino", familia:"Especiado",
-    preco:890.00, img:"img/azzaro.webp", tom:"claro",
-    desc:"Cítrico especiado com gengibre, cardamomo e vetiver. Energético, viril e versátil.",
-    notas:{Topo:"Limão, gengibre, lavanda", Corpo:"Cardamomo, gerânio, sálvia", Fundo:"Vetiver, tonka, madeiras"},
-    tamanhos:[{ml:"100 ml",mult:1}] },
 
   { id:"azzaro-most-wanted-parfum", nome:"Azzaro The Most Wanted", sub:"Parfum 100 ml", marca:"Azzaro", cat:"masculino", familia:"Especiado",
     preco:573.00, img:"img/azzaro-most-wanted-parfum.webp", tom:"claro",
@@ -855,12 +845,6 @@ const PRODUTOS = [
     desc:"O campeão de vendas em frasco de 200 ml: bergamota radiante, pimenta e ambroxan cremoso. Universal e potente.",
     notas:{Topo:"Bergamota da Calábria", Corpo:"Pimenta de Sichuan, lavanda", Fundo:"Ambroxan, baunilha, patchouli"},
     tamanhos:[{ml:"200 ml",mult:1},{ml:"100 ml",mult:0.6},{ml:"Decant 5 ml",preco:53.00},{ml:"Decant 10 ml",preco:88.00},{ml:"Decant 15 ml",preco:132.00}] },
-
-  { id:"le-male-edp", nome:"Jean Paul Gaultier Le Male", sub:"Eau de Parfum 200 ml", marca:"Jean Paul Gaultier", cat:"masculino", familia:"Aromático",
-    preco:890.00, img:"img/le-male-edp.webp", tom:"claro", destaque:true,
-    desc:"Lavanda e hortelã sobre baunilha e fava tonka. Doce, quente e inconfundível, no frasco-torso gigante.",
-    notas:{Topo:"Hortelã, bergamota, cardamomo", Corpo:"Lavanda, flor de laranjeira, canela", Fundo:"Baunilha, tonka, âmbar"},
-    tamanhos:[{ml:"200 ml",mult:1},{ml:"125 ml",mult:0.72}] },
 
   { id:"le-male-edt", nome:"Jean Paul Gaultier Le Male", sub:"Eau de Toilette 200 ml", marca:"Jean Paul Gaultier", cat:"masculino", familia:"Aromático",
     preco:739.00, img:"img/le-male-edt.webp", tom:"claro",
@@ -995,6 +979,15 @@ const PRODUTOS = [
     notas:{Kit:"3 frascos de 100 ml", Perfil:"Gourmand, floral e aquático", Indicação:"Presente ou coleção"},
     tamanhos:[{ml:"Kit 3 x 100 ml",mult:1}] }
 ];
+
+/* Promoções (kits "Promoção da Semana", menu e botão "Ver promoções"): mude para true para voltar a exibir.
+   Os kits continuam no catálogo do servidor, então sacolas que já os têm seguem pagando o preço certo. */
+const MOSTRAR_PROMOCOES = false;
+const ehPromocao = p => /promo[çc][ãa]o da semana/i.test(p.nome);
+if(!MOSTRAR_PROMOCOES){
+  for(let i = PRODUTOS.length - 1; i >= 0; i--) if(ehPromocao(PRODUTOS[i]) || PRODUTOS[i].precoAntigo) PRODUTOS.splice(i, 1);
+  document.documentElement.classList.add("sem-promocoes");
+}
 
 /* Preço de um tamanho: valor fixo (t.preco, ex.: decants) ou preço do frasco x mult. */
 const precoTamanho = (p,t) => t.preco != null ? t.preco : Math.round(p.preco*t.mult*100)/100;
@@ -1216,7 +1209,9 @@ function pintarCarrinho(){
     corpo.innerHTML = `<div class="gaveta__vazio">
       <svg viewBox="0 0 24 24"><path d="M6 8h12l-1 12H7z"/><path d="M9 8V6a3 3 0 016 0v2"/></svg>
       <p>Sua sacola está vazia.<br>Escolha um perfume para começar.</p></div>`;
-    pe.innerHTML = `<button class="btn-vazado" type="button" data-ir="#/promocoes">Ver promoções</button>`;
+    pe.innerHTML = MOSTRAR_PROMOCOES
+      ? `<button class="btn-vazado" type="button" data-ir="#/promocoes">Ver promoções</button>`
+      : `<button class="btn-vazado" type="button" data-ir="#/inicio">Ver perfumes</button>`;
     return;
   }
 
@@ -1481,7 +1476,7 @@ function listarProdutos(){
    9. VISTAS
    ============================================================ */
 function vistaInicio(){
-  const promos = PRODUTOS.filter(p => /promo[çc][ãa]o da semana/i.test(p.nome));
+  const promos = PRODUTOS.filter(ehPromocao);
   const destaques = PRODUTOS.filter(p => p.destaque && !promos.includes(p));
   // agrupa por categoria para não misturar perfumes e cosméticos na grade
   const ordemCat = { masculino:0, feminino:1, unissex:2, cosmeticos:3, bodysplash:4 };

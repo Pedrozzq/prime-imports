@@ -5,7 +5,7 @@
  * index.html. A chave é "<id do produto>|<tamanho>", exatamente como o
  * carrinho do front-end monta.
  *
- * Gerado a partir de index.html — 39 produtos, 126 variantes.
+ * Gerado a partir de index.html — 36 produtos, 122 variantes.
  */
 
 export const CATALOGO = {
@@ -21,7 +21,6 @@ export const CATALOGO = {
     "azzaro-most-wanted-parfum|Decant 10 ml": { nome: "Azzaro The Most Wanted (Decant 10 ml)", marca: "Azzaro", preco: 99.00 },
     "azzaro-most-wanted-parfum|Decant 15 ml": { nome: "Azzaro The Most Wanted (Decant 15 ml)", marca: "Azzaro", preco: 148.00 },
     "azzaro-most-wanted-parfum|Decant 5 ml": { nome: "Azzaro The Most Wanted (Decant 5 ml)", marca: "Azzaro", preco: 59.00 },
-    "azzaro-wanted|100 ml": { nome: "Azzaro Wanted (100 ml)", marca: "Azzaro", preco: 890.00 },
     "baccarat-rouge-540|35 ml": { nome: "Maison Francis Kurkdjian Baccarat Rouge 540 (35 ml)", marca: "Maison Francis Kurkdjian", preco: 1990.00 },
     "baccarat-rouge-540|Decant 10 ml": { nome: "Maison Francis Kurkdjian Baccarat Rouge 540 (Decant 10 ml)", marca: "Maison Francis Kurkdjian", preco: 660.00 },
     "baccarat-rouge-540|Decant 15 ml": { nome: "Maison Francis Kurkdjian Baccarat Rouge 540 (Decant 15 ml)", marca: "Maison Francis Kurkdjian", preco: 990.00 },
@@ -77,8 +76,6 @@ export const CATALOGO = {
     "la-vie-est-belle-200|Decant 10 ml": { nome: "Lancôme La Vie Est Belle (Decant 10 ml)", marca: "Lancôme", preco: 99.00 },
     "la-vie-est-belle-200|Decant 15 ml": { nome: "Lancôme La Vie Est Belle (Decant 15 ml)", marca: "Lancôme", preco: 148.00 },
     "la-vie-est-belle-200|Decant 5 ml": { nome: "Lancôme La Vie Est Belle (Decant 5 ml)", marca: "Lancôme", preco: 59.00 },
-    "le-male-edp|125 ml": { nome: "Jean Paul Gaultier Le Male (125 ml)", marca: "Jean Paul Gaultier", preco: 640.80 },
-    "le-male-edp|200 ml": { nome: "Jean Paul Gaultier Le Male (200 ml)", marca: "Jean Paul Gaultier", preco: 890.00 },
     "le-male-edt|200 ml": { nome: "Jean Paul Gaultier Le Male (200 ml)", marca: "Jean Paul Gaultier", preco: 739.00 },
     "le-male-edt|Decant 10 ml": { nome: "Jean Paul Gaultier Le Male (Decant 10 ml)", marca: "Jean Paul Gaultier", preco: 64.00 },
     "le-male-edt|Decant 15 ml": { nome: "Jean Paul Gaultier Le Male (Decant 15 ml)", marca: "Jean Paul Gaultier", preco: 96.00 },
@@ -87,7 +84,6 @@ export const CATALOGO = {
     "miss-dior-edp|Decant 10 ml": { nome: "Dior Miss Dior (Decant 10 ml)", marca: "Dior", preco: 136.00 },
     "miss-dior-edp|Decant 15 ml": { nome: "Dior Miss Dior (Decant 15 ml)", marca: "Dior", preco: 204.00 },
     "miss-dior-edp|Decant 5 ml": { nome: "Dior Miss Dior (Decant 5 ml)", marca: "Dior", preco: 81.00 },
-    "onemillion-edp|100 ml": { nome: "Paco Rabanne 1 Million (100 ml)", marca: "Paco Rabanne", preco: 820.00 },
     "onemillion-edt|100 ml": { nome: "Paco Rabanne 1 Million (100 ml)", marca: "Paco Rabanne", preco: 545.00 },
     "onemillion-edt|Decant 10 ml": { nome: "Paco Rabanne 1 Million (Decant 10 ml)", marca: "Paco Rabanne", preco: 64.00 },
     "onemillion-edt|Decant 15 ml": { nome: "Paco Rabanne 1 Million (Decant 15 ml)", marca: "Paco Rabanne", preco: 96.00 },
