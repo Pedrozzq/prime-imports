@@ -75,11 +75,14 @@ img{display:block;max-width:100%}
   background:radial-gradient(closest-side,rgba(217,179,108,.16),rgba(217,179,108,.05) 55%,transparent);animation:pre-luz 3.2s ease-in-out infinite}
 @keyframes pre-luz{50%{transform:translate(-50%,-50%) scale(1.12);opacity:.7}}
 .pre.sai{opacity:0;visibility:hidden}
-.pre.sai .pre__centro{transform:translateY(-14px) scale(1.04);filter:blur(6px);opacity:0}
-.pre__centro{position:relative;display:flex;flex-direction:column;align-items:center;transition:transform .9s cubic-bezier(.4,0,.2,1),filter .9s ease,opacity .8s ease}
-.pre__logo{width:112px;height:auto;opacity:0;filter:blur(10px) drop-shadow(0 0 18px rgba(217,179,108,.3));transform:translateY(8px) scale(.96);
+/* Sem "filter" (blur/drop-shadow) animado aqui: no iPhone (Safari e navegador do Instagram) a logo
+   ficava branca nos segundos finais, quando o filtro e a opacidade mudam juntos. Só opacidade e
+   movimento, que o iOS desenha sem esse defeito; o brilho dourado vem do .pre::before. */
+.pre.sai .pre__centro{transform:translateY(-14px) scale(1.04);opacity:0}
+.pre__centro{position:relative;display:flex;flex-direction:column;align-items:center;transition:transform .9s cubic-bezier(.4,0,.2,1),opacity .8s ease;will-change:transform,opacity}
+.pre__logo{width:112px;height:auto;opacity:0;transform:translateY(10px) scale(.9);
   animation:pre-logo 1.2s .15s cubic-bezier(.2,.8,.2,1) forwards}
-@keyframes pre-logo{to{opacity:1;filter:blur(0) drop-shadow(0 0 18px rgba(217,179,108,.3));transform:none}}
+@keyframes pre-logo{to{opacity:1;transform:none}}
 .pre__fio{display:block;width:150px;height:1px;margin:22px 0 18px;transform:scaleX(0);
   background:linear-gradient(90deg,transparent,#d9b36c 30%,#fff7e3 50%,#d9b36c 70%,transparent);animation:pre-fio 1s .7s cubic-bezier(.65,0,.35,1) forwards}
 @keyframes pre-fio{to{transform:scaleX(1)}}

@@ -814,11 +814,23 @@ const PRODUTOS = [
     notas:{Topo:"Toranja, hortelã, canela", Corpo:"Rosa, especiarias, couro", Fundo:"Âmbar, mel, patchouli"},
     tamanhos:[{ml:"100 ml",mult:1}] },
 
+  { id:"onemillion-edt", nome:"Paco Rabanne 1 Million", sub:"Eau de Toilette 100 ml", marca:"Paco Rabanne", cat:"masculino", familia:"Especiado",
+    preco:545.00, img:"img/onemillion-edt.webp", tom:"claro",
+    desc:"O lingote dourado original: toranja e hortelã frescas, canela e rosa no coração e um fundo de couro e âmbar. Sedutor e marcante.",
+    notas:{Topo:"Toranja, hortelã, tangerina", Corpo:"Canela, rosa, especiarias", Fundo:"Couro, âmbar, madeiras"},
+    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 5 ml",preco:39.00},{ml:"Decant 10 ml",preco:64.00},{ml:"Decant 15 ml",preco:96.00}] },
+
   { id:"azzaro-wanted", nome:"Azzaro Wanted", sub:"Eau de Parfum 100 ml", marca:"Azzaro", cat:"masculino", familia:"Especiado",
     preco:890.00, img:"img/azzaro.webp", tom:"claro",
     desc:"Cítrico especiado com gengibre, cardamomo e vetiver. Energético, viril e versátil.",
     notas:{Topo:"Limão, gengibre, lavanda", Corpo:"Cardamomo, gerânio, sálvia", Fundo:"Vetiver, tonka, madeiras"},
     tamanhos:[{ml:"100 ml",mult:1}] },
+
+  { id:"azzaro-most-wanted-parfum", nome:"Azzaro The Most Wanted", sub:"Parfum 100 ml", marca:"Azzaro", cat:"masculino", familia:"Especiado",
+    preco:573.00, img:"img/azzaro-most-wanted-parfum.webp", tom:"claro",
+    desc:"A versão mais intensa da linha Wanted: gengibre picante, caramelo tostado e âmbar amadeirado. Quente, viciante e de longa duração.",
+    notas:{Topo:"Gengibre, especiarias", Corpo:"Caramelo (toffee)", Fundo:"Âmbar, madeiras"},
+    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 5 ml",preco:59.00},{ml:"Decant 10 ml",preco:99.00},{ml:"Decant 15 ml",preco:148.00}] },
 
   { id:"ch-212-black", nome:"Carolina Herrera 212 VIP Black", sub:"Eau de Parfum 100 ml", marca:"Carolina Herrera", cat:"masculino", familia:"Amadeirado",
     preco:590.00, img:"img/ch-212-black.webp", tom:"claro",
@@ -826,17 +838,23 @@ const PRODUTOS = [
     notas:{Topo:"Absinto, anis", Corpo:"Lavanda preta, especiarias", Fundo:"Musk, madeiras, baunilha"},
     tamanhos:[{ml:"100 ml",mult:1}] },
 
-  { id:"invictus-edp", nome:"Paco Rabanne Invictus", sub:"Eau de Toilette 100 ml", marca:"Paco Rabanne", cat:"masculino", familia:"Aquático",
-    preco:779.00, img:"img/invictus-toilette.webp", tom:"claro",
+  { id:"ch-212-men", nome:"Carolina Herrera 212 Men", sub:"Eau de Toilette 200 ml", marca:"Carolina Herrera", cat:"masculino", familia:"Aromático",
+    preco:783.00, img:"img/ch-212-men.webp", tom:"claro",
+    desc:"O clássico urbano de Carolina Herrera: cítricos e gengibre, especiarias verdes e um fundo limpo de almíscar e sândalo. Leve e elegante para o dia a dia.",
+    notas:{Topo:"Toranja, bergamota, gengibre", Corpo:"Violeta, sálvia, pimenta", Fundo:"Almíscar, sândalo, vetiver"},
+    tamanhos:[{ml:"200 ml",mult:1},{ml:"Decant 5 ml",preco:44.00},{ml:"Decant 10 ml",preco:79.00},{ml:"Decant 15 ml",preco:118.00}] },
+
+  { id:"invictus-edp", nome:"Paco Rabanne Invictus", sub:"Eau de Toilette 200 ml", marca:"Paco Rabanne", cat:"masculino", familia:"Aquático",
+    preco:830.00, img:"img/invictus-toilette.webp", tom:"claro",
     desc:"Aquático amadeirado com toranja e ambroxan. Fresco, esportivo e com ótima projeção no calor.",
     notas:{Topo:"Toranja, notas marinhas", Corpo:"Folha de louro, jasmim", Fundo:"Âmbar cinza, guaíaco, patchouli"},
-    tamanhos:[{ml:"100 ml",mult:1}] },
+    tamanhos:[{ml:"200 ml",mult:1},{ml:"Decant 5 ml",preco:30.00},{ml:"Decant 10 ml",preco:55.00},{ml:"Decant 15 ml",preco:75.00}] },
 
   { id:"sauvage-edp-200", nome:"Dior Sauvage", sub:"Eau de Parfum 200 ml", marca:"Dior", cat:"masculino", familia:"Cítrico",
-    preco:1390.00, img:"img/sauvage-edp-200.webp", tom:"claro", destaque:true,
+    preco:1320.00, img:"img/sauvage-edp-200.webp", tom:"claro", destaque:true,
     desc:"O campeão de vendas em frasco de 200 ml: bergamota radiante, pimenta e ambroxan cremoso. Universal e potente.",
     notas:{Topo:"Bergamota da Calábria", Corpo:"Pimenta de Sichuan, lavanda", Fundo:"Ambroxan, baunilha, patchouli"},
-    tamanhos:[{ml:"200 ml",mult:1},{ml:"100 ml",mult:0.6}] },
+    tamanhos:[{ml:"200 ml",mult:1},{ml:"100 ml",mult:0.6},{ml:"Decant 5 ml",preco:53.00},{ml:"Decant 10 ml",preco:88.00},{ml:"Decant 15 ml",preco:132.00}] },
 
   { id:"le-male-edp", nome:"Jean Paul Gaultier Le Male", sub:"Eau de Parfum 200 ml", marca:"Jean Paul Gaultier", cat:"masculino", familia:"Aromático",
     preco:890.00, img:"img/le-male-edp.webp", tom:"claro", destaque:true,
@@ -844,23 +862,29 @@ const PRODUTOS = [
     notas:{Topo:"Hortelã, bergamota, cardamomo", Corpo:"Lavanda, flor de laranjeira, canela", Fundo:"Baunilha, tonka, âmbar"},
     tamanhos:[{ml:"200 ml",mult:1},{ml:"125 ml",mult:0.72}] },
 
+  { id:"le-male-edt", nome:"Jean Paul Gaultier Le Male", sub:"Eau de Toilette 200 ml", marca:"Jean Paul Gaultier", cat:"masculino", familia:"Aromático",
+    preco:739.00, img:"img/le-male-edt.webp", tom:"claro",
+    desc:"O Le Male original: hortelã e lavanda frescas sobre baunilha e fava tonka. Limpo, adocicado e sensual, no frasco-torso clássico.",
+    notas:{Topo:"Hortelã, lavanda, cardamomo", Corpo:"Canela, flor de laranjeira", Fundo:"Baunilha, tonka, sândalo"},
+    tamanhos:[{ml:"200 ml",mult:1},{ml:"Decant 5 ml",preco:39.00},{ml:"Decant 10 ml",preco:64.00},{ml:"Decant 15 ml",preco:96.00}] },
+
   { id:"goodgirl-edp-100", nome:"Carolina Herrera Good Girl", sub:"Eau de Parfum 80 ml", marca:"Carolina Herrera", cat:"feminino", familia:"Doce",
-    preco:729.00, img:"img/goodgirl-edp-100.webp", tom:"claro",
+    preco:793.00, img:"img/goodgirl-edp-100.webp", tom:"claro",
     desc:"O salto agulha azul: jasmim sambac e tuberosa contra cacau, café e tonka. Luz e sombra em 100 ml.",
     notas:{Topo:"Amêndoa, café, bergamota", Corpo:"Tuberosa, jasmim sambac", Fundo:"Cacau, tonka, sândalo"},
-    tamanhos:[{ml:"80 ml",mult:1}] },
+    tamanhos:[{ml:"80 ml",mult:1},{ml:"Decant 5 ml",preco:64.00},{ml:"Decant 10 ml",preco:109.00},{ml:"Decant 15 ml",preco:163.00}] },
 
   { id:"scandal-intense", nome:"Jean Paul Gaultier Scandal Intense", sub:"Eau de Parfum 80 ml", marca:"Jean Paul Gaultier", cat:"feminino", familia:"Doce",
-    preco:890.00, img:"img/scandal-intense.webp", tom:"claro", destaque:true,
+    preco:844.00, img:"img/scandal-intense.webp", tom:"claro", destaque:true,
     desc:"Mel, cera de abelha e tuberosa em versão intensa e envolvente. Gourmand floral de forte presença.",
     notas:{Topo:"Mandarina, laranja", Corpo:"Mel, cera de abelha, tuberosa", Fundo:"Baunilha, patchouli, âmbar"},
-    tamanhos:[{ml:"80 ml",mult:1}] },
+    tamanhos:[{ml:"80 ml",mult:1},{ml:"Decant 5 ml",preco:89.00},{ml:"Decant 10 ml",preco:149.00},{ml:"Decant 15 ml",preco:223.00}] },
 
   { id:"miss-dior-edp", nome:"Dior Miss Dior", sub:"Eau de Parfum 100 ml", marca:"Dior", cat:"feminino", familia:"Floral",
-    preco:990.00, img:"img/miss-dior-edp.webp", tom:"claro", destaque:true,
+    preco:1088.00, img:"img/miss-dior-edp.webp", tom:"claro", destaque:true,
     desc:"Buquê floral moderno com rosa de Grasse e notas amadeiradas. Romântico, elegante e cheio de luz.",
     notas:{Topo:"Tangerina, rosa", Corpo:"Rosa de Grasse, peônia, lírio", Fundo:"Almíscar, sândalo"},
-    tamanhos:[{ml:"100 ml",mult:1}] },
+    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 5 ml",preco:81.00},{ml:"Decant 10 ml",preco:136.00},{ml:"Decant 15 ml",preco:204.00}] },
 
   { id:"la-vie-est-belle-200", nome:"Lancôme La Vie Est Belle", sub:"Eau de Parfum 100 ml", marca:"Lancôme", cat:"feminino", familia:"Doce",
     preco:726.00, img:"img/la-vie-est-belle-200.webp", tom:"claro",
@@ -892,6 +916,18 @@ const PRODUTOS = [
     notas:{Topo:"Maçã, bergamota, canela", Corpo:"Notas marinhas, lavanda, gengibre", Fundo:"Âmbar cinza, almíscar, madeiras"},
     tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 5 ml",preco:49.00},{ml:"Decant 10 ml",preco:80.00},{ml:"Decant 15 ml",preco:120.00}] },
 
+  { id:"club-de-nuit-intense", nome:"Armaf Club de Nuit Intense", sub:"Eau de Parfum 200 ml", marca:"Armaf", cat:"masculino", familia:"Árabe",
+    preco:470.00, img:"img/club-de-nuit-intense.webp", tom:"claro",
+    desc:"Abacaxi, limão e groselha sobre bétula defumada e almíscar. Fresco, frutado e potente, com projeção de sobra.",
+    notas:{Topo:"Abacaxi, limão, groselha, bergamota", Corpo:"Bétula, jasmim, rosa", Fundo:"Almíscar, âmbar cinza, baunilha"},
+    tamanhos:[{ml:"200 ml",mult:1},{ml:"Decant 5 ml",preco:29.00},{ml:"Decant 10 ml",preco:49.00},{ml:"Decant 15 ml",preco:98.00}] },
+
+  { id:"ck-one", nome:"Calvin Klein CK One", sub:"Eau de Toilette 200 ml", marca:"Calvin Klein", cat:"masculino", extra:["feminino"], familia:"Cítrico",
+    preco:344.00, img:"img/ck-one.webp", tom:"claro",
+    desc:"O ícone unissex: cítricos e chá verde frescos sobre almíscar limpo. Leve, versátil e perfeito para usar todo dia.",
+    notas:{Topo:"Limão, bergamota, abacaxi", Corpo:"Chá verde, jasmim, violeta", Fundo:"Almíscar, âmbar, cedro"},
+    tamanhos:[{ml:"200 ml",mult:1},{ml:"Decant 5 ml",preco:29.00},{ml:"Decant 10 ml",preco:49.00},{ml:"Decant 15 ml",preco:98.00}] },
+
   { id:"fakhar-extrait", nome:"Lattafa Fakhar Extrait", sub:"Extrait de Parfum Women 100 ml", marca:"Lattafa", cat:"feminino", familia:"Floral",
     preco:229.00, img:"img/lattafa-fakar.jpeg", tom:"claro", destaque:true,
     desc:"Perfume floral doce marcante, feminino, sensual e chamativo, com aquele DNA de perfume árabe de alta fixação.",
@@ -899,7 +935,7 @@ const PRODUTOS = [
     tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 5 ml",preco:54.00},{ml:"Decant 10 ml",preco:90.00},{ml:"Decant 15 ml",preco:135.00}] },
 
   /* --- decants acrescentados (preços enviados pela loja) --- */
-  { id:"sospiro-vibrato", nome:"Sospiro Vibrato", sub:"Eau de Parfum 100 ml", marca:"Sospiro", cat:"unissex", familia:"Cítrico",
+  { id:"sospiro-vibrato", nome:"Sospiro Vibrato", sub:"Eau de Parfum 100 ml", marca:"Sospiro", cat:"masculino", familia:"Cítrico",
     preco:1748.00, img:"img/sospiro-vibrato.webp", tom:"claro",
     desc:"Cítrico luminoso de toranja e bergamota, com coração de gengibre e ervas e fundo de íris, âmbar e cedro. Fresco, elegante e com assinatura de nicho italiano.",
     notas:{Topo:"Bergamota, toranja, jasmim, magnólia", Corpo:"Gengibre, notas herbais, notas atalcadas", Fundo:"Íris, âmbar, cedro, almíscar, patchouli"},
@@ -911,7 +947,7 @@ const PRODUTOS = [
     notas:{Topo:"Tangerina, pimenta-rosa", Corpo:"Cacau, flor de laranjeira, jasmim sambac", Fundo:"Baunilha, fava tonka, patchouli"},
     tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 5 ml",preco:32.00},{ml:"Decant 10 ml",preco:54.00},{ml:"Decant 15 ml",preco:81.00}] },
 
-  { id:"baccarat-rouge-540", nome:"Maison Francis Kurkdjian Baccarat Rouge 540", sub:"Eau de Parfum 35 ml", marca:"Maison Francis Kurkdjian", cat:"unissex", familia:"Amadeirado",
+  { id:"baccarat-rouge-540", nome:"Maison Francis Kurkdjian Baccarat Rouge 540", sub:"Eau de Parfum 35 ml", marca:"Maison Francis Kurkdjian", cat:"feminino", familia:"Amadeirado",
     preco:1990.00, img:"img/baccarat-rouge-540.webp", tom:"claro", destaque:true,
     desc:"O ícone de nicho: açafrão e jasmim sobre âmbar-gris e cedro, num rastro aéreo, adocicado e mineral que se reconhece de longe.",
     notas:{Topo:"Açafrão, jasmim", Corpo:"Âmbar-gris, cedro", Fundo:"Resina de abeto, âmbar amadeirado"},
@@ -923,8 +959,8 @@ const PRODUTOS = [
     notas:{Topo:"Laranja, bergamota, toranja", Corpo:"Rosa, jasmim, lichia", Fundo:"Patchouli, vetiver, baunilha, almíscar branco"},
     tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 5 ml",preco:129.00},{ml:"Decant 10 ml",preco:209.00},{ml:"Decant 15 ml",preco:314.00}] },
 
-  { id:"xerjoff-torino21", nome:"Xerjoff Torino21", sub:"Eau de Parfum 50 ml", marca:"Xerjoff", cat:"unissex", familia:"Aromático",
-    preco:1199.00, img:"img/xerjoff-torino21.webp", tom:"claro",
+  { id:"xerjoff-torino21", nome:"Xerjoff Torino21", sub:"Eau de Parfum 50 ml", marca:"Xerjoff", cat:"masculino", familia:"Aromático",
+    preco:1199.00, img:"img/xerjoff-torino21-v2.webp", tom:"claro",
     desc:"Fresco, verde e vibrante, com hortelã e limão em destaque. Criado em homenagem às finais de tênis de Turim, cidade natal da Xerjoff.",
     notas:{Topo:"Hortelã, limão, tomilho, manjericão", Corpo:"Jasmim, alecrim, cassis, lavanda", Fundo:"Verbena, almíscar"},
     tamanhos:[{ml:"50 ml",mult:1},{ml:"Decant 5 ml",preco:210.00},{ml:"Decant 10 ml",preco:382.00},{ml:"Decant 15 ml",preco:573.00}] },
@@ -941,13 +977,19 @@ const PRODUTOS = [
     notas:{Topo:"Morango, framboesa, amora, cereja, limão", Corpo:"Jasmim, violeta", Fundo:"Almíscar, baunilha, âmbar, cashmeran"},
     tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 5 ml",preco:57.00},{ml:"Decant 10 ml",preco:95.00},{ml:"Decant 15 ml",preco:142.00}] },
 
-  { id:"kit-hawas-oud-khamrah", nome:"Kit Promoção da Semana", sub:"Hawas Black + Bade\'e Al Oud + Khamrah", marca:"Prime Perfumes", cat:"unissex", familia:"Árabe",
+  { id:"ysl-myself-labsolu", nome:"Yves Saint Laurent Myself L'Absolu", sub:"Parfum 100 ml", marca:"Yves Saint Laurent", cat:"masculino", familia:"Amadeirado",
+    preco:1399.00, img:"img/ysl-myself-labsolu.webp", tom:"claro",
+    desc:"A faceta fresca e especiada da linha Myself: gengibre cintilante e flor de laranjeira sobre madeiras quentes, no frasco espelhado prateado. Elegante, magnético e de longa duração.",
+    notas:{Topo:"Gengibre, bergamota", Corpo:"Flor de laranjeira", Fundo:"Madeiras quentes"},
+    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 5 ml",preco:90.00},{ml:"Decant 10 ml",preco:150.00},{ml:"Decant 15 ml",preco:225.00}] },
+
+  { id:"kit-hawas-oud-khamrah", nome:"Kit Promoção da Semana", sub:"Hawas Black + Bade\'e Al Oud + Khamrah", marca:"Prime Perfumes", cat:"masculino", extra:["feminino"], familia:"Árabe",
     preco:486.90, precoAntigo:549.70, img:"img/kit-hawas-oud-khamrah.webp", tom:"claro", destaque:true,
     desc:"01 Rasasi Hawas Black 100 ml + 01 Lattafa Bade\'e Al Oud for Glory 100 ml + 01 Lattafa Khamrah 100 ml. Trio árabe completo com preço promocional da semana.",
     notas:{Kit:"3 frascos de 100 ml", Perfil:"Aquático, amadeirado e gourmand", Indicação:"Presente ou coleção"},
     tamanhos:[{ml:"Kit 3 x 100 ml",mult:1}] },
 
-  { id:"kit-khamrah-fakhar-hawas", nome:"Kit Promoção da Semana", sub:"Khamrah + Fakhar + Hawas Black", marca:"Prime Perfumes", cat:"unissex", familia:"Árabe",
+  { id:"kit-khamrah-fakhar-hawas", nome:"Kit Promoção da Semana", sub:"Khamrah + Fakhar + Hawas Black", marca:"Prime Perfumes", cat:"feminino", extra:["masculino"], familia:"Árabe",
     preco:537.30, precoAntigo:614.70, img:"img/kit-khamrah-fakhar-hawas.webp", tom:"claro", destaque:true,
     desc:"01 Lattafa Khamrah 100 ml + 01 Lattafa Fakhar 100 ml + 01 Rasasi Hawas Black 100 ml. Combinação de best-sellers árabes com desconto da semana.",
     notas:{Kit:"3 frascos de 100 ml", Perfil:"Gourmand, floral e aquático", Indicação:"Presente ou coleção"},
