@@ -5,7 +5,7 @@
  * index.html. A chave é "<id do produto>|<tamanho>", exatamente como o
  * carrinho do front-end monta.
  *
- * Gerado a partir de index.html — 36 produtos, 122 variantes.
+ * Gerado a partir de index.html — 37 produtos, 129 variantes.
  */
 
 export const CATALOGO = {
@@ -30,6 +30,9 @@ export const CATALOGO = {
     "burberry-her|Decant 15 ml": { nome: "Burberry Her (Decant 15 ml)", marca: "Burberry", preco: 142.00 },
     "burberry-her|Decant 5 ml": { nome: "Burberry Her (Decant 5 ml)", marca: "Burberry", preco: 57.00 },
     "ch-212-black|100 ml": { nome: "Carolina Herrera 212 VIP Black (100 ml)", marca: "Carolina Herrera", preco: 590.00 },
+    "ch-212-black|Decant 10 ml": { nome: "Carolina Herrera 212 VIP Black (Decant 10 ml)", marca: "Carolina Herrera", preco: 79.00 },
+    "ch-212-black|Decant 15 ml": { nome: "Carolina Herrera 212 VIP Black (Decant 15 ml)", marca: "Carolina Herrera", preco: 118.00 },
+    "ch-212-black|Decant 5 ml": { nome: "Carolina Herrera 212 VIP Black (Decant 5 ml)", marca: "Carolina Herrera", preco: 48.00 },
     "ch-212-men|200 ml": { nome: "Carolina Herrera 212 Men (200 ml)", marca: "Carolina Herrera", preco: 783.00 },
     "ch-212-men|Decant 10 ml": { nome: "Carolina Herrera 212 Men (Decant 10 ml)", marca: "Carolina Herrera", preco: 79.00 },
     "ch-212-men|Decant 15 ml": { nome: "Carolina Herrera 212 Men (Decant 15 ml)", marca: "Carolina Herrera", preco: 118.00 },
@@ -62,6 +65,10 @@ export const CATALOGO = {
     "invictus-edp|Decant 10 ml": { nome: "Paco Rabanne Invictus (Decant 10 ml)", marca: "Paco Rabanne", preco: 55.00 },
     "invictus-edp|Decant 15 ml": { nome: "Paco Rabanne Invictus (Decant 15 ml)", marca: "Paco Rabanne", preco: 75.00 },
     "invictus-edp|Decant 5 ml": { nome: "Paco Rabanne Invictus (Decant 5 ml)", marca: "Paco Rabanne", preco: 30.00 },
+    "invictus-parfum|200 ml": { nome: "Paco Rabanne Invictus Parfum (200 ml)", marca: "Paco Rabanne", preco: 1190.00 },
+    "invictus-parfum|Decant 10 ml": { nome: "Paco Rabanne Invictus Parfum (Decant 10 ml)", marca: "Paco Rabanne", preco: 89.00 },
+    "invictus-parfum|Decant 15 ml": { nome: "Paco Rabanne Invictus Parfum (Decant 15 ml)", marca: "Paco Rabanne", preco: 178.00 },
+    "invictus-parfum|Decant 5 ml": { nome: "Paco Rabanne Invictus Parfum (Decant 5 ml)", marca: "Paco Rabanne", preco: 54.00 },
     "jadore-edp-200|100 ml": { nome: "Dior J'adore (100 ml)", marca: "Dior", preco: 990.00 },
     "jadore-edp-200|Decant 10 ml": { nome: "Dior J'adore (Decant 10 ml)", marca: "Dior", preco: 120.00 },
     "jadore-edp-200|Decant 15 ml": { nome: "Dior J'adore (Decant 15 ml)", marca: "Dior", preco: 180.00 },

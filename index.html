@@ -64,6 +64,14 @@ input,select{font:inherit}
 .avisos__item button{display:flex;align-items:center;gap:9px;letter-spacing:.18em;text-transform:uppercase;font-size:10.5px;transition:color .2s}
 .avisos__item button:hover{color:var(--ouro-claro)}
 .avisos svg{width:17px;height:17px;flex:none;stroke:currentColor;fill:none;stroke-width:1.4}
+.avisos__item--promo{white-space:normal}
+.avisos__promo{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;padding:2px 0;color:#fdf8ef;animation:avisoPulso 1.8s ease-in-out infinite}
+.avisos__promo b{color:var(--ouro-claro);font-weight:700}
+.avisos__promo .promo-dica__tag{margin:0;font-size:11px}
+.avisos__promo .promo-dica__selo{width:20px;height:20px;font-size:11px}
+.avisos__promo:hover b{text-decoration:underline}
+@keyframes avisoPulso{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.04);opacity:.85}}
+@media(prefers-reduced-motion:reduce){.avisos__promo{animation:none}}
 @media(max-width:820px){.avisos__item:nth-child(2){display:none}}
 @media(max-width:560px){.avisos__lista{justify-content:center}.avisos__item:nth-child(3){display:none}}
 
@@ -387,6 +395,9 @@ input,select{font:inherit}
 .qtd button:hover{color:var(--tinta)}
 .qtd span{min-width:26px;text-align:center;font-size:12.5px}
 .item__preco{font-size:14px;font-weight:500}
+.item__preco--promo{display:flex;flex-direction:column;align-items:flex-end;line-height:1.25}
+.item__preco--promo s{font-size:12px;font-weight:400;opacity:.6}
+.item__preco--promo b{font-weight:600;color:var(--ouro)}
 .item__remover{margin-top:6px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#a8574a}
 .item__remover:hover{text-decoration:underline}
 .gaveta__pe{padding:16px 20px;border-top:1px solid rgba(25,24,23,.12);background:var(--creme-2)}
@@ -412,6 +423,20 @@ input,select{font:inherit}
 .cupom__aviso.ok{color:#3f7d3f}
 .cupom__aviso.erro{color:#a8574a}
 .total-linha--desc{color:#3f7d3f}
+.promo-dica{display:flex;align-items:center;gap:12px;margin:0 0 14px;padding:12px 14px;border:1px solid var(--ouro);background:linear-gradient(135deg,rgba(217,179,108,.24),rgba(217,179,108,.08));font-size:13.5px;line-height:1.4;color:#fdf8ef;animation:promoPulso 2.4s ease-in-out infinite}
+.promo-dica b{color:var(--ouro-claro);font-weight:700}
+.promo-dica__tag{display:block;margin-bottom:3px;font-size:10px;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--ouro)}
+.promo-dica--secao{margin:0 0 22px;padding:16px 20px;font-size:15px;background:#000}
+.promo-dica--secao .promo-dica__selo{width:40px;height:40px;font-size:18px}
+.promo-dica--secao .promo-dica__tag{font-size:11px}
+.promo-dica__selo{flex:none;width:32px;height:32px;display:grid;place-items:center;border-radius:50%;background:var(--ouro);color:var(--breu);font-weight:700;font-size:15px}
+@keyframes promoPulso{0%,100%{box-shadow:0 0 0 0 rgba(217,179,108,0)}50%{box-shadow:0 0 0 4px rgba(217,179,108,.18)}}
+/* "BLACK NOVEMBER" com brilho dourado correndo pelas letras */
+.promo-dica__tag{width:max-content;background:linear-gradient(100deg,var(--ouro) 0%,var(--ouro) 38%,#fff6dc 50%,var(--ouro) 62%,var(--ouro) 100%);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:promoBrilho 2.6s linear infinite}
+@keyframes promoBrilho{from{background-position:100% 0}to{background-position:-150% 0}}
+.promo-dica__selo{animation:promoSelo 2.6s ease-in-out infinite}
+@keyframes promoSelo{0%,100%{transform:scale(1) rotate(0)}50%{transform:scale(1.12) rotate(-8deg)}}
+@media(prefers-reduced-motion:reduce){.promo-dica,.promo-dica__tag,.promo-dica__selo{animation:none}}
 
 /* ---------- sugestões dentro da sacola ---------- */
 .sugestoes-sacola{margin-top:6px;padding-top:16px;border-top:1px solid rgba(25,24,23,.1)}
@@ -459,10 +484,14 @@ input,select{font:inherit}
 .modal__corpo .produto__antigo{color:#8f8570;text-decoration:line-through}
 .modal__preco{font-family:var(--serif);font-size:33px;font-weight:600;margin:12px 0 0;color:#fbf6ec}
 .modal__parcela{font-size:12.5px;color:#a99f8b;margin:0 0 16px}
+.modal__promo{margin:-8px 0 16px;font-size:12px;letter-spacing:.04em;color:var(--ouro-claro)}
 .modal__acoes{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .modal__acoes .btn-ouro{flex:1;text-align:center;padding:14px}
 .modal__acoes .produto__fav{color:var(--ouro-claro)}
 .modal__nota-rodape{margin:16px 0 0;font-size:12px;color:#a99f8b}
+.modal__link{display:inline-flex;align-items:center;gap:8px;margin-top:14px;padding:9px 14px;border:1px solid rgba(217,179,108,.45);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ouro-claro);transition:background .2s,color .2s}
+.modal__link:hover{background:rgba(217,179,108,.12);color:#fff}
+.modal__link svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.8}
 @media(max-width:700px){.modal__painel{grid-template-columns:1fr}.modal__painel:not(.simples){grid-template-columns:1fr}.modal__img{border-right:0;border-bottom:1px solid var(--linha)}.modal__img img{aspect-ratio:16/10}.modal__corpo{padding:26px 22px}}
 
 /* ---------- modal rastreio ---------- */
@@ -544,20 +573,11 @@ input,select{font:inherit}
 <div class="avisos">
   <div class="env">
     <ul class="avisos__lista">
-      <li class="avisos__item">
-        <button type="button" data-abrir="rastreio">
-          <svg viewBox="0 0 24 24"><path d="M1 3h15v13H1z"/><path d="M16 8h4l3 3v5h-7z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-          Rastreio de entrega
-        </button>
-      </li>
-      <li class="avisos__item">
-        <svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
-        Aceitamos cartão de crédito
-      </li>
-      <li class="avisos__item">
-        <a href="https://wa.me/5521996931199" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:9px">
-          <svg viewBox="0 0 24 24"><path d="M3 18v-6a9 9 0 0118 0v6"/><path d="M21 19a2 2 0 01-2 2h-1a2 2 0 01-2-2v-3a2 2 0 012-2h3zM3 19a2 2 0 002 2h1a2 2 0 002-2v-3a2 2 0 00-2-2H3z"/></svg>
-          Atendimento exclusivo
+      <li class="avisos__item avisos__item--promo">
+        <a href="#/decants" class="avisos__promo">
+          <span class="promo-dica__selo" aria-hidden="true">%</span>
+          <span class="promo-dica__tag">Black November</span>
+          <span>Leve <b>3 decants</b> e ganhe <b>50% OFF</b> em um deles</span>
         </a>
       </li>
     </ul>
@@ -826,7 +846,7 @@ const PRODUTOS = [
     preco:590.00, img:"img/ch-212-black.webp", tom:"claro",
     desc:"Anis, lavanda preta e musk em um amadeirado noturno e magnético. Feito para a balada.",
     notas:{Topo:"Absinto, anis", Corpo:"Lavanda preta, especiarias", Fundo:"Musk, madeiras, baunilha"},
-    tamanhos:[{ml:"100 ml",mult:1}] },
+    tamanhos:[{ml:"100 ml",mult:1},{ml:"Decant 5 ml",preco:48.00},{ml:"Decant 10 ml",preco:79.00},{ml:"Decant 15 ml",preco:118.00}] },
 
   { id:"ch-212-men", nome:"Carolina Herrera 212 Men", sub:"Eau de Toilette 200 ml", marca:"Carolina Herrera", cat:"masculino", familia:"Aromático",
     preco:783.00, img:"img/ch-212-men.webp", tom:"claro",
@@ -839,6 +859,12 @@ const PRODUTOS = [
     desc:"Aquático amadeirado com toranja e ambroxan. Fresco, esportivo e com ótima projeção no calor.",
     notas:{Topo:"Toranja, notas marinhas", Corpo:"Folha de louro, jasmim", Fundo:"Âmbar cinza, guaíaco, patchouli"},
     tamanhos:[{ml:"200 ml",mult:1},{ml:"Decant 5 ml",preco:30.00},{ml:"Decant 10 ml",preco:55.00},{ml:"Decant 15 ml",preco:75.00}] },
+
+  { id:"invictus-parfum", nome:"Paco Rabanne Invictus Parfum", sub:"Parfum 200 ml", marca:"Paco Rabanne", cat:"masculino", familia:"Amadeirado",
+    preco:1190.00, img:"img/invictus-parfum.webp", tom:"claro",
+    desc:"A versão Parfum do troféu, agora em azul profundo: lavanda fresca e pimenta rosa sobre sabão negro e sândalo viciante. Aromático, amadeirado e intenso.",
+    notas:{Topo:"Lavanda, pimenta rosa", Corpo:"Sabão negro, murta", Fundo:"Sândalo, cashmeran, almíscar"},
+    tamanhos:[{ml:"200 ml",mult:1},{ml:"Decant 5 ml",preco:54.00},{ml:"Decant 10 ml",preco:89.00},{ml:"Decant 15 ml",preco:178.00}] },
 
   { id:"sauvage-edp-200", nome:"Dior Sauvage", sub:"Eau de Parfum 200 ml", marca:"Dior", cat:"masculino", familia:"Cítrico",
     preco:1320.00, img:"img/sauvage-edp-200.webp", tom:"claro", destaque:true,
@@ -906,7 +932,7 @@ const PRODUTOS = [
     notas:{Topo:"Abacaxi, limão, groselha, bergamota", Corpo:"Bétula, jasmim, rosa", Fundo:"Almíscar, âmbar cinza, baunilha"},
     tamanhos:[{ml:"200 ml",mult:1},{ml:"Decant 5 ml",preco:29.00},{ml:"Decant 10 ml",preco:49.00},{ml:"Decant 15 ml",preco:98.00}] },
 
-  { id:"ck-one", nome:"Calvin Klein CK One", sub:"Eau de Toilette 200 ml", marca:"Calvin Klein", cat:"masculino", extra:["feminino"], familia:"Cítrico",
+  { id:"ck-one", nome:"Calvin Klein CK One", sub:"Eau de Toilette 200 ml", marca:"Calvin Klein", cat:"masculino", familia:"Cítrico",
     preco:344.00, img:"img/ck-one.webp", tom:"claro",
     desc:"O ícone unissex: cítricos e chá verde frescos sobre almíscar limpo. Leve, versátil e perfeito para usar todo dia.",
     notas:{Topo:"Limão, bergamota, abacaxi", Corpo:"Chá verde, jasmim, violeta", Fundo:"Almíscar, âmbar, cedro"},
@@ -1097,6 +1123,30 @@ function remover(chave){
 const totalSacola = () => estado.carrinho.reduce((s,i) => s + i.preco*i.qtd, 0);
 const pecasSacola = () => estado.carrinho.reduce((s,i) => s + i.qtd, 0);
 
+/* ---------- Promoção Black November: leve 3 decants ----------
+   ESPELHO de api/_lib/promocoes.js (quem cobra é o servidor). A cada 3 decants
+   na sacola, o mais barato do trio sai pela metade. Se mudar lá, mude aqui. */
+const PROMO_DECANTS = { aCada:3, percentual:50, rotulo:"Black November" };
+const decantsSacola = () => estado.carrinho.filter(i => ehDecant(i.ml)).reduce((s,i) => s + i.qtd, 0);
+/** Desconto da promoção por item da sacola: { chave: reais }. */
+function descontoPorItem(){
+  const unidades = estado.carrinho.filter(i => ehDecant(i.ml))
+    .flatMap(i => Array(i.qtd).fill(null).map(() => ({ chave:i.chave, cent:Math.round(i.preco*100) })))
+    .sort((a,b) => b.cent - a.cent);
+  const porItem = {};
+  for(let j = PROMO_DECANTS.aCada - 1; j < unidades.length; j += PROMO_DECANTS.aCada){
+    const u = unidades[j];
+    porItem[u.chave] = (porItem[u.chave] || 0) + Math.round(u.cent * PROMO_DECANTS.percentual / 100);
+  }
+  for(const k in porItem) porItem[k] /= 100;
+  return porItem;
+}
+function descontoDecants(){
+  return Object.values(descontoPorItem()).reduce((s,d) => s + d, 0);
+}
+/** Subtotal já com a promoção — é sobre ele que o cupom vale. */
+const totalComPromo = () => totalSacola() - descontoDecants();
+
 /* ---------- Cupons de desconto ----------
    ESPELHO da lista do servidor (api/_lib/cupons.js) — usada só para o cliente
    ver o desconto na sacola. Quem cobra o valor certo é o servidor. Se mudar
@@ -1130,7 +1180,7 @@ function conferirCupom(codigo, subtotal){
 /** Cupom válido para o subtotal atual (ou null). Some sozinho se a sacola mudar. */
 function cupomAtivo(){
   if(!estado.cupom) return null;
-  const r = conferirCupom(estado.cupom.code, totalSacola());
+  const r = conferirCupom(estado.cupom.code, totalComPromo());
   return r.ok ? r : null;
 }
 
@@ -1143,7 +1193,7 @@ function salvarCupomLS(){
 }
 
 function aplicarCupom(codigo){
-  const r = conferirCupom(codigo, totalSacola());
+  const r = conferirCupom(codigo, totalComPromo());
   estado.cupom = r.ok ? { code:r.code } : estado.cupom;
   estado.cupomAviso = r.ok ? { tipo:"ok", texto:`Cupom ${r.code} aplicado — ${r.rotulo}.` }
                            : { tipo:"erro", texto:r.motivo };
@@ -1215,8 +1265,11 @@ function pintarCarrinho(){
     return;
   }
 
+  const descontos = descontoPorItem();
   const itensHtml = estado.carrinho.map(i => {
     const p = acharProduto(i.id);
+    const cheio = i.preco*i.qtd;
+    const desc = descontos[i.chave] || 0;
     return `<div class="item">
       ${fotoTamanho(p, i.ml, "item")}
       <div>
@@ -1228,7 +1281,9 @@ function pintarCarrinho(){
             <span>${i.qtd}</span>
             <button type="button" data-qtd="1" data-chave="${i.chave}" aria-label="Aumentar quantidade">+</button>
           </div>
-          <span class="item__preco">${dinheiro(i.preco*i.qtd)}</span>
+          ${desc
+            ? `<span class="item__preco item__preco--promo"><s>${dinheiro(cheio)}</s><b>${dinheiro(cheio - desc)}</b></span>`
+            : `<span class="item__preco">${dinheiro(cheio)}</span>`}
         </div>
         <button class="item__remover" type="button" data-remover="${i.chave}">Remover</button>
       </div>
@@ -1273,9 +1328,16 @@ function pintarCarrinho(){
 
   const total = totalSacola();
   const frete = total >= FRETE_GRATIS_A_PARTIR ? 0 : 29.9;
+  const promo = descontoDecants();
   const cup = cupomAtivo();
   const desconto = cup ? cup.desconto : 0;
-  const totalFinal = Math.max(0, total - desconto) + frete;
+  const totalFinal = Math.max(0, total - promo - desconto) + frete;
+  const qtdDecants = decantsSacola();
+  const faltamDecants = PROMO_DECANTS.aCada - (qtdDecants % PROMO_DECANTS.aCada);
+  const promoDica = qtdDecants && !promo
+    ? `<div class="promo-dica" role="status"><span class="promo-dica__selo">%</span>
+        <span><span class="promo-dica__tag">${PROMO_DECANTS.rotulo}</span>Adicione mais <b>${faltamDecants} decant${faltamDecants > 1 ? "s" : ""}</b> e ganhe <b>50% OFF</b> em um deles.</span></div>`
+    : "";
 
   const cupomInput = estado.cupom && cup ? `
     <div class="cupom cupom--ok">
@@ -1299,9 +1361,11 @@ function pintarCarrinho(){
       <p>${en.nome} · ${en.fone}<br>${en.rua}, ${en.numero}${en.complemento ? " — " + en.complemento : ""}<br>${en.bairro} · ${en.cidade}/${(en.uf||"").toUpperCase()} · CEP ${en.cep}</p>
     </div>` : "";
   pe.innerHTML = `
+    ${promoDica}
     ${cupomInput}
     ${cupomAviso}
     <div class="total-linha"><span>Subtotal</span><span>${dinheiro(total)}</span></div>
+    ${promo ? `<div class="total-linha total-linha--desc"><span>${PROMO_DECANTS.rotulo} (3 decants)</span><span>− ${dinheiro(promo)}</span></div>` : ""}
     ${desconto ? `<div class="total-linha total-linha--desc"><span>Desconto (${cup.code})</span><span>− ${dinheiro(desconto)}</span></div>` : ""}
     <div class="total-linha"><span>Frete</span><span>${frete === 0 ? "Grátis" : dinheiro(frete)}</span></div>
     <div class="total"><span>Total</span><b>${dinheiro(totalFinal)}</b></div>
@@ -1392,16 +1456,17 @@ function pintarProduto(){
       <span class="modal__marca">${p.marca} · ${p.familia}</span>
       <h2 class="modal__nome">${p.nome}</h2>
       <span class="produto__sub">${p.sub}</span>
+      <div class="opcoes" role="group" aria-label="Escolha o tamanho">
+        ${p.tamanhos.map((s,i) => `<button class="opcao ${i === tamanhoAtual ? "ativa" : ""}" type="button" data-tam="${i}">${s.ml}</button>`).join("")}
+      </div>
       <p class="modal__desc">${p.desc}</p>
       <dl class="notas">
         ${Object.entries(p.notas).map(([k,v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("")}
       </dl>
-      <div class="opcoes" role="group" aria-label="Escolha o tamanho">
-        ${p.tamanhos.map((s,i) => `<button class="opcao ${i === tamanhoAtual ? "ativa" : ""}" type="button" data-tam="${i}">${s.ml}</button>`).join("")}
-      </div>
       ${p.precoAntigo && tamanhoAtual === 0 ? `<p class="produto__antigo" style="margin:0">${dinheiro(p.precoAntigo)}</p>` : ""}
       <p class="modal__preco">${dinheiro(preco)}</p>
       <p class="modal__parcela">${parcela(preco)} sem juros</p>
+      ${ehDecant(t.ml) ? `<p class="modal__promo"><b>${PROMO_DECANTS.rotulo}:</b> leve 3 decants e ganhe 50% OFF em um deles</p>` : ""}
       <div class="modal__acoes">
         <button class="btn-ouro" type="button" data-add="${p.id}">Adicionar à sacola</button>
         <button class="produto__fav ${fav ? "ativo" : ""}" type="button" data-fav="${p.id}"
@@ -1411,6 +1476,10 @@ function pintarProduto(){
         </button>
       </div>
       <p class="modal__nota-rodape">Produto 100% original · Envio em até 24h úteis · Frete grátis acima de R$ 500</p>
+      <button class="modal__link" type="button" data-copiar-link="${p.id}">
+        <svg viewBox="0 0 24 24"><path d="M10 14a5 5 0 007.07 0l3-3a5 5 0 00-7.07-7.07l-1.5 1.5"/><path d="M14 10a5 5 0 00-7.07 0l-3 3a5 5 0 007.07 7.07l1.5-1.5"/></svg>
+        Copiar link do produto
+      </button>
     </div>`;
 }
 
@@ -1613,6 +1682,8 @@ function vistaCatalogo(){
 
   <section class="secao" style="padding-top:0">
     <div class="env">
+      ${estado.rota === "decants" ? `<div class="promo-dica promo-dica--secao" role="note"><span class="promo-dica__selo">%</span>
+        <span><span class="promo-dica__tag">${PROMO_DECANTS.rotulo}</span>Leve <b>3 decants</b> e ganhe <b>50% OFF</b> em um deles.</span></div>` : ""}
       <div class="barra-filtros">
         ${chipsCustom ? chipsCustom.map(([v,rot]) => `<button class="chip ${(estado.params.familia || "") === v ? "ativo" : ""}" type="button" data-familia="${v}">${rot}</button>`).join("") : ""}
         ${mostrarFamilias ? `<button class="chip ${!estado.params.familia ? "ativo" : ""}" type="button" data-familia="">Todos</button>
@@ -1729,6 +1800,26 @@ function navegar(){
 }
 
 function irPara(hash){ location.hash = hash; }
+
+/** Link direto que abre a janela do produto (mesmo formato que navegar() entende). */
+function linkProduto(p){
+  const rota = CATEGORIAS[p.cat] ? p.cat : "inicio";
+  return `${location.origin}${location.pathname}#/${rota}?produto=${encodeURIComponent(p.id)}`;
+}
+function copiarLinkProduto(id){
+  const p = acharProduto(id); if(!p) return;
+  const url = linkProduto(p);
+  const ok = () => avisar("Link do produto copiado");
+  const reserva = () => {
+    const campo = document.createElement("textarea");
+    campo.value = url; campo.setAttribute("readonly", ""); campo.style.cssText = "position:fixed;opacity:0";
+    document.body.appendChild(campo); campo.select();
+    try { document.execCommand("copy"); ok(); } catch(e) { avisar("Não foi possível copiar o link"); }
+    campo.remove();
+  };
+  if(navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(url).then(ok, reserva);
+  else reserva();
+}
 
 /* ============================================================
    11. CARROSSEL
@@ -1889,6 +1980,10 @@ document.addEventListener("click", e => {
   const espiar = alvo.closest("[data-espiar]");
   if(espiar){ caixaSugestoes.classList.add("oculto"); abrirProduto(espiar.dataset.espiar); return; }
 
+  // copiar link do produto (modal)
+  const copiar = alvo.closest("[data-copiar-link]");
+  if(copiar){ copiarLinkProduto(copiar.dataset.copiarLink); return; }
+
   // adicionar do modal
   const add = alvo.closest("[data-add]");
   if(add){ adicionar(add.dataset.add, tamanhoAtual); fecharTudo(); abrirSobreposicao("gavetaCarrinho"); return; }
@@ -2000,10 +2095,13 @@ document.addEventListener("click", e => {
     const linhas = estado.carrinho.map(i => `• ${acharProduto(i.id).nome} (${i.ml}) x${i.qtd} — ${dinheiro(i.preco*i.qtd)}`).join("\n");
     const endereco = `${en.nome} — ${en.fone}\n${en.rua}, ${en.numero}${en.complemento ? " (" + en.complemento + ")" : ""}\n${en.bairro}, ${en.cidade}/${(en.uf||"").toUpperCase()} — CEP ${en.cep}`;
     const cupWa = cupomAtivo();
-    const blocoCupom = cupWa
-      ? `\nSubtotal: ${dinheiro(totalSacola())}\nCupom ${cupWa.code}: − ${dinheiro(cupWa.desconto)}`
+    const promoWa = descontoDecants();
+    const blocoCupom = (cupWa || promoWa)
+      ? `\nSubtotal: ${dinheiro(totalSacola())}`
+        + (promoWa ? `\n${PROMO_DECANTS.rotulo} (3 decants): − ${dinheiro(promoWa)}` : "")
+        + (cupWa ? `\nCupom ${cupWa.code}: − ${dinheiro(cupWa.desconto)}` : "")
       : "";
-    const totalWa = Math.max(0, totalSacola() - (cupWa ? cupWa.desconto : 0));
+    const totalWa = Math.max(0, totalComPromo() - (cupWa ? cupWa.desconto : 0));
     const texto = `Olá! Quero finalizar meu pedido na Prime Perfumes:\n\n${linhas}${blocoCupom}\n\nTotal: ${dinheiro(totalWa)}\n\nEntrega:\n${endereco}`;
     window.open("https://wa.me/5521996931199?text=" + encodeURIComponent(texto), "_blank", "noopener");
     avisar("Pedido enviado para o atendimento");

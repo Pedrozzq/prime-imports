@@ -25,6 +25,7 @@
 import { MercadoPagoConfig, Preference } from 'mercadopago';
 import { validarSacola } from './_lib/catalogo.js';
 import { validarCupom } from './_lib/cupons.js';
+import { descontoDecants } from './_lib/promocoes.js';
 import { calcularFrete } from './_lib/frete.js';
 import { baseUrlDeRequest, montarPayer, itensPreferencia } from './_lib/checkout-pro.js';
 
@@ -72,14 +73,19 @@ export default async function handler(req, res) {
         }
 
         var subtotal = sacola.total;
-        var total = subtotal;
 
-        // Cupom: o cliente manda só o código; o desconto é decidido aqui.
-        var cupom = validarCupom(body.cupom, subtotal);
-        var descontoAplicado = 0;
-        if (cupom.ok && cupom.desconto > 0) {
-            descontoAplicado = cupom.desconto;
-            total = Math.round((subtotal - cupom.desconto) * 100) / 100;
+        // Promoção "leve 3 decants" — calculada aqui, nunca vem do navegador.
+        var promo = descontoDecants(sacola.itens);
+        var total = Math.round((subtotal - promo.desconto) * 100) / 100;
+        var descontoAplicado = promo.desconto;
+
+        // Cupom: o cliente manda só o código; o desconto é decidido aqui
+        // (sobre o valor já com a promoção).
+        var cupom = validarCupom(body.cupom, total);
+        var cupomOk = cupom.ok && cupom.desconto > 0;
+        if (cupomOk) {
+            descontoAplicado = Math.round((descontoAplicado + cupom.desconto) * 100) / 100;
+            total = Math.round((total - cupom.desconto) * 100) / 100;
         } else if (body.cupom) {
             console.warn('Cupom recusado (' + (cupom.code || '(vazio)') + '):', cupom.motivo);
         }
@@ -98,7 +104,7 @@ export default async function handler(req, res) {
         var referencia = 'PRIME-' + Date.now().toString(36).toUpperCase();
 
         var prefBody = {
-            items: itensPreferencia(sacola.itens, totalProdutos, descontoAplicado, cupom.code, frete),
+            items: itensPreferencia(sacola.itens, totalProdutos, descontoAplicado, cupomOk ? cupom.code : '', frete),
             payer: montarPayer(entrega),
             back_urls: {
                 success: base + '/checkout.html?mp=success',
@@ -117,7 +123,8 @@ export default async function handler(req, res) {
             external_reference: referencia,
             metadata: {
                 referencia: referencia,
-                cupom: descontoAplicado > 0 ? cupom.code : null,
+                cupom: cupomOk ? cupom.code : null,
+                promocao: promo.desconto,
                 subtotal: subtotal,
                 frete: frete,
                 total: total

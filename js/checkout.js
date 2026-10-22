@@ -81,6 +81,28 @@
         return items.reduce(function (sum, it) { return sum + it.qty * it.price; }, 0);
     }
 
+    /**
+     * Promoção Black November ("leve 3 decants") — espelho de api/_lib/promocoes.js, só para
+     * exibição: a cada 3 decants, o mais barato do trio sai pela metade.
+     */
+    function getPromo(items) {
+        var unidades = [];
+        items.forEach(function (it) {
+            var tamanho = String(it.id || '').split('|')[1] || '';
+            if (tamanho.indexOf('Decant') !== 0) return;
+            for (var i = 0; i < (Number(it.qty) || 0); i++) unidades.push(Math.round(Number(it.price) * 100));
+        });
+        unidades.sort(function (a, b) { return b - a; });
+        var cent = 0;
+        for (var j = 2; j < unidades.length; j += 3) cent += Math.round(unidades[j] / 2);
+        return cent / 100;
+    }
+
+    /** Subtotal com promoção e cupom, ainda sem frete. */
+    function getTotalProdutos(items, cupom) {
+        return getSubtotal(items) - getPromo(items) - (cupom ? cupom.desconto : 0);
+    }
+
     /** Mesma regra de api/_lib/frete.js (quem cobra é o servidor; aqui é só exibição). */
     var FRETE_VALOR = 29.9;
     var FRETE_GRATIS_A_PARTIR = 500;
@@ -117,25 +139,34 @@
                     '</div>';
             }).join('');
 
-            if (cupom) {
+            var promo = getPromo(items);
+            if (cupom || promo) {
                 linhas += '<div class="flex justify-between items-center gap-4 text-sm pt-3">' +
                         '<span class="text-brand-gray">Subtotal</span>' +
                         '<span class="text-brand-gray whitespace-nowrap">' + formatBRL(getSubtotal(items)) + '</span>' +
-                    '</div>' +
-                    '<div class="flex justify-between items-center gap-4 text-sm py-1 text-green-400">' +
+                    '</div>';
+            }
+            if (promo) {
+                linhas += '<div class="flex justify-between items-center gap-4 text-sm py-1 text-green-400">' +
+                        '<span>Black November (3 decants)</span>' +
+                        '<span class="whitespace-nowrap">-' + formatBRL(promo) + '</span>' +
+                    '</div>';
+            }
+            if (cupom) {
+                linhas += '<div class="flex justify-between items-center gap-4 text-sm py-1 text-green-400">' +
                         '<span>Cupom ' + escapeHtml(cupom.code) + '</span>' +
                         '<span class="whitespace-nowrap">-' + formatBRL(cupom.desconto) + '</span>' +
                     '</div>';
             }
             var frete = getFrete(items);
-            linhas += '<div class="flex justify-between items-center gap-4 text-sm ' + (cupom ? 'py-1' : 'pt-3') + '">' +
+            linhas += '<div class="flex justify-between items-center gap-4 text-sm ' + (cupom || promo ? 'py-1' : 'pt-3') + '">' +
                     '<span class="text-brand-gray">Frete</span>' +
                     '<span class="whitespace-nowrap ' + (frete > 0 ? 'text-brand-gray' : 'text-green-400') + '">' + (frete > 0 ? formatBRL(frete) : 'Grátis') + '</span>' +
                 '</div>';
             listEl.innerHTML = linhas;
         }
 
-        var total = getSubtotal(items) - (cupom ? cupom.desconto : 0);
+        var total = getTotalProdutos(items, cupom);
         if (items.length && total > 0) total += getFrete(items);
         if (totalEl) totalEl.textContent = formatBRL(total > 0 ? total : 0);
     }
@@ -289,7 +320,7 @@
         renderEntrega(entrega);
         ligarBotaoPagar();
 
-        var total = getSubtotal(items) - (cupom ? cupom.desconto : 0);
+        var total = getTotalProdutos(items, cupom);
         if (!items.length || total <= 0) {
             setPayButton('Sacola vazia', true);
             showStatus('error', 'Sua sacola está vazia. <a class="underline" href="index.html">Volte à loja</a> para montar o pedido.');
@@ -307,7 +338,7 @@
         renderSummary(items, cupom);
         renderEntrega(getEntrega());
         ligarBotaoPagar();
-        var total = getSubtotal(items) - (cupom ? cupom.desconto : 0);
+        var total = getTotalProdutos(items, cupom);
         setPayButton(items.length && total > 0 ? 'Tentar novamente' : 'Sacola vazia', !(items.length && total > 0));
     }
 

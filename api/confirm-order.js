@@ -24,6 +24,7 @@ import { MercadoPagoConfig, Payment } from 'mercadopago';
 import { enviarEmailPedido } from './_lib/order-email.js';
 import { validarSacola } from './_lib/catalogo.js';
 import { validarCupom } from './_lib/cupons.js';
+import { descontoDecants } from './_lib/promocoes.js';
 import { calcularFrete } from './_lib/frete.js';
 
 const ACCESS_TOKEN = process.env.MP_ACCESS_TOKEN;
@@ -74,11 +75,13 @@ export default async function handler(req, res) {
         }
 
         var subtotal = sacola.total;
-        var total = subtotal;
-        var cupom = validarCupom(body.cupom, subtotal);
+        var promo = descontoDecants(sacola.itens);
+        var promoAplicada = promo.desconto > 0 ? promo : null;
+        var total = Math.round((subtotal - promo.desconto) * 100) / 100;
+        var cupom = validarCupom(body.cupom, total);
         var cupomAplicado = (cupom.ok && cupom.desconto > 0) ? cupom : null;
         if (cupomAplicado) {
-            total = Math.round((subtotal - cupomAplicado.desconto) * 100) / 100;
+            total = Math.round((total - cupomAplicado.desconto) * 100) / 100;
         }
         var frete = calcularFrete(subtotal);
         total = Math.round((total + frete) * 100) / 100;
@@ -112,6 +115,7 @@ export default async function handler(req, res) {
             items: sacola.itens,
             entrega: entrega,
             subtotal: subtotal,
+            promo: promoAplicada,
             cupom: cupomAplicado,
             frete: frete,
             total: total

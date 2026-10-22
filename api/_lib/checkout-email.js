@@ -46,7 +46,9 @@ export function montarEmailCheckout(dados) {
     var total = Number(dados.total) || 0;
     var cupom = dados.cupom && dados.cupom.desconto > 0 ? dados.cupom : null;
     var frete = Number(dados.frete) || 0;
-    var subtotal = Number(dados.subtotal) || (cupom ? total + cupom.desconto : total) - frete;
+    var promo = dados.promo && dados.promo.desconto > 0 ? dados.promo : null;
+    var subtotal = Number(dados.subtotal)
+        || total + (cupom ? cupom.desconto : 0) + (promo ? promo.desconto : 0) - frete;
 
     var nomeCliente = entrega.nome || 'Cliente sem nome';
     var endereco = linhaEndereco(entrega);
@@ -54,10 +56,16 @@ export function montarEmailCheckout(dados) {
 
     var assunto = '[CHECKOUT] ' + nomeCliente + ' está pagando — ' + brl(total);
 
-    var linhasCupomHtml = cupom
+    var linhasCupomHtml = (cupom || promo)
         ? '<tr><td colspan="2" style="padding:6px 8px;color:#555">Subtotal</td>' +
-          '<td style="padding:6px 8px;text-align:right;color:#555">' + brl(subtotal) + '</td></tr>' +
-          '<tr><td colspan="2" style="padding:6px 8px;color:#15803d">Cupom ' + escapeHtml(cupom.code) +
+          '<td style="padding:6px 8px;text-align:right;color:#555">' + brl(subtotal) + '</td></tr>'
+        : '';
+    linhasCupomHtml += promo
+        ? '<tr><td colspan="2" style="padding:6px 8px;color:#15803d">Promoção ' + escapeHtml(promo.rotulo) + '</td>' +
+          '<td style="padding:6px 8px;text-align:right;color:#15803d">-' + brl(promo.desconto) + '</td></tr>'
+        : '';
+    linhasCupomHtml += cupom
+        ? '<tr><td colspan="2" style="padding:6px 8px;color:#15803d">Cupom ' + escapeHtml(cupom.code) +
           (cupom.rotulo ? ' <span style="color:#888">(' + escapeHtml(cupom.rotulo) + ')</span>' : '') + '</td>' +
           '<td style="padding:6px 8px;text-align:right;color:#15803d">-' + brl(cupom.desconto) + '</td></tr>'
         : '';
@@ -121,7 +129,8 @@ export function montarEmailCheckout(dados) {
             }).join('\n')
             : '- (nenhum item enviado)',
         '',
-        cupom ? 'Subtotal: ' + brl(subtotal) : null,
+        (cupom || promo) ? 'Subtotal: ' + brl(subtotal) : null,
+        promo ? 'Promoção ' + promo.rotulo + ': -' + brl(promo.desconto) : null,
         cupom ? 'Cupom ' + cupom.code + (cupom.rotulo ? ' (' + cupom.rotulo + ')' : '') + ': -' + brl(cupom.desconto) : null,
         'Frete: ' + (frete > 0 ? brl(frete) : 'Grátis'),
         'TOTAL: ' + brl(total),
