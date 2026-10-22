@@ -1459,10 +1459,6 @@ function pintarProduto(){
       <div class="opcoes" role="group" aria-label="Escolha o tamanho">
         ${p.tamanhos.map((s,i) => `<button class="opcao ${i === tamanhoAtual ? "ativa" : ""}" type="button" data-tam="${i}">${s.ml}</button>`).join("")}
       </div>
-      <p class="modal__desc">${p.desc}</p>
-      <dl class="notas">
-        ${Object.entries(p.notas).map(([k,v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("")}
-      </dl>
       ${p.precoAntigo && tamanhoAtual === 0 ? `<p class="produto__antigo" style="margin:0">${dinheiro(p.precoAntigo)}</p>` : ""}
       <p class="modal__preco">${dinheiro(preco)}</p>
       <p class="modal__parcela">${parcela(preco)} sem juros</p>
@@ -1475,6 +1471,10 @@ function pintarProduto(){
           <svg viewBox="0 0 24 24"><path d="M20.8 5.6a5 5 0 00-7.1 0L12 7.3l-1.7-1.7a5 5 0 10-7.1 7.1L12 21.5l8.8-8.8a5 5 0 000-7.1z"/></svg>
         </button>
       </div>
+      <p class="modal__desc">${p.desc}</p>
+      <dl class="notas">
+        ${Object.entries(p.notas).map(([k,v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("")}
+      </dl>
       <p class="modal__nota-rodape">Produto 100% original · Envio em até 24h úteis · Frete grátis acima de R$ 500</p>
       <button class="modal__link" type="button" data-copiar-link="${p.id}">
         <svg viewBox="0 0 24 24"><path d="M10 14a5 5 0 007.07 0l3-3a5 5 0 00-7.07-7.07l-1.5 1.5"/><path d="M14 10a5 5 0 00-7.07 0l-3 3a5 5 0 007.07 7.07l1.5-1.5"/></svg>
