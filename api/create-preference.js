@@ -74,7 +74,7 @@ export default async function handler(req, res) {
 
         var subtotal = sacola.total;
 
-        // Promoção "leve 3 decants" — calculada aqui, nunca vem do navegador.
+        // Promoção "leve 3 produtos" — calculada aqui, nunca vem do navegador.
         var promo = descontoDecants(sacola.itens);
         var total = Math.round((subtotal - promo.desconto) * 100) / 100;
         var descontoAplicado = promo.desconto;

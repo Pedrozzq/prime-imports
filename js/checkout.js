@@ -82,14 +82,12 @@
     }
 
     /**
-     * Promoção Black November ("leve 3 decants") — espelho de api/_lib/promocoes.js, só para
-     * exibição: a cada 3 decants, o mais barato do trio sai pela metade.
+     * Promoção Black November ("leve 3 produtos") — espelho de api/_lib/promocoes.js, só para
+     * exibição: a cada 3 produtos da sacola, o mais barato do trio sai pela metade.
      */
     function getPromo(items) {
         var unidades = [];
         items.forEach(function (it) {
-            var tamanho = String(it.id || '').split('|')[1] || '';
-            if (tamanho.indexOf('Decant') !== 0) return;
             for (var i = 0; i < (Number(it.qty) || 0); i++) unidades.push(Math.round(Number(it.price) * 100));
         });
         unidades.sort(function (a, b) { return b - a; });
@@ -148,7 +146,7 @@
             }
             if (promo) {
                 linhas += '<div class="flex justify-between items-center gap-4 text-sm py-1 text-green-400">' +
-                        '<span>Black November (3 decants)</span>' +
+                        '<span>Black November (leve 3 produtos)</span>' +
                         '<span class="whitespace-nowrap">-' + formatBRL(promo) + '</span>' +
                     '</div>';
             }

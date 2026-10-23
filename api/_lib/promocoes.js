@@ -6,8 +6,9 @@
  * catálogo. Se mudar a regra aqui, espelhe em descontoDecants() do index.html
  * e de js/checkout.js (usados só para o cliente ver o desconto).
  *
- * Black November — leve 3 decants: a cada 3 decants na sacola (contando a quantidade de cada
- * item), o mais barato desse grupo sai pela metade do preço. As unidades são
+ * Black November — leve 3 produtos: a cada 3 produtos na sacola (qualquer item:
+ * frasco, decant, cosmético ou body splash, contando a quantidade de cada um),
+ * o mais barato desse grupo sai pela metade do preço. As unidades são
  * ordenadas do mais caro para o mais barato e agrupadas de 3 em 3, então o
  * desconto cai sempre sobre a unidade mais barata de cada trio.
  */
@@ -16,7 +17,7 @@ export const PROMO_DECANTS = {
     ativo: true,
     aCada: 3,
     percentual: 50,
-    rotulo: 'Black November — leve 3 decants, o mais barato sai pela metade'
+    rotulo: 'Black November — leve 3 produtos, o de menor valor sai pela metade'
 };
 
 /** Centavos evitam erro de ponto flutuante. */
@@ -24,14 +25,9 @@ function centavos(valor) {
     return Math.round(Number(valor) * 100);
 }
 
-/** A chave do item é "<produto>|<tamanho>"; decant é o tamanho "Decant ...". */
-function ehDecant(item) {
-    var tamanho = String(item && item.id || '').split('|')[1] || '';
-    return tamanho.indexOf('Decant') === 0;
-}
-
 /**
- * Desconto (R$) da promoção de decants para itens já validados pelo catálogo.
+ * Desconto (R$) da promoção "leve 3 produtos" para itens já validados pelo catálogo.
+ * (O nome descontoDecants ficou da primeira versão da promoção, que valia só para decants.)
  *
  * @param {Array<{id:string, price:number, qty:number}>} itens
  * @returns {{desconto:number, rotulo:string}} `desconto` 0 = promoção não se aplica.
@@ -42,7 +38,6 @@ export function descontoDecants(itens) {
 
     var unidades = [];
     itens.forEach(function (it) {
-        if (!ehDecant(it)) return;
         var qtd = Math.floor(Number(it.qty)) || 0;
         for (var i = 0; i < qtd; i++) unidades.push(centavos(it.price));
     });

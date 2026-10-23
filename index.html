@@ -574,10 +574,10 @@ input,select{font:inherit}
   <div class="env">
     <ul class="avisos__lista">
       <li class="avisos__item avisos__item--promo">
-        <a href="#/decants" class="avisos__promo">
+        <a href="#/inicio" class="avisos__promo">
           <span class="promo-dica__selo" aria-hidden="true">%</span>
           <span class="promo-dica__tag">Black November</span>
-          <span>Leve <b>3 decants</b> e ganhe <b>50% OFF</b> em um deles</span>
+          <span>Leve <b>3 produtos</b> e o de menor valor sai com <b>50% OFF</b></span>
         </a>
       </li>
     </ul>
@@ -1123,14 +1123,14 @@ function remover(chave){
 const totalSacola = () => estado.carrinho.reduce((s,i) => s + i.preco*i.qtd, 0);
 const pecasSacola = () => estado.carrinho.reduce((s,i) => s + i.qtd, 0);
 
-/* ---------- Promoção Black November: leve 3 decants ----------
-   ESPELHO de api/_lib/promocoes.js (quem cobra é o servidor). A cada 3 decants
-   na sacola, o mais barato do trio sai pela metade. Se mudar lá, mude aqui. */
+/* ---------- Promoção Black November: leve 3 produtos ----------
+   ESPELHO de api/_lib/promocoes.js (quem cobra é o servidor). A cada 3 produtos
+   na sacola (qualquer item), o mais barato do trio sai pela metade. Se mudar lá, mude aqui. */
 const PROMO_DECANTS = { aCada:3, percentual:50, rotulo:"Black November" };
-const decantsSacola = () => estado.carrinho.filter(i => ehDecant(i.ml)).reduce((s,i) => s + i.qtd, 0);
+const itensPromoSacola = () => estado.carrinho.reduce((s,i) => s + i.qtd, 0);
 /** Desconto da promoção por item da sacola: { chave: reais }. */
 function descontoPorItem(){
-  const unidades = estado.carrinho.filter(i => ehDecant(i.ml))
+  const unidades = estado.carrinho
     .flatMap(i => Array(i.qtd).fill(null).map(() => ({ chave:i.chave, cent:Math.round(i.preco*100) })))
     .sort((a,b) => b.cent - a.cent);
   const porItem = {};
@@ -1332,11 +1332,11 @@ function pintarCarrinho(){
   const cup = cupomAtivo();
   const desconto = cup ? cup.desconto : 0;
   const totalFinal = Math.max(0, total - promo - desconto) + frete;
-  const qtdDecants = decantsSacola();
-  const faltamDecants = PROMO_DECANTS.aCada - (qtdDecants % PROMO_DECANTS.aCada);
-  const promoDica = qtdDecants && !promo
+  const qtdPromo = itensPromoSacola();
+  const faltamPromo = PROMO_DECANTS.aCada - (qtdPromo % PROMO_DECANTS.aCada);
+  const promoDica = qtdPromo && !promo
     ? `<div class="promo-dica" role="status"><span class="promo-dica__selo">%</span>
-        <span><span class="promo-dica__tag">${PROMO_DECANTS.rotulo}</span>Adicione mais <b>${faltamDecants} decant${faltamDecants > 1 ? "s" : ""}</b> e ganhe <b>50% OFF</b> em um deles.</span></div>`
+        <span><span class="promo-dica__tag">${PROMO_DECANTS.rotulo}</span>Adicione mais <b>${faltamPromo} produto${faltamPromo > 1 ? "s" : ""}</b> e o de menor valor sai com <b>50% OFF</b>.</span></div>`
     : "";
 
   const cupomInput = estado.cupom && cup ? `
@@ -1365,7 +1365,7 @@ function pintarCarrinho(){
     ${cupomInput}
     ${cupomAviso}
     <div class="total-linha"><span>Subtotal</span><span>${dinheiro(total)}</span></div>
-    ${promo ? `<div class="total-linha total-linha--desc"><span>${PROMO_DECANTS.rotulo} (3 decants)</span><span>− ${dinheiro(promo)}</span></div>` : ""}
+    ${promo ? `<div class="total-linha total-linha--desc"><span>${PROMO_DECANTS.rotulo} (leve 3 produtos)</span><span>− ${dinheiro(promo)}</span></div>` : ""}
     ${desconto ? `<div class="total-linha total-linha--desc"><span>Desconto (${cup.code})</span><span>− ${dinheiro(desconto)}</span></div>` : ""}
     <div class="total-linha"><span>Frete</span><span>${frete === 0 ? "Grátis" : dinheiro(frete)}</span></div>
     <div class="total"><span>Total</span><b>${dinheiro(totalFinal)}</b></div>
@@ -1462,7 +1462,7 @@ function pintarProduto(){
       ${p.precoAntigo && tamanhoAtual === 0 ? `<p class="produto__antigo" style="margin:0">${dinheiro(p.precoAntigo)}</p>` : ""}
       <p class="modal__preco">${dinheiro(preco)}</p>
       <p class="modal__parcela">${parcela(preco)} sem juros</p>
-      ${ehDecant(t.ml) ? `<p class="modal__promo"><b>${PROMO_DECANTS.rotulo}:</b> leve 3 decants e ganhe 50% OFF em um deles</p>` : ""}
+      <p class="modal__promo"><b>${PROMO_DECANTS.rotulo}:</b> leve 3 produtos e o de menor valor sai com 50% OFF</p>
       <div class="modal__acoes">
         <button class="btn-ouro" type="button" data-add="${p.id}">Adicionar à sacola</button>
         <button class="produto__fav ${fav ? "ativo" : ""}" type="button" data-fav="${p.id}"
@@ -1682,8 +1682,8 @@ function vistaCatalogo(){
 
   <section class="secao" style="padding-top:0">
     <div class="env">
-      ${estado.rota === "decants" ? `<div class="promo-dica promo-dica--secao" role="note"><span class="promo-dica__selo">%</span>
-        <span><span class="promo-dica__tag">${PROMO_DECANTS.rotulo}</span>Leve <b>3 decants</b> e ganhe <b>50% OFF</b> em um deles.</span></div>` : ""}
+      <div class="promo-dica promo-dica--secao" role="note"><span class="promo-dica__selo">%</span>
+        <span><span class="promo-dica__tag">${PROMO_DECANTS.rotulo}</span>Leve <b>3 produtos</b> e o de menor valor sai com <b>50% OFF</b>.</span></div>
       <div class="barra-filtros">
         ${chipsCustom ? chipsCustom.map(([v,rot]) => `<button class="chip ${(estado.params.familia || "") === v ? "ativo" : ""}" type="button" data-familia="${v}">${rot}</button>`).join("") : ""}
         ${mostrarFamilias ? `<button class="chip ${!estado.params.familia ? "ativo" : ""}" type="button" data-familia="">Todos</button>
@@ -2098,7 +2098,7 @@ document.addEventListener("click", e => {
     const promoWa = descontoDecants();
     const blocoCupom = (cupWa || promoWa)
       ? `\nSubtotal: ${dinheiro(totalSacola())}`
-        + (promoWa ? `\n${PROMO_DECANTS.rotulo} (3 decants): − ${dinheiro(promoWa)}` : "")
+        + (promoWa ? `\n${PROMO_DECANTS.rotulo} (leve 3 produtos): − ${dinheiro(promoWa)}` : "")
         + (cupWa ? `\nCupom ${cupWa.code}: − ${dinheiro(cupWa.desconto)}` : "")
       : "";
     const totalWa = Math.max(0, totalComPromo() - (cupWa ? cupWa.desconto : 0));
