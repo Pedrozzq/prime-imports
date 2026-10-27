@@ -150,6 +150,76 @@ input,select{font:inherit}
 .hero__ponto{width:8px;height:8px;padding:0;border:0;border-radius:50%;background:rgba(217,179,108,.28);cursor:pointer;transition:transform .25s,background .25s}
 .hero__ponto:hover{background:rgba(217,179,108,.6)}
 .hero__ponto.is-active{background:var(--ouro);transform:scale(1.35)}
+/* ---------- Black November: faixa premium das páginas de catálogo ---------- */
+@property --bn-ang{syntax:"<angle>";initial-value:0deg;inherits:false}
+.bn{position:relative;isolation:isolate;overflow:hidden;display:flex;align-items:center;justify-content:space-between;gap:22px;flex-wrap:wrap;margin:0 0 22px;padding:20px 24px;
+  border:1.5px solid transparent;color:#fdf8ef;
+  background:
+    radial-gradient(120% 140% at 0% 0%,rgba(217,179,108,.16),transparent 55%) padding-box,
+    repeating-linear-gradient(115deg,#050505 0 18px,#0a0a0a 18px 36px) padding-box,
+    conic-gradient(from var(--bn-ang),#8a6d3c,#f0dcae,#c39a4e,#3a2c14,#f0dcae,#8a6d3c) border-box;
+  box-shadow:0 24px 50px -28px rgba(0,0,0,.9);animation:bnBorda 6s linear infinite}
+@keyframes bnBorda{to{--bn-ang:360deg}}
+/* luz que atravessa a faixa */
+.bn::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(105deg,transparent 40%,rgba(240,220,174,.13) 50%,transparent 60%);
+  transform:translateX(-100%);animation:bnLuz 5s ease-in-out infinite}
+@keyframes bnLuz{0%,40%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+.bn__marca{display:flex;align-items:center;gap:16px}
+.bn__selo{flex:none;width:52px;height:52px;display:grid;place-items:center;border-radius:50%;font:700 22px/1 var(--serif);color:#0a0a0a;
+  background:radial-gradient(circle at 30% 25%,#fff4d6,#d9b36c 55%,#8a6d3c);box-shadow:0 0 0 4px rgba(217,179,108,.15),0 0 26px -4px rgba(217,179,108,.8);animation:promoSelo 2.6s ease-in-out infinite}
+.bn__pre{display:block;font-size:10px;font-weight:600;letter-spacing:.32em;text-transform:uppercase;color:#b9ae9b}
+.bn__titulo{margin:2px 0 0;font-family:var(--serif);font-size:clamp(26px,3.4vw,38px);font-weight:700;line-height:1;letter-spacing:.06em;text-transform:uppercase;
+  background:linear-gradient(100deg,#8a6d3c 0%,#f0dcae 22%,#fff8e6 30%,#d9b36c 45%,#8a6d3c 60%,#f0dcae 80%,#c39a4e 100%);background-size:250% 100%;
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:bnOuro 4s linear infinite}
+.bn__titulo em{font-style:italic;font-weight:600;letter-spacing:.02em}
+@keyframes bnOuro{from{background-position:100% 0}to{background-position:-150% 0}}
+.bn__niveis{display:flex;gap:10px;flex-wrap:wrap}
+.bn__nivel{display:flex;align-items:center;gap:12px;padding:10px 12px 10px 10px;border:1px solid rgba(217,179,108,.35);background:rgba(255,255,255,.03)}
+.bn__qtd{width:40px;height:40px;display:grid;place-items:center;border:1px solid #d9b36c;font:600 24px/1 var(--serif);color:#f0dcae}
+.bn__txt{font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#fdf8ef}
+.bn__txt small{display:block;margin-top:2px;font-size:11px;font-weight:400;letter-spacing:.04em;text-transform:none;color:#b9ae9b}
+.bn__oferta{padding:7px 10px;font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#0a0a0a;background:#d9b36c}
+.bn__nivel--top{border-color:#d9b36c;background:linear-gradient(135deg,rgba(217,179,108,.2),rgba(217,179,108,.04))}
+.bn__nivel--top .bn__qtd{background:#d9b36c;color:#0a0a0a}
+.bn__nivel--top .bn__oferta{background:linear-gradient(120deg,#fff4d6,#d9b36c 60%);animation:bnPulso 1.8s ease-in-out infinite}
+@keyframes bnPulso{0%,100%{box-shadow:0 0 0 0 rgba(217,179,108,.55)}50%{box-shadow:0 0 0 7px rgba(217,179,108,0)}}
+@media(max-width:640px){
+  .bn{padding:16px;gap:14px}
+  .bn__selo{width:42px;height:42px;font-size:18px}
+  .bn__niveis{width:100%;flex-direction:column}
+  .bn__nivel{width:100%}
+  .bn__txt{flex:1}
+}
+@media(prefers-reduced-motion:reduce){.bn,.bn::after,.bn__selo,.bn__titulo,.bn__nivel--top .bn__oferta{animation:none}}
+
+/* anúncio da promoção sobre os frascos */
+.hero__vitrine--promo .hero__frascos{width:78%;margin-inline:auto}
+.hero__vitrine--promo .hero__pontos{display:none} /* o cartão da promoção ocupa o lugar dos pontos; os frascos seguem trocando sozinhos */
+.hero__promo{position:relative;z-index:3;margin:-46px 0 0;padding:18px 18px 16px;text-align:left;border:1.5px solid transparent;
+  background:linear-gradient(160deg,rgba(10,10,10,.94),rgba(3,3,3,.97)) padding-box,
+    conic-gradient(from var(--bn-ang),#8a6d3c,#f0dcae,#c39a4e,#3a2c14,#f0dcae,#8a6d3c) border-box;
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  box-shadow:0 24px 50px -22px rgba(0,0,0,.9),0 0 40px -18px rgba(217,179,108,.6);overflow:hidden;animation:bnBorda 6s linear infinite}
+.hero__promo .promo-dica__tag{font-size:12px}
+.hero__promo::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(100deg,transparent 35%,rgba(240,220,174,.14) 50%,transparent 65%);transform:translateX(-120%);animation:promoVarrer 4.5s ease-in-out infinite}
+@keyframes promoVarrer{0%,55%{transform:translateX(-120%)}100%{transform:translateX(120%)}}
+.hero__promo-topo{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.hero__promo .promo-dica__tag{margin:0;font-size:11px}
+.hero__promo-titulo{margin:6px 0 12px;font-family:var(--serif);font-size:25px;font-weight:600;line-height:1.1;color:var(--creme)}
+.hero__promo-titulo em{font-style:italic;color:var(--ouro-claro)}
+.hero__nivel{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;padding:10px 0;border-top:1px solid rgba(217,179,108,.18)}
+.hero__nivel-qtd{width:42px;height:42px;display:grid;place-items:center;border:1px solid var(--ouro);color:var(--ouro-claro);font-family:var(--serif);font-size:24px;font-weight:600;line-height:1}
+.hero__nivel b{display:block;font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--creme)}
+.hero__nivel div span{display:block;margin-top:2px;font-size:12.5px;line-height:1.35;color:#b9ae9b}
+.hero__nivel-selo{padding:6px 9px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;color:var(--breu);background:var(--ouro)}
+.hero__nivel--top .hero__nivel-qtd{background:var(--ouro);color:var(--breu)}
+.hero__nivel--top .hero__nivel-selo{background:linear-gradient(120deg,#fff3d1,var(--ouro) 60%);box-shadow:0 0 18px -2px rgba(217,179,108,.7)}
+.hero__promo-cta{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:6px;padding:13px 16px;font-size:11.5px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--breu);background:linear-gradient(120deg,var(--ouro-claro),var(--ouro) 55%,var(--ouro-forte));transition:filter .2s,transform .2s}
+.hero__promo-cta:hover{filter:brightness(1.08);transform:translateY(-1px)}
+@media(max-width:900px){.hero__promo{margin-top:-34px}.hero__promo-titulo{font-size:22px}}
+@media(prefers-reduced-motion:reduce){.hero__promo,.hero__promo::before{animation:none}}
 .garantias{position:relative;z-index:2;display:flex;justify-content:center;flex-wrap:wrap;gap:0;padding:14px 0 30px}
 .garantia{display:flex;align-items:center;gap:12px;padding:6px 26px;color:#ece1cd}
 .garantia+.garantia{border-left:1px solid rgba(217,179,108,.28)}
@@ -426,9 +496,6 @@ input,select{font:inherit}
 .promo-dica{display:flex;align-items:center;gap:12px;margin:0 0 14px;padding:12px 14px;border:1px solid var(--ouro);background:linear-gradient(135deg,rgba(217,179,108,.24),rgba(217,179,108,.08));font-size:13.5px;line-height:1.4;color:#fdf8ef;animation:promoPulso 2.4s ease-in-out infinite}
 .promo-dica b{color:var(--ouro-claro);font-weight:700}
 .promo-dica__tag{display:block;margin-bottom:3px;font-size:10px;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--ouro)}
-.promo-dica--secao{margin:0 0 22px;padding:16px 20px;font-size:15px;background:#000}
-.promo-dica--secao .promo-dica__selo{width:40px;height:40px;font-size:18px}
-.promo-dica--secao .promo-dica__tag{font-size:11px}
 .promo-dica__selo{flex:none;width:32px;height:32px;display:grid;place-items:center;border-radius:50%;background:var(--ouro);color:var(--breu);font-weight:700;font-size:15px}
 @keyframes promoPulso{0%,100%{box-shadow:0 0 0 0 rgba(217,179,108,0)}50%{box-shadow:0 0 0 4px rgba(217,179,108,.18)}}
 /* "BLACK NOVEMBER" com brilho dourado correndo pelas letras */
@@ -577,7 +644,7 @@ input,select{font:inherit}
         <a href="#/inicio" class="avisos__promo">
           <span class="promo-dica__selo" aria-hidden="true">%</span>
           <span class="promo-dica__tag">Black November</span>
-          <span>Leve <b>3 produtos</b> e o de menor valor sai com <b>50% OFF</b></span>
+          <span>Leve <b>3</b>: o de menor valor com <b>50% OFF</b> · Leve <b>5</b>: o de menor valor sai <b>de graça</b></span>
         </a>
       </li>
     </ul>
@@ -1074,8 +1141,9 @@ const estado = {
   cupom:null, cupomAviso:null
 };
 
-// casas árabes (para as subseções Importados x Árabes)
+// casas árabes e de nicho (para as subseções Árabes x Importados x Nicho)
 const MARCAS_ARABES = ["Lattafa","Rasasi","Orientica","Al Haramain","Armaf","Maison Alhambra","Lattafa Perfumes","Al Wataniah"];
+const MARCAS_NICHO = ["Xerjoff","Sospiro","Maison Francis Kurkdjian"];
 // subseções de Cosméticos ainda sem catálogo — mostram bloco "Em breve"
 const COSMETICOS_EM_BREVE = ["Facial"];
 
@@ -1123,10 +1191,11 @@ function remover(chave){
 const totalSacola = () => estado.carrinho.reduce((s,i) => s + i.preco*i.qtd, 0);
 const pecasSacola = () => estado.carrinho.reduce((s,i) => s + i.qtd, 0);
 
-/* ---------- Promoção Black November: leve 3 produtos ----------
-   ESPELHO de api/_lib/promocoes.js (quem cobra é o servidor). A cada 3 produtos
-   na sacola (qualquer item), o mais barato do trio sai pela metade. Se mudar lá, mude aqui. */
-const PROMO_DECANTS = { aCada:3, percentual:50, rotulo:"Black November" };
+/* ---------- Promoção Black November: leve 3 / leve 5 ----------
+   ESPELHO de api/_lib/promocoes.js (quem cobra é o servidor). Unidades do mais caro ao
+   mais barato, em grupos de 5: grupo de 5 → o mais barato de graça; sobra de 3 ou 4 →
+   o mais barato pela metade. Se mudar lá, mude aqui. */
+const PROMO_DECANTS = { aCada:3, gratisCom:5, percentual:50, rotulo:"Black November" };
 const itensPromoSacola = () => estado.carrinho.reduce((s,i) => s + i.qtd, 0);
 /** Desconto da promoção por item da sacola: { chave: reais }. */
 function descontoPorItem(){
@@ -1134,9 +1203,13 @@ function descontoPorItem(){
     .flatMap(i => Array(i.qtd).fill(null).map(() => ({ chave:i.chave, cent:Math.round(i.preco*100) })))
     .sort((a,b) => b.cent - a.cent);
   const porItem = {};
-  for(let j = PROMO_DECANTS.aCada - 1; j < unidades.length; j += PROMO_DECANTS.aCada){
-    const u = unidades[j];
-    porItem[u.chave] = (porItem[u.chave] || 0) + Math.round(u.cent * PROMO_DECANTS.percentual / 100);
+  const somar = (u, cent) => { porItem[u.chave] = (porItem[u.chave] || 0) + cent; };
+  const metade = u => Math.round(u.cent * PROMO_DECANTS.percentual / 100);
+  for(let ini = 0; ini < unidades.length; ini += PROMO_DECANTS.gratisCom){
+    const fim = Math.min(ini + PROMO_DECANTS.gratisCom, unidades.length) - 1;   // o mais barato do grupo
+    const tamanho = fim - ini + 1;
+    if(tamanho === PROMO_DECANTS.gratisCom) somar(unidades[fim], unidades[fim].cent);
+    else if(tamanho >= PROMO_DECANTS.aCada) somar(unidades[fim], metade(unidades[fim]));
   }
   for(const k in porItem) porItem[k] /= 100;
   return porItem;
@@ -1333,10 +1406,13 @@ function pintarCarrinho(){
   const desconto = cup ? cup.desconto : 0;
   const totalFinal = Math.max(0, total - promo - desconto) + frete;
   const qtdPromo = itensPromoSacola();
-  const faltamPromo = PROMO_DECANTS.aCada - (qtdPromo % PROMO_DECANTS.aCada);
-  const promoDica = qtdPromo && !promo
+  // dica do próximo degrau: com 1–2 no grupo falta para os 50% OFF; com 3–4, para o grátis
+  const noGrupo = qtdPromo % PROMO_DECANTS.gratisCom;
+  const rumoGratis = noGrupo >= PROMO_DECANTS.aCada;
+  const faltamPromo = (rumoGratis ? PROMO_DECANTS.gratisCom : PROMO_DECANTS.aCada) - noGrupo;
+  const promoDica = noGrupo
     ? `<div class="promo-dica" role="status"><span class="promo-dica__selo">%</span>
-        <span><span class="promo-dica__tag">${PROMO_DECANTS.rotulo}</span>Adicione mais <b>${faltamPromo} produto${faltamPromo > 1 ? "s" : ""}</b> e o de menor valor sai com <b>50% OFF</b>.</span></div>`
+        <span><span class="promo-dica__tag">${PROMO_DECANTS.rotulo}</span>Adicione mais <b>${faltamPromo} produto${faltamPromo > 1 ? "s" : ""}</b> e ${rumoGratis ? "o de menor valor sai <b>de graça</b>" : "o de menor valor sai com <b>50% OFF</b>"}.</span></div>`
     : "";
 
   const cupomInput = estado.cupom && cup ? `
@@ -1365,7 +1441,7 @@ function pintarCarrinho(){
     ${cupomInput}
     ${cupomAviso}
     <div class="total-linha"><span>Subtotal</span><span>${dinheiro(total)}</span></div>
-    ${promo ? `<div class="total-linha total-linha--desc"><span>${PROMO_DECANTS.rotulo} (leve 3 produtos)</span><span>− ${dinheiro(promo)}</span></div>` : ""}
+    ${promo ? `<div class="total-linha total-linha--desc"><span>${PROMO_DECANTS.rotulo} (leve 3 / leve 5)</span><span>− ${dinheiro(promo)}</span></div>` : ""}
     ${desconto ? `<div class="total-linha total-linha--desc"><span>Desconto (${cup.code})</span><span>− ${dinheiro(desconto)}</span></div>` : ""}
     <div class="total-linha"><span>Frete</span><span>${frete === 0 ? "Grátis" : dinheiro(frete)}</span></div>
     <div class="total"><span>Total</span><b>${dinheiro(totalFinal)}</b></div>
@@ -1462,7 +1538,7 @@ function pintarProduto(){
       ${p.precoAntigo && tamanhoAtual === 0 ? `<p class="produto__antigo" style="margin:0">${dinheiro(p.precoAntigo)}</p>` : ""}
       <p class="modal__preco">${dinheiro(preco)}</p>
       <p class="modal__parcela">${parcela(preco)} sem juros</p>
-      <p class="modal__promo"><b>${PROMO_DECANTS.rotulo}:</b> leve 3 produtos e o de menor valor sai com 50% OFF</p>
+      <p class="modal__promo"><b>${PROMO_DECANTS.rotulo}:</b> leve 3 e o de menor valor sai com 50% OFF · leve 5 e o de menor valor sai de graça</p>
       <div class="modal__acoes">
         <button class="btn-ouro" type="button" data-add="${p.id}">Adicionar à sacola</button>
         <button class="produto__fav ${fav ? "ativo" : ""}" type="button" data-fav="${p.id}"
@@ -1527,7 +1603,8 @@ function listarProdutos(){
   else if(["masculino","feminino","unissex","cosmeticos","bodysplash"].includes(rota)) lista = lista.filter(p => p.cat === rota || (p.extra && p.extra.includes(rota)));
 
   if(rota === "decants" && params.familia) lista = lista.filter(p => p.cat === params.familia || (p.extra && p.extra.includes(params.familia)));
-  else if(params.familia === "importados") lista = lista.filter(p => p.cat === rota && !MARCAS_ARABES.includes(p.marca));
+  else if(params.familia === "importados") lista = lista.filter(p => p.cat === rota && !MARCAS_ARABES.includes(p.marca) && !MARCAS_NICHO.includes(p.marca));
+  else if(params.familia === "nicho") lista = lista.filter(p => p.cat === rota && MARCAS_NICHO.includes(p.marca));
   else if(params.familia === "arabes") lista = lista.filter(p => p.cat === rota && MARCAS_ARABES.includes(p.marca));
   else if(params.familia === "bodysplash") lista = lista.filter(p => p.familia === "Corpo");
   else if(params.familia) lista = lista.filter(p => p.familia === params.familia);
@@ -1561,7 +1638,7 @@ function vistaInicio(){
         <div class="hero__brand">
           <img class="hero__logo" src="img/logo.webp" alt="Prime Perfumes">
         </div>
-        <div class="hero__vitrine">
+        <div class="hero__vitrine hero__vitrine--promo">
           <div class="hero__frascos" id="heroFrascos">${HERO_FRASCOS.map((f,i) => `
             <a href="${f.link}" class="hero__frasco${i === 0 ? " is-active" : ""}" aria-label="Ver ${f.nome} — ${f.marca}">
               <img src="${f.img}" alt="${f.nome} — ${f.marca}" loading="lazy">
@@ -1569,6 +1646,24 @@ function vistaInicio(){
           </div>
           <div class="hero__pontos" id="heroPontos">${HERO_FRASCOS.map((f,i) => `
             <button type="button" class="hero__ponto${i === 0 ? " is-active" : ""}" data-index="${i}" aria-label="${f.nome}"></button>`).join("")}
+          </div>
+          <div class="hero__promo">
+            <div class="hero__promo-topo">
+              <span class="promo-dica__tag">Black November</span>
+              <span class="promo-dica__selo" aria-hidden="true">%</span>
+            </div>
+            <p class="hero__promo-titulo">Leve mais, <em>pague menos</em></p>
+            <div class="hero__nivel">
+              <span class="hero__nivel-qtd">3</span>
+              <div><b>Leve 3 perfumes</b><span>O de menor valor sai pela metade do preço</span></div>
+              <span class="hero__nivel-selo">50% OFF</span>
+            </div>
+            <div class="hero__nivel hero__nivel--top">
+              <span class="hero__nivel-qtd">5</span>
+              <div><b>Leve 5 perfumes</b><span>O de menor valor sai de graça</span></div>
+              <span class="hero__nivel-selo">Grátis</span>
+            </div>
+            <button type="button" class="hero__promo-cta" id="heroPromoCta">Montar meu combo <span aria-hidden="true">→</span></button>
           </div>
         </div>
       </div>
@@ -1661,8 +1756,8 @@ function vistaCatalogo(){
   const familias = [...new Set(PRODUTOS.filter(p => ["masculino","feminino","unissex","cosmeticos","bodysplash"].includes(estado.rota) ? p.cat === estado.rota : true).map(p => p.familia))];
   const mostrarFamilias = ["unissex","cosmeticos"].includes(estado.rota);
   const chipsCustom = {
-    masculino: [["","Todos"],["importados","Importados"],["arabes","Árabes"]],
-    feminino:  [["","Todos"],["importados","Importados"],["arabes","Árabes"],["bodysplash","Body Splash"]],
+    masculino: [["","Todos"],["arabes","Árabes"],["importados","Importados"],["nicho","Nicho"]],
+    feminino:  [["","Todos"],["arabes","Árabes"],["importados","Importados"],["nicho","Nicho"],["bodysplash","Body Splash"]],
     decants:   [["","Todos"],["masculino","Masculino"],["feminino","Feminino"]]
   }[estado.rota];
   const emBreve = estado.rota === "cosmeticos" && COSMETICOS_EM_BREVE.includes(estado.params.familia);
@@ -1682,8 +1777,16 @@ function vistaCatalogo(){
 
   <section class="secao" style="padding-top:0">
     <div class="env">
-      <div class="promo-dica promo-dica--secao" role="note"><span class="promo-dica__selo">%</span>
-        <span><span class="promo-dica__tag">${PROMO_DECANTS.rotulo}</span>Leve <b>3 produtos</b> e o de menor valor sai com <b>50% OFF</b>.</span></div>
+      <div class="bn" role="note" aria-label="Black November: leve 3 e o de menor valor sai com 50% OFF; leve 5 e o de menor valor sai de graça">
+        <div class="bn__marca">
+          <span class="bn__selo" aria-hidden="true">%</span>
+          <div><span class="bn__pre">Só em novembro</span><p class="bn__titulo">Black <em>November</em></p></div>
+        </div>
+        <div class="bn__niveis">
+          <div class="bn__nivel"><span class="bn__qtd">3</span><span class="bn__txt">Leve 3<small>o de menor valor</small></span><span class="bn__oferta">50% OFF</span></div>
+          <div class="bn__nivel bn__nivel--top"><span class="bn__qtd">5</span><span class="bn__txt">Leve 5<small>o de menor valor</small></span><span class="bn__oferta">Grátis</span></div>
+        </div>
+      </div>
       <div class="barra-filtros">
         ${chipsCustom ? chipsCustom.map(([v,rot]) => `<button class="chip ${(estado.params.familia || "") === v ? "ativo" : ""}" type="button" data-familia="${v}">${rot}</button>`).join("") : ""}
         ${mostrarFamilias ? `<button class="chip ${!estado.params.familia ? "ativo" : ""}" type="button" data-familia="">Todos</button>
@@ -1861,6 +1964,12 @@ function ligarHeroFrascos(){
   const parar = () => { if(timer){ clearInterval(timer); timer = null; } };
   const iniciar = () => { parar(); timer = setInterval(proximo, 2000); };
   bolas.forEach(b => b.addEventListener("click", () => { ir(Number(b.dataset.index)); iniciar(); }));
+  // "Montar meu combo" desce até o catálogo da página inicial
+  const cta = document.getElementById("heroPromoCta");
+  if(cta) cta.addEventListener("click", () => {
+    const alvo = document.getElementById("secaoTodos") || document.getElementById("secaoPromo");
+    if(alvo) alvo.scrollIntoView({ behavior:"smooth", block:"start" });
+  });
   palco.addEventListener("mouseenter", parar);
   palco.addEventListener("mouseleave", iniciar);
   iniciar();
@@ -2098,7 +2207,7 @@ document.addEventListener("click", e => {
     const promoWa = descontoDecants();
     const blocoCupom = (cupWa || promoWa)
       ? `\nSubtotal: ${dinheiro(totalSacola())}`
-        + (promoWa ? `\n${PROMO_DECANTS.rotulo} (leve 3 produtos): − ${dinheiro(promoWa)}` : "")
+        + (promoWa ? `\n${PROMO_DECANTS.rotulo} (leve 3 / leve 5): − ${dinheiro(promoWa)}` : "")
         + (cupWa ? `\nCupom ${cupWa.code}: − ${dinheiro(cupWa.desconto)}` : "")
       : "";
     const totalWa = Math.max(0, totalComPromo() - (cupWa ? cupWa.desconto : 0));

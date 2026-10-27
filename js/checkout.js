@@ -82,8 +82,9 @@
     }
 
     /**
-     * Promoção Black November ("leve 3 produtos") — espelho de api/_lib/promocoes.js, só para
-     * exibição: a cada 3 produtos da sacola, o mais barato do trio sai pela metade.
+     * Promoção Black November — espelho de api/_lib/promocoes.js, só para exibição.
+     * Unidades do mais caro ao mais barato, em grupos de 5: grupo de 5 → o mais barato
+     * de graça; sobra de 3 ou 4 → o mais barato pela metade.
      */
     function getPromo(items) {
         var unidades = [];
@@ -92,7 +93,12 @@
         });
         unidades.sort(function (a, b) { return b - a; });
         var cent = 0;
-        for (var j = 2; j < unidades.length; j += 3) cent += Math.round(unidades[j] / 2);
+        for (var ini = 0; ini < unidades.length; ini += 5) {
+            var fim = Math.min(ini + 5, unidades.length) - 1;
+            var tamanho = fim - ini + 1;
+            if (tamanho === 5) cent += unidades[fim];
+            else if (tamanho >= 3) cent += Math.round(unidades[fim] / 2);
+        }
         return cent / 100;
     }
 
@@ -146,7 +152,7 @@
             }
             if (promo) {
                 linhas += '<div class="flex justify-between items-center gap-4 text-sm py-1 text-green-400">' +
-                        '<span>Black November (leve 3 produtos)</span>' +
+                        '<span>Black November (leve 3 / leve 5)</span>' +
                         '<span class="whitespace-nowrap">-' + formatBRL(promo) + '</span>' +
                     '</div>';
             }
