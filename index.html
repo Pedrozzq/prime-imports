@@ -150,47 +150,31 @@ input,select{font:inherit}
 .hero__ponto{width:8px;height:8px;padding:0;border:0;border-radius:50%;background:rgba(217,179,108,.28);cursor:pointer;transition:transform .25s,background .25s}
 .hero__ponto:hover{background:rgba(217,179,108,.6)}
 .hero__ponto.is-active{background:var(--ouro);transform:scale(1.35)}
-/* ---------- Black November: faixa premium das páginas de catálogo ---------- */
+/* borda dourada giratória (usada pelo cartão da promoção no hero) */
 @property --bn-ang{syntax:"<angle>";initial-value:0deg;inherits:false}
-.bn{position:relative;isolation:isolate;overflow:hidden;display:flex;align-items:center;justify-content:space-between;gap:22px;flex-wrap:wrap;margin:0 0 22px;padding:20px 24px;
-  border:1.5px solid transparent;color:#fdf8ef;
-  background:
-    radial-gradient(120% 140% at 0% 0%,rgba(217,179,108,.16),transparent 55%) padding-box,
-    repeating-linear-gradient(115deg,#050505 0 18px,#0a0a0a 18px 36px) padding-box,
-    conic-gradient(from var(--bn-ang),#8a6d3c,#f0dcae,#c39a4e,#3a2c14,#f0dcae,#8a6d3c) border-box;
-  box-shadow:0 24px 50px -28px rgba(0,0,0,.9);animation:bnBorda 6s linear infinite}
 @keyframes bnBorda{to{--bn-ang:360deg}}
-/* luz que atravessa a faixa */
-.bn::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(105deg,transparent 40%,rgba(240,220,174,.13) 50%,transparent 60%);
-  transform:translateX(-100%);animation:bnLuz 5s ease-in-out infinite}
-@keyframes bnLuz{0%,40%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
-.bn__marca{display:flex;align-items:center;gap:16px}
-.bn__selo{flex:none;width:52px;height:52px;display:grid;place-items:center;border-radius:50%;font:700 22px/1 var(--serif);color:#0a0a0a;
-  background:radial-gradient(circle at 30% 25%,#fff4d6,#d9b36c 55%,#8a6d3c);box-shadow:0 0 0 4px rgba(217,179,108,.15),0 0 26px -4px rgba(217,179,108,.8);animation:promoSelo 2.6s ease-in-out infinite}
-.bn__pre{display:block;font-size:10px;font-weight:600;letter-spacing:.32em;text-transform:uppercase;color:#b9ae9b}
-.bn__titulo{margin:2px 0 0;font-family:var(--serif);font-size:clamp(26px,3.4vw,38px);font-weight:700;line-height:1;letter-spacing:.06em;text-transform:uppercase;
-  background:linear-gradient(100deg,#8a6d3c 0%,#f0dcae 22%,#fff8e6 30%,#d9b36c 45%,#8a6d3c 60%,#f0dcae 80%,#c39a4e 100%);background-size:250% 100%;
-  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:bnOuro 4s linear infinite}
-.bn__titulo em{font-style:italic;font-weight:600;letter-spacing:.02em}
-@keyframes bnOuro{from{background-position:100% 0}to{background-position:-150% 0}}
-.bn__niveis{display:flex;gap:10px;flex-wrap:wrap}
-.bn__nivel{display:flex;align-items:center;gap:12px;padding:10px 12px 10px 10px;border:1px solid rgba(217,179,108,.35);background:rgba(255,255,255,.03)}
-.bn__qtd{width:40px;height:40px;display:grid;place-items:center;border:1px solid #d9b36c;font:600 24px/1 var(--serif);color:#f0dcae}
-.bn__txt{font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#fdf8ef}
-.bn__txt small{display:block;margin-top:2px;font-size:11px;font-weight:400;letter-spacing:.04em;text-transform:none;color:#b9ae9b}
-.bn__oferta{padding:7px 10px;font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#0a0a0a;background:#d9b36c}
-.bn__nivel--top{border-color:#d9b36c;background:linear-gradient(135deg,rgba(217,179,108,.2),rgba(217,179,108,.04))}
-.bn__nivel--top .bn__qtd{background:#d9b36c;color:#0a0a0a}
-.bn__nivel--top .bn__oferta{background:linear-gradient(120deg,#fff4d6,#d9b36c 60%);animation:bnPulso 1.8s ease-in-out infinite}
-@keyframes bnPulso{0%,100%{box-shadow:0 0 0 0 rgba(217,179,108,.55)}50%{box-shadow:0 0 0 7px rgba(217,179,108,0)}}
+/* ---------- Black November: faixa minimalista das páginas de catálogo ---------- */
+.bn{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;margin:0 0 36px;padding:14px 20px;
+  border:1px solid rgba(217,179,108,.4);background:#0a0a0a;color:#fdf8ef}
+.bn__marca{display:flex;align-items:baseline;gap:12px}
+.bn__pre{font-size:10px;font-weight:600;letter-spacing:.32em;text-transform:uppercase;color:#b9ae9b}
+.bn__titulo{margin:0;font-family:var(--serif);font-size:clamp(20px,2.4vw,26px);font-weight:600;line-height:1;letter-spacing:.06em;text-transform:uppercase;color:#d9b36c}
+.bn__titulo em{font-style:italic;letter-spacing:.02em}
+.bn__niveis{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+.bn__nivel{display:flex;align-items:baseline;gap:8px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#fdf8ef}
+.bn__nivel + .bn__nivel{padding-left:22px;border-left:1px solid rgba(217,179,108,.25)}
+.bn__oferta{font-weight:700;color:#d9b36c}
+.bn__txt small{margin-left:6px;font-size:11px;letter-spacing:.04em;text-transform:none;color:#b9ae9b}
 @media(max-width:640px){
-  .bn{padding:16px;gap:14px}
-  .bn__selo{width:42px;height:42px;font-size:18px}
-  .bn__niveis{width:100%;flex-direction:column}
-  .bn__nivel{width:100%}
-  .bn__txt{flex:1}
+  /* tudo numa linha só: título à esquerda, ofertas à direita */
+  .bn{flex-wrap:nowrap;gap:10px;margin-bottom:28px;padding:10px 12px}
+  .bn__marca{flex:none}
+  .bn__titulo{font-size:13px;letter-spacing:.04em;white-space:nowrap}
+  .bn__pre,.bn__txt small{display:none}
+  .bn__niveis{flex-wrap:nowrap;gap:8px}
+  .bn__nivel{gap:4px;font-size:9.5px;letter-spacing:.06em;white-space:nowrap}
+  .bn__nivel + .bn__nivel{padding-left:8px}
 }
-@media(prefers-reduced-motion:reduce){.bn,.bn::after,.bn__selo,.bn__titulo,.bn__nivel--top .bn__oferta{animation:none}}
 
 /* anúncio da promoção sobre os frascos */
 .hero__vitrine--promo .hero__frascos{width:78%;margin-inline:auto}
@@ -1655,12 +1639,12 @@ function vistaInicio(){
             <p class="hero__promo-titulo">Leve mais, <em>pague menos</em></p>
             <div class="hero__nivel">
               <span class="hero__nivel-qtd">3</span>
-              <div><b>Leve 3 perfumes</b><span>O de menor valor sai pela metade do preço</span></div>
+              <div><b>Leve 3 e ganhe 50% OFF no 3º</b><span>Desconto aplicado no perfume de menor valor</span></div>
               <span class="hero__nivel-selo">50% OFF</span>
             </div>
             <div class="hero__nivel hero__nivel--top">
               <span class="hero__nivel-qtd">5</span>
-              <div><b>Leve 5 perfumes</b><span>O de menor valor sai de graça</span></div>
+              <div><b>Leve 5 e ganhe o 5º de presente</b><span>O perfume de menor valor sai por nossa conta</span></div>
               <span class="hero__nivel-selo">Grátis</span>
             </div>
             <button type="button" class="hero__promo-cta" id="heroPromoCta">Montar meu combo <span aria-hidden="true">→</span></button>
@@ -1779,12 +1763,11 @@ function vistaCatalogo(){
     <div class="env">
       <div class="bn" role="note" aria-label="Black November: leve 3 e o de menor valor sai com 50% OFF; leve 5 e o de menor valor sai de graça">
         <div class="bn__marca">
-          <span class="bn__selo" aria-hidden="true">%</span>
-          <div><span class="bn__pre">Só em novembro</span><p class="bn__titulo">Black <em>November</em></p></div>
+          <p class="bn__titulo">Black <em>November</em></p><span class="bn__pre">Só em novembro</span>
         </div>
         <div class="bn__niveis">
-          <div class="bn__nivel"><span class="bn__qtd">3</span><span class="bn__txt">Leve 3<small>o de menor valor</small></span><span class="bn__oferta">50% OFF</span></div>
-          <div class="bn__nivel bn__nivel--top"><span class="bn__qtd">5</span><span class="bn__txt">Leve 5<small>o de menor valor</small></span><span class="bn__oferta">Grátis</span></div>
+          <div class="bn__nivel"><span class="bn__txt">Leve 3<small>o 3º sai pela metade</small></span><span class="bn__oferta">50% OFF</span></div>
+          <div class="bn__nivel"><span class="bn__txt">Leve 5<small>o 5º é presente</small></span><span class="bn__oferta">Grátis</span></div>
         </div>
       </div>
       <div class="barra-filtros">
