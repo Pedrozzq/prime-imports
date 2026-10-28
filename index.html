@@ -203,6 +203,17 @@ input,select{font:inherit}
   color:var(--breu);background:linear-gradient(120deg,var(--ouro-claro),var(--ouro) 55%,var(--ouro-forte));transition:filter .2s,transform .2s}
 .hero__promo-cta:hover{filter:brightness(1.08);transform:translateY(-1px)}
 @media(max-width:900px){.hero__promo{margin-top:-34px}.hero__promo-titulo{font-size:22px}}
+/* celular: cartão compacto e abaixo dos frascos, sem sobrepor o perfume */
+@media(max-width:640px){
+  .hero__promo{margin-top:14px;padding:12px 14px}
+  .hero__promo-titulo{margin:4px 0 8px;font-size:18px}
+  .hero__nivel{gap:10px;padding:7px 0}
+  .hero__nivel-qtd{width:30px;height:30px;font-size:17px}
+  .hero__nivel b{font-size:10.5px;letter-spacing:.08em}
+  .hero__nivel div span{display:none}
+  .hero__nivel-selo{padding:5px 7px;font-size:10px}
+  .hero__promo-cta{padding:10px 14px;font-size:10.5px}
+}
 @media(prefers-reduced-motion:reduce){.hero__promo,.hero__promo::before{animation:none}}
 .garantias{position:relative;z-index:2;display:flex;justify-content:center;flex-wrap:wrap;gap:0;padding:14px 0 30px}
 .garantia{display:flex;align-items:center;gap:12px;padding:6px 26px;color:#ece1cd}
