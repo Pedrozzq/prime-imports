@@ -1,0 +1,3 @@
+Organize este trabalho em quatro pastas: originais, assets, projeto e entregas. Coloque o vídeo em originais e preserve o arquivo original.
+
+Instale o Remotion: https://github.com/remotion-dev/skills/
