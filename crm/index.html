@@ -3023,15 +3023,15 @@ function gaGrafico(el, serie) {
       ${serie.map((x, i) => i % cada === (n - 1) % cada ? `<text class="ax" x="${X(i)}" y="${H - 6}" text-anchor="middle">${ddmm(x.dia)}</text>` : '').join('')}
       <line class="xh" id="gaXh" y1="${T}" y2="${H - B}" style="display:none"/>
       ${serie.map((x, i) => `<rect class="hit" data-i="${i}" x="${X(i) - (W - L - R) / Math.max(1, n - 1) / 2}" y="${T}" width="${(W - L - R) / Math.max(1, n - 1)}" height="${H - T - B}"/>`).join('')}
-    </svg><div class="lc-tip" style="display:none"></div>`;
+    </svg><div class="lc-tip"></div>`;
     const tip = el.querySelector('.lc-tip'), xh = el.querySelector('#gaXh');
     el.querySelectorAll('.hit').forEach(h => {
       h.onpointerenter = () => { const i = +h.dataset.i, x = serie[i];
         xh.setAttribute('x1', X(i)); xh.setAttribute('x2', X(i)); xh.style.display = '';
-        tip.style.display = ''; tip.innerHTML = `<b>${gaN(x.usuarios)} visitantes</b><span>${new Date(x.dia + 'T12:00').toLocaleDateString('pt-BR', {weekday: 'short', day: '2-digit', month: '2-digit'})} · ${gaN(x.sessoes)} visitas · ${gaN(x.views)} páginas</span>`;
-        tip.style.left = Math.min(W - 190, Math.max(0, X(i) - 90)) + 'px'; };
+        tip.innerHTML = `<b>${gaN(x.usuarios)} visitantes</b><span>${new Date(x.dia + 'T12:00').toLocaleDateString('pt-BR', {weekday: 'short', day: '2-digit', month: '2-digit'})} · ${gaN(x.sessoes)} visitas · ${gaN(x.views)} páginas</span>`;
+        tip.style.left = Math.min(W - tip.offsetWidth / 2, Math.max(tip.offsetWidth / 2, X(i))) + 'px'; tip.style.top = Math.max(0, Y(x.usuarios) - 64) + 'px'; tip.style.opacity = 1; };
     });
-    el.onpointerleave = () => { tip.style.display = 'none'; xh.style.display = 'none'; };
+    el.onpointerleave = () => { tip.style.opacity = 0; xh.style.display = 'none'; };
   };
   render(); new ResizeObserver(() => el.isConnected && render()).observe(el);
 }
