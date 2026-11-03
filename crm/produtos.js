@@ -3,7 +3,7 @@
 //  Não edite à mão: rode "npm run catalogo" depois de alterar PRODUTOS no index.html.
 //  Cada tamanho (100 ml, decants) é um produto no CRM; o id é "<id do produto>|<tamanho>",
 //  o mesmo que o carrinho do site usa. Ao abrir, o CRM cadastra os novos e inativa os que saíram.
-//  Gerado a partir de index.html — 37 produtos, 129 variantes.
+//  Gerado a partir de index.html — 39 produtos, 135 variantes.
 // =====================================================================
 window.ZOO_CATALOGO = [
  {
@@ -149,6 +149,33 @@ window.ZOO_CATALOGO = [
   "secao": "feminino",
   "familia": "Amadeirado",
   "linha": "nicho"
+ },
+ {
+  "id": "boss-bottled-night|Decant 10 ml",
+  "name": "Hugo Boss Bottled Night (Decant 10 ml)",
+  "category": "Hugo Boss",
+  "price": 59,
+  "secao": "masculino",
+  "familia": "Amadeirado",
+  "linha": "importado"
+ },
+ {
+  "id": "boss-bottled-night|Decant 15 ml",
+  "name": "Hugo Boss Bottled Night (Decant 15 ml)",
+  "category": "Hugo Boss",
+  "price": 85,
+  "secao": "masculino",
+  "familia": "Amadeirado",
+  "linha": "importado"
+ },
+ {
+  "id": "boss-bottled-night|Decant 5 ml",
+  "name": "Hugo Boss Bottled Night (Decant 5 ml)",
+  "category": "Hugo Boss",
+  "price": 35,
+  "secao": "masculino",
+  "familia": "Amadeirado",
+  "linha": "importado"
  },
  {
   "id": "burberry-her|100 ml",
@@ -746,6 +773,33 @@ window.ZOO_CATALOGO = [
   "name": "Dior Miss Dior (Decant 5 ml)",
   "category": "Dior",
   "price": 81,
+  "secao": "feminino",
+  "familia": "Floral",
+  "linha": "importado"
+ },
+ {
+  "id": "olympea-flora|Decant 10 ml",
+  "name": "Rabanne Olympéa Flora (Decant 10 ml)",
+  "category": "Paco Rabanne",
+  "price": 94,
+  "secao": "feminino",
+  "familia": "Floral",
+  "linha": "importado"
+ },
+ {
+  "id": "olympea-flora|Decant 15 ml",
+  "name": "Rabanne Olympéa Flora (Decant 15 ml)",
+  "category": "Paco Rabanne",
+  "price": 185,
+  "secao": "feminino",
+  "familia": "Floral",
+  "linha": "importado"
+ },
+ {
+  "id": "olympea-flora|Decant 5 ml",
+  "name": "Rabanne Olympéa Flora (Decant 5 ml)",
+  "category": "Paco Rabanne",
+  "price": 55,
   "secao": "feminino",
   "familia": "Floral",
   "linha": "importado"

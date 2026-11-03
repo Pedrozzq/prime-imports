@@ -5,7 +5,7 @@
  * index.html. A chave é "<id do produto>|<tamanho>", exatamente como o
  * carrinho do front-end monta.
  *
- * Gerado a partir de index.html — 37 produtos, 129 variantes.
+ * Gerado a partir de index.html — 39 produtos, 135 variantes.
  */
 
 export const CATALOGO = {
@@ -25,6 +25,9 @@ export const CATALOGO = {
     "baccarat-rouge-540|Decant 10 ml": { nome: "Maison Francis Kurkdjian Baccarat Rouge 540 (Decant 10 ml)", marca: "Maison Francis Kurkdjian", preco: 660.00 },
     "baccarat-rouge-540|Decant 15 ml": { nome: "Maison Francis Kurkdjian Baccarat Rouge 540 (Decant 15 ml)", marca: "Maison Francis Kurkdjian", preco: 990.00 },
     "baccarat-rouge-540|Decant 5 ml": { nome: "Maison Francis Kurkdjian Baccarat Rouge 540 (Decant 5 ml)", marca: "Maison Francis Kurkdjian", preco: 333.00 },
+    "boss-bottled-night|Decant 10 ml": { nome: "Hugo Boss Bottled Night (Decant 10 ml)", marca: "Hugo Boss", preco: 59.00 },
+    "boss-bottled-night|Decant 15 ml": { nome: "Hugo Boss Bottled Night (Decant 15 ml)", marca: "Hugo Boss", preco: 85.00 },
+    "boss-bottled-night|Decant 5 ml": { nome: "Hugo Boss Bottled Night (Decant 5 ml)", marca: "Hugo Boss", preco: 35.00 },
     "burberry-her|100 ml": { nome: "Burberry Her (100 ml)", marca: "Burberry", preco: 858.00 },
     "burberry-her|Decant 10 ml": { nome: "Burberry Her (Decant 10 ml)", marca: "Burberry", preco: 95.00 },
     "burberry-her|Decant 15 ml": { nome: "Burberry Her (Decant 15 ml)", marca: "Burberry", preco: 142.00 },
@@ -91,6 +94,9 @@ export const CATALOGO = {
     "miss-dior-edp|Decant 10 ml": { nome: "Dior Miss Dior (Decant 10 ml)", marca: "Dior", preco: 136.00 },
     "miss-dior-edp|Decant 15 ml": { nome: "Dior Miss Dior (Decant 15 ml)", marca: "Dior", preco: 204.00 },
     "miss-dior-edp|Decant 5 ml": { nome: "Dior Miss Dior (Decant 5 ml)", marca: "Dior", preco: 81.00 },
+    "olympea-flora|Decant 10 ml": { nome: "Rabanne Olympéa Flora (Decant 10 ml)", marca: "Paco Rabanne", preco: 94.00 },
+    "olympea-flora|Decant 15 ml": { nome: "Rabanne Olympéa Flora (Decant 15 ml)", marca: "Paco Rabanne", preco: 185.00 },
+    "olympea-flora|Decant 5 ml": { nome: "Rabanne Olympéa Flora (Decant 5 ml)", marca: "Paco Rabanne", preco: 55.00 },
     "onemillion-edt|100 ml": { nome: "Paco Rabanne 1 Million (100 ml)", marca: "Paco Rabanne", preco: 545.00 },
     "onemillion-edt|Decant 10 ml": { nome: "Paco Rabanne 1 Million (Decant 10 ml)", marca: "Paco Rabanne", preco: 64.00 },
     "onemillion-edt|Decant 15 ml": { nome: "Paco Rabanne 1 Million (Decant 15 ml)", marca: "Paco Rabanne", preco: 96.00 },
