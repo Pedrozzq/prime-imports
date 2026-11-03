@@ -312,3 +312,16 @@ Aguardando pagamento → Pagamento aprovado → Enviado → Entregue, além de P
 Venda cancelada. O Mercado Pago muda sozinho: Pix pago vira "Pagamento aprovado", cartão
 recusado ou Pix vencido vira "Pagamento recusado", e estorno vira "Venda cancelada" (o estoque volta).
 Só "Pagamento aprovado", "Enviado" e "Entregue" contam como venda e baixam estoque.
+
+### Google Analytics dentro do CRM (menu Site → Google Analytics)
+
+Visitantes, visitas, engajamento, quem está no site agora, de onde vêm, aparelhos, cidades,
+páginas, eventos, funil de compra, horários de pico e a conversão do site (vendas do CRM ÷ visitas).
+Os dados vêm do GA4 (G-EC7NP05FJV) pelo `api/ga-relatorio.js`, e só quem está logado no CRM consegue ver.
+
+1. Google Cloud Console: crie um projeto, ative a **Google Analytics Data API**, crie uma conta de serviço e baixe a chave **JSON**.
+2. Google Analytics → Administrador → Gerenciamento de acesso à propriedade → adicione o e-mail da conta de serviço como **Leitor**.
+3. Google Analytics → Administrador → Detalhes da propriedade → copie o **ID da propriedade** (só números).
+4. Vercel → Settings → Environment Variables: `GA_PROPERTY_ID` = o número e `GA_CREDENTIALS` = o JSON inteiro. Depois, faça um novo deploy.
+
+O site passa a mandar os eventos `view_item`, `add_to_cart` e `begin_checkout` (pelo `js/crm-loja.js`) para o funil.

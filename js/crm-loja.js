@@ -374,6 +374,44 @@
     }
   }
 
+  // ---------- eventos do Google Analytics (funil de compra no CRM > Google Analytics) ----------
+  function evento(nome, itens, valor) {
+    if (typeof gtag !== "function") return;
+    try {
+      gtag("event", nome, { currency: "BRL", value: Math.round((valor || 0) * 100) / 100, items: itens });
+    } catch (e) { /* Analytics bloqueado: a loja segue normal */ }
+  }
+  function itemGa(p, t, qtd) {
+    return { item_id: p.id + "|" + t.ml, item_name: p.nome, item_brand: p.marca || p.sub || "", item_variant: t.ml,
+             price: Number(t.preco != null ? t.preco : p.preco) || 0, quantity: qtd || 1 };
+  }
+  if (typeof abrirProduto === "function") {
+    var abrirProdutoOriginal = abrirProduto;
+    abrirProduto = function (id) {
+      var r = abrirProdutoOriginal.apply(this, arguments);
+      var p = acharProduto(id), t = p && p.tamanhos[0];
+      if (t) evento("view_item", [itemGa(p, t)], t.preco);
+      return r;
+    };
+  }
+  var adicionarComEstoque = adicionar;
+  adicionar = function (id, tamanhoIdx, qtd) {
+    var antes = estado.carrinho.reduce(function (s, i) { return s + i.qtd; }, 0);
+    var r = adicionarComEstoque.apply(this, arguments);
+    var depois = estado.carrinho.reduce(function (s, i) { return s + i.qtd; }, 0);
+    var p = acharProduto(id), t = p && p.tamanhos[tamanhoIdx || 0];
+    if (t && depois > antes) evento("add_to_cart", [itemGa(p, t, depois - antes)], t.preco * (depois - antes));
+    return r;
+  };
+  document.addEventListener("click", function (e) {
+    if (!e.target.closest || !e.target.closest("#btnPagarOnline")) return;
+    if (!estado.carrinho.length || !estado.entrega || !estado.entrega.nome) return;
+    var itens = estado.carrinho.map(function (i) {
+      return { item_id: i.chave || i.id, item_name: (acharProduto(i.id) || {}).nome || i.id, item_variant: i.ml, price: i.preco, quantity: i.qtd };
+    });
+    evento("begin_checkout", itens, estado.carrinho.reduce(function (s, i) { return s + i.preco * i.qtd; }, 0));
+  }, true);
+
   sincronizar();
   setInterval(sincronizar, INTERVALO);
   document.addEventListener("visibilitychange", function () { if (!document.hidden) sincronizar(); });
