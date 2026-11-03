@@ -182,6 +182,28 @@ Detalhes:
 - Sem CRM configurado (ou fora do ar), o site usa os preços do `produtos.js`.
 - Produto novo: inclua no `produtos.js` (com foto etc.) e abra o CRM. Não troque o `id` de um produto que já vendeu.
 
+## 4b. Loja online (index.html) ligada ao CRM
+
+O que muda no CRM vale na loja em até 1 minuto, sem publicar o site:
+
+| No CRM | Na loja |
+|---|---|
+| Preço (Perfumes / Decants) | Preço do tamanho na vitrine, na sacola e no **valor cobrado** no Mercado Pago |
+| Estoque | Não deixa pôr na sacola mais do que tem; estoque 0 tira o tamanho da loja |
+| "No site" desligado | O tamanho some (sem nenhum tamanho, some o perfume) |
+| Oferta relâmpago no ar | Preço de oferta com o antigo riscado, selo -%, produtos em **Promoções** |
+| — | Pagamento aprovado vira pedido **Novo** no CRM e baixa o estoque e os ml dos decants |
+| — | Pix/boleto ainda não pago: pedido **Aguardando pagamento** (não baixa estoque); vira Novo quando o Mercado Pago aprova; recusado/estornado vira Cancelado |
+
+Configurar (uma vez):
+1. **SQL Editor**: rode o `perfumaria.sql` (depois do `site-pedidos.sql`).
+2. **Chave**: no SQL Editor, `select chave from public.agente_config;` e copie o valor.
+3. **Vercel** (projeto do site) → Settings → Environment Variables: crie `CRM_CHAVE` com essa chave e faça um novo deploy.
+
+Sem a `CRM_CHAVE`, a loja já mostra preço/estoque/ofertas do CRM, mas os pedidos não entram no CRM (continuam só por e-mail).
+Se o CRM ficar fora do ar, a loja vende pelos preços escritos no `index.html`.
+Cupons e a promoção leve 3 / leve 5 continuam no código (`api/_lib/cupons.js` e `promocoes.js`).
+
 ## 5. WhatsApp Business dentro do CRM
 
 Menu **WhatsApp**: caixa de entrada com as conversas, chat em tempo real, respostas rápidas, botão *Conversar* na ficha do cliente e chave **Agente automático** por conversa.

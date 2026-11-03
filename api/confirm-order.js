@@ -7,9 +7,10 @@
  * `payment_id` que o Mercado Pago anexou na URL de retorno e a sacola que
  * ainda está no navegador.
  *
- * Busca o pagamento no Mercado Pago (fonte da verdade), reconfere a sacola
- * pelos preços do servidor e dispara o e-mail do pedido para a loja
- * (api/_lib/order-email.js → Resend).
+ * Busca o pagamento no Mercado Pago (fonte da verdade), grava o pedido no CRM
+ * (api/_lib/crm.js — baixa o estoque quando o pagamento está aprovado),
+ * reconfere a sacola pelos preços do servidor e dispara o e-mail do pedido
+ * para a loja (api/_lib/order-email.js → Resend).
  *
  * Responde sempre 200 para não travar a tela de "obrigado" do cliente —
  * qualquer problema fica só nos logs da função. O aviso de "cliente chegou ao
@@ -17,7 +18,7 @@
  * falhe a loja já foi avisada da intenção de compra.
  *
  * Configuração (Vercel → Project Settings → Environment Variables):
- *   MP_ACCESS_TOKEN, RESEND_API_KEY, ORDER_EMAIL_TO, ORDER_EMAIL_FROM
+ *   MP_ACCESS_TOKEN, RESEND_API_KEY, ORDER_EMAIL_TO, ORDER_EMAIL_FROM, CRM_CHAVE
  */
 
 import { MercadoPagoConfig, Payment } from 'mercadopago';
@@ -26,6 +27,7 @@ import { validarSacola } from './_lib/catalogo.js';
 import { validarCupom } from './_lib/cupons.js';
 import { descontoDecants } from './_lib/promocoes.js';
 import { calcularFrete } from './_lib/frete.js';
+import { catalogoAoVivo, registrarPagamento, dadosDoPagamento } from './_lib/crm.js';
 
 const ACCESS_TOKEN = process.env.MP_ACCESS_TOKEN;
 
@@ -60,16 +62,29 @@ export default async function handler(req, res) {
             }
         }
 
+        // Pedido no CRM: só com o pagamento confirmado no Mercado Pago (o status vem de lá).
+        // Os itens e a entrega vêm do metadata da preference (o que foi cobrado); a sacola
+        // do navegador fica de reserva.
+        var crm = null;
+        if (payment && payment.id != null) {
+            crm = await registrarPagamento(dadosDoPagamento(payment, {
+                entrega: entrega,
+                itens: validarSacola(items, await catalogoAoVivo(), { ignorarEstoque: true }).itens,
+                cupom: body.cupom || null
+            }));
+        }
+
         // Reconstrói a sacola pelos preços do servidor (mesma regra do checkout).
-        var sacola = validarSacola(items);
+        var sacola = validarSacola(items, await catalogoAoVivo(), { ignorarEstoque: true });
         if (sacola.erros.length || !sacola.itens.length) {
             console.warn(
                 'confirm-order sem sacola válida (payment ' + (paymentId || 's/ id') + '):',
                 sacola.erros.join(' | ')
             );
             return res.status(200).json({
-                ok: false,
+                ok: !!(crm && crm.ok),
                 status: payment.status || 'unknown',
+                numero: crm && crm.numero,
                 reason: 'sacola-invalida'
             });
         }
@@ -124,7 +139,8 @@ export default async function handler(req, res) {
         return res.status(200).json({
             ok: true,
             id: pagamentoParaEmail.id,
-            status: pagamentoParaEmail.status
+            status: pagamentoParaEmail.status,
+            numero: crm && crm.ok ? crm.numero : undefined
         });
     } catch (err) {
         console.error('Erro em confirm-order:', err && err.message);

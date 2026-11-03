@@ -188,3 +188,130 @@ do $$ begin
     begin alter publication supabase_realtime add table public.decant_frascos; exception when duplicate_object then null; end;
   end if;
 end $$;
+
+-- =====================================================================
+-- 4. LOJA ONLINE (index.html) LIGADA AO CRM
+--    - o site lê preço, estoque, "no site" e ofertas daqui (loja_catalogo, público);
+--    - o servidor da loja (api/ na Vercel) confere a sacola por aqui antes de cobrar;
+--    - pagamento do Mercado Pago vira pedido no CRM (loja_registrar_pedido, com a chave do agente):
+--        aprovado              → status "novo" (conta como venda e baixa o estoque / os ml dos decants)
+--        pendente (Pix/boleto) → "aguardando_pagamento" (não baixa estoque); aprovou depois → "novo"
+--        recusado/estornado    → "cancelado" (devolve o estoque, se já tinha baixado)
+-- =====================================================================
+alter table public.produtos add column if not exists excluido boolean not null default false;
+alter table public.pedidos add column if not exists pagamento_ref    text;
+alter table public.pedidos add column if not exists pagamento_status text;
+create unique index if not exists pedidos_pagamento_ref_key on public.pedidos (pagamento_ref) where pagamento_ref is not null;
+
+alter table public.pedidos drop constraint if exists pedidos_status_check;
+alter table public.pedidos add constraint pedidos_status_check
+  check (status in ('novo','confirmado','em_preparo','saiu_entrega','entregue','cancelado','fora_horario','aguardando_pagamento'));
+
+-- status que contam como venda e baixam estoque
+create or replace function public._conta_venda(p_status text) returns boolean
+language sql immutable as $$ select coalesce(p_status not in ('cancelado','fora_horario','aguardando_pagamento'), true) $$;
+
+-- regra de frete da tabacaria (frete-gratis.sql), se tiver sido rodada: a loja manda o frete dela
+drop trigger if exists t_pedidos_frete on public.pedidos;
+
+-- Catálogo ao vivo para o site e para o servidor de pagamento (só dado de vitrine)
+--   produtos: id = site_id ("khamrah|100 ml"), preco = preço normal, oferta = preço de oferta valendo agora (ou null)
+create or replace function public.loja_catalogo() returns jsonb
+language sql stable security definer set search_path = public as $$
+  select jsonb_build_object(
+    'agora', now(),
+    'produtos', coalesce((select jsonb_agg(jsonb_build_object(
+        'id', p.site_id, 'preco', p.preco, 'ativo', p.ativo, 'estoque', p.estoque, 'oferta', public._preco_oferta(p.site_id)))
+      from public.produtos p where p.site_id is not null and not p.excluido), '[]'::jsonb),
+    'ofertas', coalesce((select jsonb_agg(jsonb_build_object('titulo', o.titulo, 'subtitulo', o.subtitulo, 'inicio', o.inicio, 'fim', o.fim) order by o.fim)
+      from public.ofertas o where o.ativo and now() >= o.inicio and now() < o.fim), '[]'::jsonb))
+$$;
+revoke all on function public.loja_catalogo() from public;
+grant execute on function public.loja_catalogo() to anon, authenticated;
+
+-- Pedido pago no site → CRM. Chamado só pelo servidor da loja (precisa da chave do agente).
+-- p_dados = {ref, pagamento_status, metodo, parcelas,
+--            cliente:{nome, telefone, email}, entrega:{cep, rua, numero, complemento, bairro, cidade, uf},
+--            itens:[{id, nome, marca, quantidade, preco}], desconto, frete, cupom, observacoes}
+-- Pode ser chamado várias vezes para o mesmo pagamento (retorno do cliente + aviso do Mercado Pago):
+-- a 1ª cria o pedido, as outras só atualizam o status do pagamento.
+create or replace function public.loja_registrar_pedido(p_chave text, p_dados jsonb)
+returns jsonb language plpgsql security definer set search_path = public as $$
+declare
+  v_ref text := nullif(trim(p_dados->>'ref'), '');
+  v_pst text := lower(coalesce(nullif(p_dados->>'pagamento_status', ''), 'pending'));
+  v_ok boolean; v_ruim boolean; v_pid uuid; v_num int; v_st text; v_cli uuid; v_total numeric;
+  v_tel text; v_end text; v_cid text; v_ent jsonb := coalesce(p_dados->'entrega', '{}'::jsonb); v_item jsonb; v_prod record;
+begin
+  perform public._agente_validar(p_chave);
+  if v_ref is null then raise exception 'pagamento sem referência'; end if;
+  v_ok   := v_pst in ('approved', 'authorized');
+  v_ruim := v_pst in ('rejected', 'cancelled', 'refunded', 'charged_back');
+  perform pg_advisory_xact_lock(hashtext('loja_pedido:' || v_ref));
+
+  -- já registrado: só acompanha o pagamento
+  select id, numero into v_pid, v_num from public.pedidos where pagamento_ref = v_ref;
+  if found then
+    update public.pedidos set pagamento_status = v_pst,
+           status = case
+             when v_ok and status = 'aguardando_pagamento' then 'novo'
+             when v_ruim and status in ('aguardando_pagamento', 'novo') then 'cancelado'
+             else status end
+     where id = v_pid
+     returning status, total into v_st, v_total;
+    return jsonb_build_object('ok', true, 'pedido_id', v_pid, 'numero', v_num, 'status', v_st, 'total', v_total, 'novo', false);
+  end if;
+
+  if v_ruim then return jsonb_build_object('ok', false, 'motivo', 'pagamento ' || v_pst); end if;
+  if jsonb_typeof(p_dados->'itens') is distinct from 'array' or jsonb_array_length(p_dados->'itens') = 0 then
+    raise exception 'pedido sem itens';
+  end if;
+
+  v_tel := public._fone(p_dados->'cliente'->>'telefone');
+  if v_tel is null then v_tel := 'mp' || regexp_replace(v_ref, '\D', '', 'g'); end if;   -- sem telefone: ficha pelo nº do pagamento
+  v_end := nullif(concat_ws(', ', nullif(v_ent->>'rua', ''), nullif(v_ent->>'numero', ''), nullif(v_ent->>'complemento', '')), '');
+  v_cid := nullif(concat_ws(' - ', nullif(v_ent->>'cidade', ''), nullif(v_ent->>'uf', '')), '');
+
+  insert into public.clientes as c (nome, telefone, email, endereco, bairro, cidade, origem)
+  values (coalesce(nullif(trim(p_dados->'cliente'->>'nome'), ''), 'Cliente do site'), v_tel,
+          nullif(trim(p_dados->'cliente'->>'email'), ''), v_end, nullif(v_ent->>'bairro', ''), v_cid, 'site')
+  on conflict (telefone) do update set
+    nome     = case when excluded.nome = 'Cliente do site' then c.nome else excluded.nome end,
+    email    = coalesce(excluded.email, c.email),
+    endereco = coalesce(excluded.endereco, c.endereco),
+    bairro   = coalesce(excluded.bairro, c.bairro),
+    cidade   = coalesce(excluded.cidade, c.cidade)
+  returning id into v_cli;
+
+  insert into public.pedidos (cliente_id, status, tipo_entrega, endereco_entrega, forma_pagamento, taxa_entrega, desconto,
+                              observacoes, origem, pagamento_ref, pagamento_status)
+  values (v_cli, case when v_ok then 'novo' else 'aguardando_pagamento' end, 'entrega',
+          nullif(concat_ws(' · ', v_end, nullif(v_ent->>'bairro', ''), v_cid,
+                 case when nullif(v_ent->>'cep', '') is not null then 'CEP ' || (v_ent->>'cep') end), ''),
+          case lower(coalesce(p_dados->>'metodo', ''))
+            when 'pix' then 'pix' when 'bank_transfer' then 'pix'
+            when 'credit_card' then 'cartao_credito' when 'debit_card' then 'cartao_debito' else null end,
+          greatest(coalesce(nullif(p_dados->>'frete', '')::numeric, 0), 0),
+          greatest(coalesce(nullif(p_dados->>'desconto', '')::numeric, 0), 0),
+          concat_ws(' · ', 'Mercado Pago #' || v_ref,
+                 case when coalesce(nullif(p_dados->>'parcelas', '')::int, 1) > 1 then (p_dados->>'parcelas') || 'x no cartão' end,
+                 case when nullif(p_dados->>'cupom', '') is not null then 'cupom ' || upper(p_dados->>'cupom') end,
+                 nullif(p_dados->>'observacoes', '')),
+          'site', v_ref, v_pst)
+  returning id, numero into v_pid, v_num;
+
+  for v_item in select * from jsonb_array_elements(p_dados->'itens') loop
+    select id, nome, categoria into v_prod from public.produtos where site_id = v_item->>'id';
+    insert into public.pedido_itens (pedido_id, produto_id, produto, categoria, quantidade, preco_unitario)
+    values (v_pid, v_prod.id,
+            coalesce(v_prod.nome, nullif(v_item->>'nome', ''), v_item->>'id'),
+            coalesce(v_prod.categoria, nullif(v_item->>'marca', '')),
+            greatest(coalesce(nullif(v_item->>'quantidade', '')::int, 1), 1),
+            greatest(coalesce(nullif(v_item->>'preco', '')::numeric, 0), 0));
+  end loop;
+
+  select status, total into v_st, v_total from public.pedidos where id = v_pid;
+  return jsonb_build_object('ok', true, 'pedido_id', v_pid, 'numero', v_num, 'status', v_st, 'total', v_total, 'novo', true);
+end $$;
+revoke all on function public.loja_registrar_pedido(text, jsonb) from public;
+grant execute on function public.loja_registrar_pedido(text, jsonb) to anon, authenticated;

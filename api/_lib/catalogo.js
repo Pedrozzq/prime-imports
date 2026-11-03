@@ -7,6 +7,10 @@
  *
  * Assim, adulterar o localStorage ou o corpo do fetch não muda um centavo do
  * que é cobrado: no máximo faz o pagamento ser recusado.
+ *
+ * Com o CRM ligado (api/_lib/crm.js → catalogoAoVivo), o preço, a oferta e o
+ * estoque que valem são os do CRM; a tabela fixa fica de reserva para quando
+ * o CRM não responder (ou para produto que ainda não está no CRM).
  */
 
 import { CATALOGO } from './catalogo-dados.js';
@@ -22,12 +26,15 @@ function centavos(valor) {
  * Reconstrói a sacola com os preços oficiais.
  *
  * @param {Array} items itens crus vindos do checkout (campo `id` = "<produto>|<tamanho>")
+ * @param {Map|null} [aoVivo] catálogo do CRM (catalogoAoVivo()); null/omitido = só a tabela fixa
+ * @param {{ignorarEstoque?:boolean}} [opcoes] ignorarEstoque: depois do pagamento (e-mail, pedido), o estoque já pode ter baixado
  * @returns {{itens:Array, total:number, erros:Array<string>, divergencias:Array<object>}}
  *   `itens` já vem com nome, marca e preço do catálogo — use sempre estes, nunca os do cliente.
  *   `erros` não vazio significa: não crie o pagamento.
  *   `divergencias` lista o que o cliente tinha dito, quando difere do catálogo (só para log).
  */
-export function validarSacola(items) {
+export function validarSacola(items, aoVivo, opcoes) {
+    const ignorarEstoque = !!(opcoes && opcoes.ignorarEstoque);
     const erros = [];
     const divergencias = [];
     const itens = [];
@@ -40,7 +47,11 @@ export function validarSacola(items) {
     for (const cru of items) {
         const bruto = cru && typeof cru === 'object' ? cru : {};
         const chave = String(bruto.id == null ? '' : bruto.id).trim();
-        const oficial = Object.prototype.hasOwnProperty.call(CATALOGO, chave) ? CATALOGO[chave] : null;
+        const fixo = Object.prototype.hasOwnProperty.call(CATALOGO, chave) ? CATALOGO[chave] : null;
+        const crm = aoVivo && aoVivo.get ? aoVivo.get(chave) : null;
+        const oficial = crm
+            ? { nome: fixo ? fixo.nome : chave.replace('|', ' (') + (chave.indexOf('|') > 0 ? ')' : ''), marca: fixo ? fixo.marca : '', preco: crm.preco }
+            : fixo;
 
         if (!oficial) {
             erros.push('Produto não encontrado no catálogo: ' + (chave || '(sem id)'));
@@ -54,6 +65,16 @@ export function validarSacola(items) {
         }
         if (qtd > QTD_MAXIMA) {
             erros.push('Quantidade acima do limite (' + QTD_MAXIMA + ') para ' + oficial.nome + '.');
+            continue;
+        }
+        if (crm && !crm.ativo && !ignorarEstoque) {
+            erros.push(oficial.nome + ' não está mais à venda.');
+            continue;
+        }
+        if (crm && crm.estoque != null && qtd > crm.estoque && !ignorarEstoque) {
+            erros.push(crm.estoque > 0
+                ? 'Só temos ' + crm.estoque + ' em estoque de ' + oficial.nome + '.'
+                : oficial.nome + ' esgotou.');
             continue;
         }
 

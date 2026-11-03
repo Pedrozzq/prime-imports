@@ -28,6 +28,7 @@ import { validarCupom } from './_lib/cupons.js';
 import { descontoDecants } from './_lib/promocoes.js';
 import { calcularFrete } from './_lib/frete.js';
 import { baseUrlDeRequest, montarPayer, itensPreferencia } from './_lib/checkout-pro.js';
+import { catalogoAoVivo, itensParaMetadata } from './_lib/crm.js';
 
 const ACCESS_TOKEN = process.env.MP_ACCESS_TOKEN;
 
@@ -55,13 +56,17 @@ export default async function handler(req, res) {
         var items = Array.isArray(body.items) ? body.items : [];
         var entrega = body.entrega && typeof body.entrega === 'object' ? body.entrega : {};
 
-        // Reconstrói a sacola pelos preços do servidor. A partir daqui, o que o
-        // cliente disse sobre preço não vale mais nada.
-        var sacola = validarSacola(items);
+        // Reconstrói a sacola pelos preços do servidor (CRM ao vivo: preço, oferta e
+        // estoque; sem CRM, a tabela fixa). A partir daqui, o que o cliente disse
+        // sobre preço não vale mais nada.
+        var sacola = validarSacola(items, await catalogoAoVivo());
         if (sacola.erros.length) {
             console.warn('Sacola recusada na validação:', sacola.erros.join(' | '));
+            var semEstoque = sacola.erros.filter(function (e) { return /estoque|esgotou|mais à venda/.test(e); });
             return res.status(400).json({
-                error: 'Não foi possível conferir os itens da sacola. Volte à loja e monte o pedido novamente.',
+                error: semEstoque.length
+                    ? semEstoque.join(' ') + ' Ajuste a sacola e tente de novo.'
+                    : 'Não foi possível conferir os itens da sacola. Volte à loja e monte o pedido novamente.',
                 detail: sacola.erros
             });
         }
@@ -120,14 +125,21 @@ export default async function handler(req, res) {
                 installments: 12
             },
             statement_descriptor: 'PRIMEIMPORTS',
+            // aviso do Mercado Pago (api/mp-webhook.js): grava/atualiza o pedido no CRM mesmo
+            // se o cliente não voltar para a loja (ex.: Pix pago depois)
+            notification_url: ehHttps ? base + '/api/mp-webhook' : undefined,
             external_reference: referencia,
             metadata: {
                 referencia: referencia,
                 cupom: cupomOk ? cupom.code : null,
                 promocao: promo.desconto,
                 subtotal: subtotal,
+                desconto: descontoAplicado,
                 frete: frete,
-                total: total
+                total: total,
+                // para montar o pedido no CRM: itens já com o preço cobrado e a entrega
+                itens: itensParaMetadata(sacola.itens),
+                entrega: JSON.stringify(entrega).slice(0, 1500)
             }
         };
         // auto_return exige back_urls https válidas; em `vercel dev` (http) o

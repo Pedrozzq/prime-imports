@@ -18,6 +18,7 @@ import { validarSacola } from './_lib/catalogo.js';
 import { validarCupom } from './_lib/cupons.js';
 import { descontoDecants } from './_lib/promocoes.js';
 import { calcularFrete } from './_lib/frete.js';
+import { catalogoAoVivo } from './_lib/crm.js';
 
 const MAX_ITENS = 50;
 const CAMPOS_ENTREGA = ['nome', 'fone', 'cep', 'rua', 'numero', 'complemento', 'bairro', 'cidade', 'uf'];
@@ -69,7 +70,7 @@ export default async function handler(req, res) {
         // assim o e-mail nunca mostra um total adulterado pelo navegador. Se algo
         // não bater, segue com o que veio, porque este aviso é informativo e não
         // pode deixar de chegar.
-        var conferida = validarSacola(body.items);
+        var conferida = validarSacola(body.items, await catalogoAoVivo(), { ignorarEstoque: true });
         if (!conferida.erros.length && conferida.itens.length) {
             items = conferida.itens;
         }

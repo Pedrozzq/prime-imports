@@ -21,9 +21,15 @@ Se o repositório Git ainda não existir, ou não houver remoto no GitHub config
 - Sem framework/build: edições são feitas direto nos arquivos `.html`, `css/*.css`, `js/*.js`.
 - Paleta de marca: dourado `#D4AF37` (`brand-gold`), `#F3E5AB` (`brand-gold-light`), `#AA8529` (`brand-gold-dark`), fundo `#0a0a0a`/`#171717` (`brand-black`/`brand-dark`).
 - Botões: usar as classes compartilhadas de `css/buttons.css` (`.btn-venus`, `.btn-venus-solid`, `.btn-venus-row`) para manter a estética consistente em todo o site.
-- **Preços: `index.html` é a fonte única.** Depois de alterar `PRODUTOS` (preço,
+- **Preço, estoque e ofertas valendo: o CRM (`crm/`, Supabase).** A loja lê ao vivo
+  (`js/crm-loja.js` → função `loja_catalogo`) e o servidor cobra pelo mesmo catálogo
+  (`api/_lib/crm.js` + `api/_lib/catalogo.js`). Pagamento do Mercado Pago vira pedido no CRM
+  (`api/confirm-order.js` e `api/mp-webhook.js` → `loja_registrar_pedido`, env `CRM_CHAVE`).
+  O `PRODUTOS` do `index.html` define os produtos (foto, texto, tamanhos) e é a tabela de
+  reserva quando o CRM não responde.
+- **Preços de reserva: `index.html`.** Depois de alterar `PRODUTOS` (preço,
   tamanho, `mult` de decant, produto novo), rode `npm run catalogo` e commite o
   `api/_lib/catalogo-dados.js` gerado — é essa tabela que o servidor usa para
-  cobrar. Nunca edite o arquivo gerado à mão, e nunca faça a função de pagamento
+  cobrar quando o CRM não responde (e o `crm/produtos.js`, que cadastra os produtos novos no CRM). Nunca edite o arquivo gerado à mão, e nunca faça a função de pagamento
   confiar no `price` que vem do navegador.
 - Carrinho (`js/cart.js`) é compartilhado por todas as páginas; qualquer botão de "adicionar à sacola" precisa dos atributos `data-cart-add`, `data-cart-id`, `data-cart-name`, `data-cart-brand`, `data-cart-price`, `data-cart-image`.

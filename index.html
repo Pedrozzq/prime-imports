@@ -1465,7 +1465,7 @@ function pintarCarrinho(){
 function cartaoProduto(p, virado = false){
   const fav = estado.favoritos.has(p.id);
   const desconto = p.precoAntigo ? Math.round((1 - p.preco/p.precoAntigo)*100) : 0;
-  const decants = p.tamanhos.map((t,i) => ({ ml:t.ml.replace("Decant ",""), i, preco:precoTamanho(p,t) }))
+  const decants = p.tamanhos.map((t,i) => ({ ml:t.ml.replace("Decant ",""), i, preco:precoTamanho(p,t), antigo:t.precoAntigo }))
     .filter((d,i) => p.tamanhos[i].ml.startsWith("Decant"));
   const frente = `
     <div class="produto__midia">
@@ -1501,7 +1501,7 @@ function cartaoProduto(p, virado = false){
         <ul class="produto__decants-lista">
           ${decants.map(d => `<li>
             <span class="produto__decants-ml">${d.ml}</span>
-            <span class="produto__decants-preco">${dinheiro(d.preco)}</span>
+            <span class="produto__decants-preco">${d.antigo ? `<s style="opacity:.55;font-size:.85em;margin-right:4px">${dinheiro(d.antigo)}</s>` : ""}${dinheiro(d.preco)}</span>
             <button type="button" class="produto__decants-add" data-add-decant="${p.id}" data-decant-idx="${d.i}" aria-label="Adicionar decant ${d.ml} de ${p.nome} à sacola">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 4h2.3l2.4 11.2h10.4l2.1-8.2H6"/><circle cx="9" cy="19.3" r="1.4"/><circle cx="16.6" cy="19.3" r="1.4"/></svg>
             </button>
@@ -1539,7 +1539,7 @@ function pintarProduto(){
       <div class="opcoes" role="group" aria-label="Escolha o tamanho">
         ${p.tamanhos.map((s,i) => `<button class="opcao ${i === tamanhoAtual ? "ativa" : ""}" type="button" data-tam="${i}">${s.ml}</button>`).join("")}
       </div>
-      ${p.precoAntigo && tamanhoAtual === 0 ? `<p class="produto__antigo" style="margin:0">${dinheiro(p.precoAntigo)}</p>` : ""}
+      ${t.precoAntigo || (p.precoAntigo && tamanhoAtual === 0) ? `<p class="produto__antigo" style="margin:0">${dinheiro(t.precoAntigo || p.precoAntigo)}</p>` : ""}
       <p class="modal__preco">${dinheiro(preco)}</p>
       <p class="modal__parcela">${parcela(preco)} sem juros</p>
       <p class="modal__promo"><b>${PROMO_DECANTS.rotulo}:</b> leve 3 e o de menor valor sai com 50% OFF · leve 5 e o de menor valor sai de graça</p>
@@ -1597,7 +1597,7 @@ function listarProdutos(){
   const { rota, params } = estado;
   let lista = PRODUTOS.slice();
 
-  if(rota === "promocoes") lista = lista.filter(p => p.precoAntigo);
+  if(rota === "promocoes") lista = lista.filter(p => p.precoAntigo || p.emOferta);
   else if(rota === "favoritos") lista = lista.filter(p => estado.favoritos.has(p.id));
   else if(rota === "busca"){
     const q = semAcento(params.q || "");
@@ -2378,5 +2378,7 @@ try {
 navegar();
 pintarCarrinho();
 </script>
+<!-- preço, estoque e ofertas ao vivo do CRM (crm/) — precisa vir depois do script acima -->
+<script src="js/crm-loja.js"></script>
 </body>
 </html>

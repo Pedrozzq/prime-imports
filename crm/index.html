@@ -227,6 +227,7 @@ td.small.mut,td.num{white-space:nowrap}
 .s-entregue{color:var(--green);background:rgba(95,214,138,.1)}
 .s-cancelado{color:var(--red);background:rgba(255,93,93,.1)}
 .s-fora_horario{color:var(--violet);background:rgba(184,146,255,.1);border-color:rgba(184,146,255,.25)}
+.s-aguardando_pagamento{color:var(--amber);background:rgba(255,181,71,.1);border-color:rgba(255,181,71,.3)}
 select.pill{appearance:none;cursor:pointer;padding-right:10px;outline:none}
 select.pill option{background:var(--card);color:var(--txt)}
 .tag{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:6px;background:var(--card2);border:1px solid var(--line2);color:var(--mut)}
@@ -798,9 +799,10 @@ const toast = (msg, err, ms = 3500) => {
 // Etapas do pedido que a equipe escolhe
 const STATUS = {novo: 'Novo', saiu_entrega: 'Saiu p/ entrega', entregue: 'Entregue', cancelado: 'Cancelado'};
 // etapas antigas: só aparecem em pedidos que já estavam nelas (ao trocar, somem da lista)
-const STATUS_ANTIGO = {confirmado: 'Confirmado', em_preparo: 'Em preparo', fora_horario: 'Fora do horário'};
+const STATUS_ANTIGO = {confirmado: 'Confirmado', em_preparo: 'Em preparo', fora_horario: 'Fora do horário', aguardando_pagamento: 'Aguardando pagamento'};
 // pedido do site com a loja fechada: não conta como venda nem baixa estoque até virar "Novo"
-const contaVenda = p => p.status !== 'cancelado' && p.status !== 'fora_horario';
+// pedido da loja com Pix/boleto ainda não pago: também não conta (vira "Novo" sozinho quando o Mercado Pago aprova)
+const contaVenda = p => p.status !== 'cancelado' && p.status !== 'fora_horario' && p.status !== 'aguardando_pagamento';
 const ABERTOS = ['novo', 'confirmado', 'em_preparo', 'saiu_entrega'];
 // Entrega agendada pelo site (agendamento.sql): "sex, 07/11 · 20h às 21h"
 const fmtAgenda = v => { if (!v) return '';
@@ -2082,7 +2084,7 @@ async function viewPedidos() {
   const peds = await cache.pedidos(true);
   const abertosSet = ABERTOS;
   const counts = {abertos: peds.filter(p => abertosSet.includes(p.status)).length, todos: peds.length};
-  [...Object.keys(STATUS), 'fora_horario'].forEach(s => counts[s] = peds.filter(p => p.status === s).length);
+  [...Object.keys(STATUS), 'fora_horario', 'aguardando_pagamento'].forEach(s => counts[s] = peds.filter(p => p.status === s).length);
   // atendimento: "Meus" = aceitos por mim e ainda abertos; "Sem atendente" = abertos sem ninguém
   const meu = p => p.aceito_por && p.aceito_por === EU.id && precisaAtend(p), livre = p => !p.aceito_por && precisaAtend(p);
   counts.meus = peds.filter(meu).length; counts.livres = peds.filter(livre).length;
@@ -2091,7 +2093,7 @@ async function viewPedidos() {
       : pedFiltro === 'meus' ? meu(p) : pedFiltro === 'livres' ? livre(p) : p.status === pedFiltro)
     .filter(p => !q || `#${p.numero} ${p.clientes?.nome} ${p.clientes?.telefone} ${itensResumo(p.pedido_itens)}`.toLowerCase().includes(q));
   if (pedFiltro === 'fora_horario') list.sort((a, b) => String(a.agendado_para || '9').localeCompare(String(b.agendado_para || '9')));
-  const tabs = [['abertos', 'Em aberto'], ...(ATEND_ON ? [['meus', 'Meus'], ['livres', 'Sem atendente']] : []), ['todos', 'Todos'], ...Object.entries(STATUS), ['fora_horario', 'Fora do horário']];
+  const tabs = [['abertos', 'Em aberto'], ...(ATEND_ON ? [['meus', 'Meus'], ['livres', 'Sem atendente']] : []), ['todos', 'Todos'], ...Object.entries(STATUS), ['aguardando_pagamento', 'Aguardando pagamento'], ...(counts.fora_horario ? [['fora_horario', 'Fora do horário']] : [])];
 
   [...etqSel].forEach(id => { if (!peds.some(p => p.id === id)) etqSel.delete(id); });
   $('#view').innerHTML = header('Pedidos', 'Pedidos do site e do WhatsApp entram aqui automaticamente',
@@ -3304,9 +3306,9 @@ async function viewOfertas() {
   const secao = (t, lista, vazio) => `<div class="sec-t">${t}<span class="small mut">${lista.length || ''}</span></div>
     ${lista.length ? `<div class="of-grid">${lista.map(card).join('')}</div>` : `<div class="card empty" style="padding:22px">${vazio}</div>`}`;
 
-  $('#view').innerHTML = header('Ofertas relâmpago', 'No horário da oferta, os produtos viram o destaque do topo do site com contagem regressiva.',
+  $('#view').innerHTML = header('Ofertas relâmpago', 'No horário da oferta, a loja mostra o preço de oferta com o antigo riscado e os produtos entram em Promoções. O pagamento cobra o preço da oferta.',
     `<button class="btn pri" id="novaOferta">+ Nova oferta relâmpago</button>`) +
-    secao('No ar agora', grupos.ar, 'Nenhuma oferta no ar. O topo do site está no modo normal.') +
+    secao('No ar agora', grupos.ar, 'Nenhuma oferta no ar. A loja está com os preços normais.') +
     secao('Agendadas', [...grupos.agenda, ...grupos.pausa], 'Nenhuma oferta agendada.') +
     (grupos.fim.length ? secao('Encerradas', grupos.fim.sort((a, b) => b.fim.localeCompare(a.fim)).slice(0, 12), '') : '');
 
@@ -3345,7 +3347,7 @@ function formOferta(o, prods) {
   const ov = modal(`<form id="fof"><div class="dh"><h2>${o.id ? 'Editar oferta' : 'Nova oferta relâmpago'}</h2><button type="button" class="x" data-close>${ICON_X}</button></div>
     <div class="db">
       <div class="grid2">
-        <label class="f"><span>Título (aparece no topo do site)</span><input class="in" name="titulo" required maxlength="40" value="${esc(o.titulo || 'Oferta relâmpago')}"></label>
+        <label class="f"><span>Título (aparece em aviso para o cliente na loja)</span><input class="in" name="titulo" required maxlength="40" value="${esc(o.titulo || 'Oferta relâmpago')}"></label>
         <label class="f"><span>Frase de apoio (opcional)</span><input class="in" name="subtitulo" maxlength="120" placeholder="Ex.: Só hoje, até acabar o estoque!" value="${esc(o.subtitulo || '')}"></label>
       </div>
       <div class="grid2">
@@ -3427,7 +3429,7 @@ function formOferta(o, prods) {
     try {
       await API.salvarOferta({id: o.id || undefined, titulo: f.titulo.value.trim(), subtitulo: f.subtitulo.value.trim() || null,
         inicio: inicio.toISOString(), fim: fim.toISOString(), ativo: o.id ? o.ativo !== false : true}, itens);
-      toast(inicio <= Date.now() ? 'Oferta no ar: o topo do site já mudou' : `Oferta agendada para ${fmtPeriodo(inicio, fim)}`);
+      toast(inicio <= Date.now() ? 'Oferta no ar: a loja já mostra o preço de oferta' : `Oferta agendada para ${fmtPeriodo(inicio, fim)}`);
       ov.remove(); location.hash === '#ofertas' ? viewOfertas() : (location.hash = '#ofertas');
     } catch (er) { toast(er.message, true); b.disabled = false; b.textContent = 'Salvar oferta'; }
   };
