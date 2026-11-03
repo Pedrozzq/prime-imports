@@ -19,6 +19,8 @@ import { fileURLToPath } from 'node:url';
 const RAIZ = join(dirname(fileURLToPath(import.meta.url)), '..');
 const ORIGEM = join(RAIZ, 'index.html');
 const DESTINO = join(RAIZ, 'api', '_lib', 'catalogo-dados.js');
+// Catálogo do CRM (crm/index.html): uma linha por variante, no mesmo id do carrinho
+const DESTINO_CRM = join(RAIZ, 'crm', 'produtos.js');
 
 const html = readFileSync(ORIGEM, 'utf8');
 
@@ -43,6 +45,7 @@ if (!Array.isArray(PRODUTOS) || !PRODUTOS.length) {
 }
 
 const catalogo = {};
+const crm = [];
 let variantes = 0;
 
 for (const p of PRODUTOS) {
@@ -62,6 +65,7 @@ for (const p of PRODUTOS) {
             marca: p.marca || '',
             preco: preco
         };
+        crm.push({ id: chave, name: catalogo[chave].nome, category: p.marca || 'Outros', price: preco });
         variantes++;
     }
 }
@@ -89,5 +93,18 @@ ${linhas.join(',\n')}
 
 mkdirSync(dirname(DESTINO), { recursive: true });
 writeFileSync(DESTINO, saida, 'utf8');
+
+const saidaCrm = `// =====================================================================
+//  PRIME PERFUMES · CATÁLOGO DO CRM — ARQUIVO GERADO.
+//  Não edite à mão: rode "npm run catalogo" depois de alterar PRODUTOS no index.html.
+//  Cada tamanho (100 ml, decants) é um produto no CRM; o id é "<id do produto>|<tamanho>",
+//  o mesmo que o carrinho do site usa. Ao abrir, o CRM cadastra os novos e inativa os que saíram.
+//  Gerado a partir de index.html — ${PRODUTOS.length} produtos, ${variantes} variantes.
+// =====================================================================
+window.ZOO_CATALOGO = ${JSON.stringify(crm.sort((a, b) => a.id.localeCompare(b.id)), null, 1)};
+window.ZOO_PRODUTOS = window.ZOO_CATALOGO;
+`;
+mkdirSync(dirname(DESTINO_CRM), { recursive: true });
+writeFileSync(DESTINO_CRM, saidaCrm, 'utf8');
 
 console.log('catalogo-dados.js gerado: ' + PRODUTOS.length + ' produtos, ' + variantes + ' variantes.');

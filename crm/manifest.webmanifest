@@ -1,0 +1,17 @@
+{
+  "name": "Prime Perfumes · CRM",
+  "short_name": "Prime CRM",
+  "description": "Pedidos, clientes e WhatsApp da Prime Perfumes",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0a0a0a",
+  "theme_color": "#0a0a0a",
+  "lang": "pt-BR",
+  "icons": [
+    { "src": "img/crm-favicon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "img/crm-favicon-apple.png", "sizes": "180x180", "type": "image/png", "purpose": "any" }
+  ]
+}
