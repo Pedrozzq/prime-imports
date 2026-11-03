@@ -17,3 +17,4 @@ Nova pasta/
 # Sistema
 .DS_Store
 Thumbs.db
+.env*
