@@ -6,9 +6,9 @@
  * Adulterar o localStorage ou o corpo do fetch não muda um centavo — no
  * máximo o cupom é recusado e a compra segue pelo valor cheio.
  *
- * Para adicionar / editar / desligar cupons, mexa SÓ no objeto CUPONS abaixo.
- * Se mudar aqui, espelhe a mesma lista no bloco CUPONS de index.html (usada
- * apenas para o cliente ver o desconto na sacola antes do checkout).
+ * Os cupons são cadastrados no CRM (menu Cupons → tabela cupons, função
+ * loja_cupom): validarCupomAoVivo() consulta lá. O objeto CUPONS abaixo é só a
+ * RESERVA para quando o CRM não responder (mesma lista do index.html).
  *
  *   tipo "percentual" → `valor` é a porcentagem (ex.: 10 = 10% de desconto).
  *   tipo "fixo"       → `valor` é o desconto em reais.
@@ -18,6 +18,8 @@
  *   ativo             → false desliga o cupom sem apagar a linha.
  *   rotulo            → texto curto mostrado ao cliente.
  */
+
+import { cupomAoVivo } from './crm.js';
 
 export const CUPONS = {
     PRIME10:    { tipo: 'percentual', valor: 10, minimo: 0,   tetoDesconto: 150, ativo: true, rotulo: '10% OFF' },
@@ -45,16 +47,39 @@ function brl(valor) {
  */
 export function validarCupom(codigoBruto, subtotal) {
     const code = String(codigoBruto == null ? '' : codigoBruto).trim().toUpperCase();
-    const sub = Number(subtotal) || 0;
-
     if (!code) {
         return { ok: false, code: '', desconto: 0, motivo: 'Nenhum cupom informado.' };
     }
-
     const cupom = Object.prototype.hasOwnProperty.call(CUPONS, code) ? CUPONS[code] : null;
     if (!cupom || !cupom.ativo) {
         return { ok: false, code: code, desconto: 0, motivo: 'Cupom inválido ou expirado.' };
     }
+    return aplicarRegra(cupom, code, subtotal);
+}
+
+/**
+ * Mesma validação, com as regras do CRM (validade, limite de usos, 1 por cliente).
+ * Sem resposta do CRM, cai na lista fixa (validarCupom).
+ *
+ * @param {string} codigoBruto
+ * @param {number} subtotal
+ * @param {{telefone?:string, posPagamento?:boolean}} [opcoes]
+ *   posPagamento: depois de pago (e-mail/pedido) não confere prazo nem limite — o próprio pedido já é um uso
+ */
+export async function validarCupomAoVivo(codigoBruto, subtotal, opcoes) {
+    const code = String(codigoBruto == null ? '' : codigoBruto).trim().toUpperCase();
+    if (!code) return { ok: false, code: '', desconto: 0, motivo: 'Nenhum cupom informado.' };
+    const o = opcoes || {};
+    const r = await cupomAoVivo(code, o.telefone, o.posPagamento);
+    if (r === undefined) return validarCupom(code, subtotal);
+    if (!r.ok) return { ok: false, code: code, desconto: 0, motivo: r.motivo || 'Cupom inválido ou expirado.' };
+    return aplicarRegra({ tipo: r.tipo, valor: Number(r.valor), minimo: Number(r.minimo) || 0,
+        tetoDesconto: Number(r.teto) || 0, rotulo: r.rotulo }, code, subtotal);
+}
+
+/** Desconto de uma regra {tipo, valor, minimo, tetoDesconto, rotulo} sobre o subtotal. */
+function aplicarRegra(cupom, code, subtotal) {
+    const sub = Number(subtotal) || 0;
 
     if (sub < (cupom.minimo || 0)) {
         return {

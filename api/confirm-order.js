@@ -24,7 +24,7 @@
 import { MercadoPagoConfig, Payment } from 'mercadopago';
 import { enviarEmailPedido } from './_lib/order-email.js';
 import { validarSacola } from './_lib/catalogo.js';
-import { validarCupom } from './_lib/cupons.js';
+import { validarCupomAoVivo } from './_lib/cupons.js';
 import { descontoDecants } from './_lib/promocoes.js';
 import { calcularFrete } from './_lib/frete.js';
 import { catalogoAoVivo, registrarPagamento, dadosDoPagamento } from './_lib/crm.js';
@@ -93,7 +93,7 @@ export default async function handler(req, res) {
         var promo = descontoDecants(sacola.itens);
         var promoAplicada = promo.desconto > 0 ? promo : null;
         var total = Math.round((subtotal - promo.desconto) * 100) / 100;
-        var cupom = validarCupom(body.cupom, total);
+        var cupom = await validarCupomAoVivo(body.cupom, total, { posPagamento: true });
         var cupomAplicado = (cupom.ok && cupom.desconto > 0) ? cupom : null;
         if (cupomAplicado) {
             total = Math.round((total - cupomAplicado.desconto) * 100) / 100;

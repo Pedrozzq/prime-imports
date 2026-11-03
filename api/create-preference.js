@@ -24,7 +24,7 @@
 
 import { MercadoPagoConfig, Preference } from 'mercadopago';
 import { validarSacola } from './_lib/catalogo.js';
-import { validarCupom } from './_lib/cupons.js';
+import { validarCupomAoVivo } from './_lib/cupons.js';
 import { descontoDecants } from './_lib/promocoes.js';
 import { calcularFrete } from './_lib/frete.js';
 import { baseUrlDeRequest, montarPayer, itensPreferencia } from './_lib/checkout-pro.js';
@@ -86,7 +86,7 @@ export default async function handler(req, res) {
 
         // Cupom: o cliente manda só o código; o desconto é decidido aqui
         // (sobre o valor já com a promoção).
-        var cupom = validarCupom(body.cupom, total);
+        var cupom = await validarCupomAoVivo(body.cupom, total, { telefone: entrega.fone });
         var cupomOk = cupom.ok && cupom.desconto > 0;
         if (cupomOk) {
             descontoAplicado = Math.round((descontoAplicado + cupom.desconto) * 100) / 100;

@@ -193,23 +193,28 @@ end $$;
 -- 4. LOJA ONLINE (index.html) LIGADA AO CRM
 --    - o site lê preço, estoque, "no site" e ofertas daqui (loja_catalogo, público);
 --    - o servidor da loja (api/ na Vercel) confere a sacola por aqui antes de cobrar;
---    - pagamento do Mercado Pago vira pedido no CRM (loja_registrar_pedido, com a chave do agente):
---        aprovado              → status "novo" (conta como venda e baixa o estoque / os ml dos decants)
---        pendente (Pix/boleto) → "aguardando_pagamento" (não baixa estoque); aprovou depois → "novo"
---        recusado/estornado    → "cancelado" (devolve o estoque, se já tinha baixado)
+--    - pagamento do Mercado Pago vira pedido no CRM (loja_registrar_pedido, com a chave do agente).
+--      Status do pedido no CRM (valor no banco → nome na tela):
+--        aguardando_pagamento → Aguardando pagamento (Pix/boleto em aberto; não baixa estoque)
+--        novo                 → Pagamento aprovado   (conta como venda; baixa estoque e ml dos decants)
+--        saiu_entrega         → Enviado
+--        entregue             → Entregue
+--        recusado             → Pagamento recusado   (não conta; Pix vencido também cai aqui)
+--        cancelado            → Venda cancelada      (estorno/chargeback ou cancelada pela equipe; devolve o estoque)
 -- =====================================================================
 alter table public.produtos add column if not exists excluido boolean not null default false;
 alter table public.pedidos add column if not exists pagamento_ref    text;
 alter table public.pedidos add column if not exists pagamento_status text;
+alter table public.pedidos add column if not exists cupom            text;   -- código do cupom usado (seção 5)
 create unique index if not exists pedidos_pagamento_ref_key on public.pedidos (pagamento_ref) where pagamento_ref is not null;
 
 alter table public.pedidos drop constraint if exists pedidos_status_check;
 alter table public.pedidos add constraint pedidos_status_check
-  check (status in ('novo','confirmado','em_preparo','saiu_entrega','entregue','cancelado','fora_horario','aguardando_pagamento'));
+  check (status in ('novo','confirmado','em_preparo','saiu_entrega','entregue','cancelado','fora_horario','aguardando_pagamento','recusado'));
 
 -- status que contam como venda e baixam estoque
 create or replace function public._conta_venda(p_status text) returns boolean
-language sql immutable as $$ select coalesce(p_status not in ('cancelado','fora_horario','aguardando_pagamento'), true) $$;
+language sql immutable as $$ select coalesce(p_status not in ('cancelado','fora_horario','aguardando_pagamento','recusado'), true) $$;
 
 -- regra de frete da tabacaria (frete-gratis.sql), se tiver sido rodada: a loja manda o frete dela
 drop trigger if exists t_pedidos_frete on public.pedidos;
@@ -240,13 +245,15 @@ returns jsonb language plpgsql security definer set search_path = public as $$
 declare
   v_ref text := nullif(trim(p_dados->>'ref'), '');
   v_pst text := lower(coalesce(nullif(p_dados->>'pagamento_status', ''), 'pending'));
-  v_ok boolean; v_ruim boolean; v_pid uuid; v_num int; v_st text; v_cli uuid; v_total numeric;
+  v_ok boolean; v_recusa boolean; v_estorno boolean; v_novo_st text; v_pid uuid; v_num int; v_st text; v_cli uuid; v_total numeric;
   v_tel text; v_end text; v_cid text; v_ent jsonb := coalesce(p_dados->'entrega', '{}'::jsonb); v_item jsonb; v_prod record;
 begin
   perform public._agente_validar(p_chave);
   if v_ref is null then raise exception 'pagamento sem referência'; end if;
-  v_ok   := v_pst in ('approved', 'authorized');
-  v_ruim := v_pst in ('rejected', 'cancelled', 'refunded', 'charged_back');
+  v_ok      := v_pst in ('approved', 'authorized');
+  v_recusa  := v_pst in ('rejected', 'cancelled');          -- não pagou (cartão recusado, Pix/boleto vencido)
+  v_estorno := v_pst in ('refunded', 'charged_back');       -- pagou e o dinheiro voltou
+  v_novo_st := case when v_ok then 'novo' when v_recusa then 'recusado' when v_estorno then 'cancelado' else 'aguardando_pagamento' end;
   perform pg_advisory_xact_lock(hashtext('loja_pedido:' || v_ref));
 
   -- já registrado: só acompanha o pagamento
@@ -254,15 +261,15 @@ begin
   if found then
     update public.pedidos set pagamento_status = v_pst,
            status = case
-             when v_ok and status = 'aguardando_pagamento' then 'novo'
-             when v_ruim and status in ('aguardando_pagamento', 'novo') then 'cancelado'
+             when v_ok and status in ('aguardando_pagamento', 'recusado') then 'novo'
+             when v_recusa and status = 'aguardando_pagamento' then 'recusado'
+             when (v_estorno or v_recusa) and status in ('novo', 'confirmado', 'em_preparo', 'saiu_entrega', 'entregue') then 'cancelado'
              else status end
      where id = v_pid
      returning status, total into v_st, v_total;
     return jsonb_build_object('ok', true, 'pedido_id', v_pid, 'numero', v_num, 'status', v_st, 'total', v_total, 'novo', false);
   end if;
 
-  if v_ruim then return jsonb_build_object('ok', false, 'motivo', 'pagamento ' || v_pst); end if;
   if jsonb_typeof(p_dados->'itens') is distinct from 'array' or jsonb_array_length(p_dados->'itens') = 0 then
     raise exception 'pedido sem itens';
   end if;
@@ -284,8 +291,8 @@ begin
   returning id into v_cli;
 
   insert into public.pedidos (cliente_id, status, tipo_entrega, endereco_entrega, forma_pagamento, taxa_entrega, desconto,
-                              observacoes, origem, pagamento_ref, pagamento_status)
-  values (v_cli, case when v_ok then 'novo' else 'aguardando_pagamento' end, 'entrega',
+                              observacoes, origem, pagamento_ref, pagamento_status, cupom)
+  values (v_cli, v_novo_st, 'entrega',
           nullif(concat_ws(' · ', v_end, nullif(v_ent->>'bairro', ''), v_cid,
                  case when nullif(v_ent->>'cep', '') is not null then 'CEP ' || (v_ent->>'cep') end), ''),
           case lower(coalesce(p_dados->>'metodo', ''))
@@ -297,7 +304,7 @@ begin
                  case when coalesce(nullif(p_dados->>'parcelas', '')::int, 1) > 1 then (p_dados->>'parcelas') || 'x no cartão' end,
                  case when nullif(p_dados->>'cupom', '') is not null then 'cupom ' || upper(p_dados->>'cupom') end,
                  nullif(p_dados->>'observacoes', '')),
-          'site', v_ref, v_pst)
+          'site', v_ref, v_pst, nullif(upper(trim(coalesce(p_dados->>'cupom', ''))), ''))
   returning id, numero into v_pid, v_num;
 
   for v_item in select * from jsonb_array_elements(p_dados->'itens') loop
@@ -315,3 +322,77 @@ begin
 end $$;
 revoke all on function public.loja_registrar_pedido(text, jsonb) from public;
 grant execute on function public.loja_registrar_pedido(text, jsonb) to anon, authenticated;
+
+-- =====================================================================
+-- 5. CUPONS DE DESCONTO (CRM > Cupons → sacola do site e cobrança no Mercado Pago)
+--    percentual (com teto opcional) ou valor fixo, compra mínima, validade, limite de usos
+--    e "1 uso por cliente" (pelo WhatsApp do checkout). O site e o servidor consultam
+--    loja_cupom(); a lista de códigos NÃO é pública (ninguém lista os cupons pela API).
+--    Uso = pedido com o cupom que não foi cancelado (Aguardando pagamento também conta,
+--    para o limite não estourar com vários Pix em aberto).
+-- =====================================================================
+create table if not exists public.cupons (
+  codigo          text primary key check (codigo ~ '^[A-Z0-9_-]{3,24}$'),
+  tipo            text not null default 'percentual' check (tipo in ('percentual', 'fixo')),
+  valor           numeric(10,2) not null check (valor > 0),
+  minimo          numeric(10,2) not null default 0 check (minimo >= 0),     -- compra mínima (R$, já com a promoção)
+  teto            numeric(10,2) not null default 0 check (teto >= 0),       -- desconto máximo do percentual (0 = sem teto)
+  rotulo          text,                                                     -- texto curto que o cliente vê
+  ativo           boolean not null default true,
+  inicio          timestamptz,                                              -- vazio = já vale
+  fim             timestamptz,                                              -- vazio = sem prazo
+  limite_usos     integer check (limite_usos is null or limite_usos > 0),   -- vazio = sem limite
+  um_por_cliente  boolean not null default false,
+  criado_em       timestamptz not null default now(),
+  atualizado_em   timestamptz not null default now(),
+  constraint cupons_periodo check (fim is null or inicio is null or fim > inicio),
+  constraint cupons_percentual check (tipo <> 'percentual' or valor <= 100)
+);
+alter table public.cupons enable row level security;
+drop policy if exists "equipe cupons" on public.cupons;
+create policy "equipe cupons" on public.cupons for all to authenticated using (true) with check (true);
+grant select, insert, update, delete on public.cupons to authenticated;
+revoke all on public.cupons from anon;
+
+-- os cupons que estavam no código do site (api/_lib/cupons.js) entram já cadastrados
+insert into public.cupons (codigo, tipo, valor, minimo, teto, rotulo) values
+  ('PRIME10',    'percentual', 10, 0,   150, '10% OFF'),
+  ('PRIME15',    'percentual', 15, 500, 300, '15% OFF acima de R$ 500'),
+  ('BEMVINDO30', 'fixo',       30, 199, 0,   'R$ 30 OFF acima de R$ 199')
+on conflict (codigo) do nothing;
+
+create index if not exists idx_pedidos_cupom on public.pedidos (cupom) where cupom is not null;
+
+-- Regras do cupom valendo agora, para a sacola do site e para o servidor de pagamento.
+--   {ok:true, codigo, tipo, valor, minimo, teto, rotulo} ou {ok:false, motivo}
+--   p_telefone: confere "1 uso por cliente"; p_ignorar_limites: depois do pagamento (o próprio pedido já conta como uso)
+create or replace function public.loja_cupom(p_codigo text, p_telefone text default null, p_ignorar_limites boolean default false)
+returns jsonb language plpgsql stable security definer set search_path = public as $$
+declare c public.cupons; v_cod text := upper(trim(coalesce(p_codigo, ''))); v_usos int; v_tel text := public._fone(p_telefone);
+begin
+  select * into c from public.cupons where codigo = v_cod;
+  if not found or not c.ativo then return jsonb_build_object('ok', false, 'motivo', 'Cupom inválido ou expirado.'); end if;
+  if not p_ignorar_limites then
+    if c.inicio is not null and now() < c.inicio then return jsonb_build_object('ok', false, 'motivo', 'Este cupom ainda não começou a valer.'); end if;
+    if c.fim is not null and now() >= c.fim then return jsonb_build_object('ok', false, 'motivo', 'Cupom inválido ou expirado.'); end if;
+    if c.limite_usos is not null then
+      select count(*) into v_usos from public.pedidos where cupom = v_cod and status <> 'cancelado';
+      if v_usos >= c.limite_usos then return jsonb_build_object('ok', false, 'motivo', 'Este cupom já esgotou.'); end if;
+    end if;
+    if c.um_por_cliente and v_tel is not null and exists (
+         select 1 from public.pedidos p join public.clientes cl on cl.id = p.cliente_id
+          where p.cupom = v_cod and p.status <> 'cancelado' and cl.telefone = v_tel) then
+      return jsonb_build_object('ok', false, 'motivo', 'Você já usou este cupom.');
+    end if;
+  end if;
+  return jsonb_build_object('ok', true, 'codigo', c.codigo, 'tipo', c.tipo, 'valor', c.valor, 'minimo', c.minimo,
+                            'teto', c.teto, 'rotulo', coalesce(nullif(c.rotulo, ''), c.codigo));
+end $$;
+revoke all on function public.loja_cupom(text, text, boolean) from public;
+grant execute on function public.loja_cupom(text, text, boolean) to anon, authenticated;
+
+do $$ begin
+  if exists (select 1 from pg_publication where pubname = 'supabase_realtime') then
+    begin alter publication supabase_realtime add table public.cupons; exception when duplicate_object then null; end;
+  end if;
+end $$;

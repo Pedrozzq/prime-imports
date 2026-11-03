@@ -134,6 +134,50 @@
     return mudarQtdOriginal(chave, delta);
   };
 
+  // ---------- cupons (CRM > Cupons) ----------
+  // A sacola calcula o desconto com as regras em CUPONS (index.html). Ao aplicar, pergunta ao CRM
+  // (função loja_cupom) e põe as regras de lá em CUPONS; cupom recusado pelo CRM sai da lista.
+  // Sem resposta do CRM, vale a lista escrita no index.html. Quem cobra é o servidor, pelo CRM.
+  async function buscarCupom(code) {
+    try {
+      var r = await fetch(SUPABASE_URL + "/rest/v1/rpc/loja_cupom", {
+        method: "POST", cache: "no-store",
+        headers: { apikey: SUPABASE_KEY, "Content-Type": "application/json" },
+        body: JSON.stringify({ p_codigo: code, p_telefone: (estado.entrega && estado.entrega.fone) || null })
+      });
+      if (!r.ok) return undefined;
+      return await r.json();
+    } catch (e) { return undefined; }
+  }
+  function guardarCupom(code, r) {
+    if (r === undefined) return;                 // CRM fora do ar: fica a lista do index.html
+    if (r && r.ok) CUPONS[code] = { tipo: r.tipo, valor: Number(r.valor), minimo: Number(r.minimo) || 0, teto: Number(r.teto) || 0, rotulo: r.rotulo || code };
+    else delete CUPONS[code];
+  }
+  if (typeof aplicarCupom === "function" && typeof CUPONS !== "undefined") {
+    var aplicarCupomOriginal = aplicarCupom;
+    aplicarCupom = async function (codigo) {
+      var code = String(codigo || "").trim().toUpperCase();
+      if (!code) return aplicarCupomOriginal(codigo);
+      var btn = document.getElementById("btnAplicarCupom");
+      if (btn) { btn.disabled = true; btn.textContent = "..."; }
+      var r = await buscarCupom(code);
+      guardarCupom(code, r);
+      aplicarCupomOriginal(code);
+      // recusado pelo CRM: mostra o motivo de lá (esgotado, já usado, ainda não começou...)
+      if (r && !r.ok && r.motivo) { estado.cupomAviso = { tipo: "erro", texto: r.motivo }; pintarCarrinho(); }
+    };
+    // cupom salvo de uma visita anterior: confere no CRM se ainda vale
+    if (estado.cupom && estado.cupom.code) {
+      var salvo = estado.cupom.code;
+      buscarCupom(salvo).then(function (r) {
+        guardarCupom(salvo, r);
+        if (r && !r.ok) { estado.cupom = null; estado.cupomAviso = r.motivo ? { tipo: "erro", texto: "Cupom " + salvo + ": " + r.motivo } : null; salvarCupomLS(); }
+        pintarCarrinho();
+      });
+    }
+  }
+
   sincronizar();
   setInterval(sincronizar, INTERVALO);
   document.addEventListener("visibilitychange", function () { if (!document.hidden) sincronizar(); });

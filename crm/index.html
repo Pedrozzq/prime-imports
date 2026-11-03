@@ -226,6 +226,7 @@ td.small.mut,td.num{white-space:nowrap}
 .s-saiu_entrega{color:var(--violet);background:rgba(184,146,255,.1)}
 .s-entregue{color:var(--green);background:rgba(95,214,138,.1)}
 .s-cancelado{color:var(--red);background:rgba(255,93,93,.1)}
+.s-recusado{color:#ff8a65;background:rgba(255,138,101,.1);border-color:rgba(255,138,101,.3)}
 .s-fora_horario{color:var(--violet);background:rgba(184,146,255,.1);border-color:rgba(184,146,255,.25)}
 .s-aguardando_pagamento{color:var(--amber);background:rgba(255,181,71,.1);border-color:rgba(255,181,71,.3)}
 select.pill{appearance:none;cursor:pointer;padding-right:10px;outline:none}
@@ -720,7 +721,6 @@ tr.dim td.strong{color:var(--mut)}
       <a href="#dashboard" data-r="dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="9" rx="2"/><rect x="14" y="3" width="7" height="5" rx="2"/><rect x="14" y="12" width="7" height="9" rx="2"/><rect x="3" y="16" width="7" height="5" rx="2"/></svg>Visão geral</a>
       <div class="nav-grp">Vendas</div>
       <a href="#pedidos" data-r="pedidos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18M16 10a4 4 0 0 1-8 0"/></svg>Pedidos<span class="badge hidden" id="badgeNovos"></span></a>
-      <a href="#atendimento" data-r="atendimento"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M4 13v-1a8 8 0 0 1 16 0v1"/><rect x="2.5" y="13" width="4" height="6" rx="1.5"/><rect x="17.5" y="13" width="4" height="6" rx="1.5"/><path d="M20 19a3 3 0 0 1-3 3h-3"/></svg>Atendimento</a>
       <a href="#clientes" data-r="clientes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0M16 4a4 4 0 0 1 0 8M22 21a7 7 0 0 0-4-6.3"/></svg>Clientes</a>
       <div class="nav-grp">Conversas</div>
       <a href="#whatsapp" data-r="whatsapp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3.5 20.5 5 16a8.5 8.5 0 1 1 3.2 3.1z"/><path d="M9 8.6c0 3.3 2.9 6.4 6.3 6.6l1.2-1.4-1.9-1-1 .9a5 5 0 0 1-2.8-2.8l.9-1-1-1.9z"/></svg>WhatsApp<span class="badge hidden" id="badgeWa" style="background:#5fd68a"></span></a>
@@ -729,6 +729,7 @@ tr.dim td.strong{color:var(--mut)}
       <a href="#perfumes" data-r="perfumes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6v3H9z"/><path d="M10 6v2.2a6 6 0 1 0 4 0V6"/><path d="M8.5 14.5h7"/></svg>Perfumes</a>
       <a href="#decants" data-r="decants"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2h4v3h-4z"/><path d="M9.5 5h5v15a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2z"/><path d="M9.5 14h5"/><path d="M18 6.5c1.2 1.3 1.8 2.4 1.8 3.3a1.8 1.8 0 1 1-3.6 0c0-.9.6-2 1.8-3.3z"/></svg>Decants</a>
       <a href="#ofertas" data-r="ofertas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M13.5 2 4 14h6.5L9.5 22 20 9.5h-6.6L13.5 2Z"/></svg>Ofertas<span class="badge hidden" id="badgeOferta">no ar</span></a>
+      <a href="#cupons" data-r="cupons"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5V6a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v2.5a2.5 2.5 0 0 0 0 5V18a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-4.5a2.5 2.5 0 0 0 0-5Z"/><path d="M14.5 5v2M14.5 11v2M14.5 17v2"/><path d="m8 15 3-6"/></svg>Cupons</a>
       <div class="nav-grp">Gestão</div>
       <a href="#compras" data-r="compras"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2 3h3l2.6 12.2a1.5 1.5 0 0 0 1.5 1.2h8.6a1.5 1.5 0 0 0 1.5-1.1L21 8H6.2"/></svg>Compras e reposição</a>
       <a href="#margem" data-r="margem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M19 5 5 19"/><circle cx="7" cy="7" r="2.5"/><circle cx="17" cy="17" r="2.5"/></svg>Margem de lucro</a>
@@ -755,8 +756,9 @@ tr.dim td.strong{color:var(--mut)}
 (() => {
 'use strict';
 const CFG = window.ZOO_CONFIG || {SUPABASE_URL: '', SUPABASE_ANON_KEY: ''};
-// Atendimento ligado até o banco dizer que não tem a tabela funcionarios (atendimento.sql não rodou)
-let ATEND_ON = true, EU = {id: null, nome: ''}, FUNCS = [];
+// Aceitar pedido / responsável por pedido: DESLIGADO (o pedido não precisa ser aceito por ninguém).
+// Para voltar a usar, troque para true (precisa do atendimento.sql).
+let ATEND_ON = false, EU = {id: null, nome: ''}, FUNCS = [];
 const DEMO = !CFG.SUPABASE_URL || CFG.SUPABASE_URL.includes('SEU-PROJETO') || String(CFG.SUPABASE_ANON_KEY).includes('SUA-');
 // Catálogo do site (crm/produtos.js) no formato da tabela produtos do CRM
 const SITE_PRODUTOS = (window.ZOO_CATALOGO || window.ZOO_PRODUTOS || []).map(p => ({site_id: p.id, nome: p.name, categoria: p.category, preco: +p.price || 0, componentes: p.bundle || null}));
@@ -798,12 +800,13 @@ const toast = (msg, err, ms = 3500) => {
   $('#toast').appendChild(el); setTimeout(() => el.remove(), ms);
 };
 // Etapas do pedido que a equipe escolhe
-const STATUS = {novo: 'Novo', saiu_entrega: 'Saiu p/ entrega', entregue: 'Entregue', cancelado: 'Cancelado'};
+// banco → tela: aguardando_pagamento · novo (= pago) · saiu_entrega (= enviado) · entregue · recusado · cancelado
+const STATUS = {aguardando_pagamento: 'Aguardando pagamento', novo: 'Pagamento aprovado', saiu_entrega: 'Enviado', entregue: 'Entregue', recusado: 'Pagamento recusado', cancelado: 'Venda cancelada'};
 // etapas antigas: só aparecem em pedidos que já estavam nelas (ao trocar, somem da lista)
-const STATUS_ANTIGO = {confirmado: 'Confirmado', em_preparo: 'Em preparo', fora_horario: 'Fora do horário', aguardando_pagamento: 'Aguardando pagamento'};
+const STATUS_ANTIGO = {confirmado: 'Confirmado', em_preparo: 'Em preparo', fora_horario: 'Fora do horário'};
 // pedido do site com a loja fechada: não conta como venda nem baixa estoque até virar "Novo"
 // pedido da loja com Pix/boleto ainda não pago: também não conta (vira "Novo" sozinho quando o Mercado Pago aprova)
-const contaVenda = p => p.status !== 'cancelado' && p.status !== 'fora_horario' && p.status !== 'aguardando_pagamento';
+const contaVenda = p => !['cancelado', 'fora_horario', 'aguardando_pagamento', 'recusado'].includes(p.status);
 const ABERTOS = ['novo', 'confirmado', 'em_preparo', 'saiu_entrega'];
 // Entrega agendada pelo site (agendamento.sql): "sex, 07/11 · 20h às 21h"
 const fmtAgenda = v => { if (!v) return '';
@@ -853,7 +856,7 @@ function pintarEu() {
 }
 async function carregarEu(s) {
   EU.id = s.user?.id || null;
-  FUNCS = await API.funcionarios().catch(() => []);
+  FUNCS = ATEND_ON ? await API.funcionarios().catch(() => []) : [];
   EU.nome = FUNCS.find(f => f.id === EU.id)?.nome || '';
   pintarEu();
 }
@@ -866,10 +869,10 @@ const ATD = 'atd:';
 const statusValor = p => ATEND_ON && p.aceito_por && ['novo', 'confirmado', 'em_preparo'].includes(p.status) ? ATD + p.aceito_por : p.status;
 const statusOpcoes = p => {
   const v = statusValor(p);
-  const ops = [...(STATUS_ANTIGO[p.status] ? [[p.status, STATUS_ANTIGO[p.status]]] : []), ['novo', STATUS.novo],
+  const ops = [...(STATUS_ANTIGO[p.status] ? [[p.status, STATUS_ANTIGO[p.status]]] : []), ['aguardando_pagamento', STATUS.aguardando_pagamento], ['novo', STATUS.novo],
     ...(ATEND_ON ? FUNCS.map(f => [ATD + f.id, `Atendimento (${f.nome})`]) : []),
     ...(v.startsWith(ATD) && !FUNCS.some(f => ATD + f.id === v) ? [[v, `Atendimento (${respNome(p)})`]] : []),
-    ...Object.entries(STATUS).filter(([k]) => k !== 'novo')];
+    ...Object.entries(STATUS).filter(([k]) => k !== 'novo' && k !== 'aguardando_pagamento')];
   return ops.map(([k, l]) => `<option value="${esc(k)}" ${k === v ? 'selected' : ''}>${esc(l)}</option>`).join('');
 };
 const statusClasse = v => String(v).startsWith(ATD) ? 's-atendimento' : `s-${esc(v)}`;
@@ -1025,6 +1028,12 @@ const API = DEMO ? demoApi() : {
     if (r.error && /decant_frascos/.test(r.error.message)) return undefined; return chk(r); },
   async abrirFrasco(perfume, ml, frascoId) { return chk(await sb.rpc('decant_abrir_frasco', {p_perfume: perfume, p_ml: ml, p_frasco: frascoId || null})); },
   async ajustarFrasco(perfume, ml) { return chk(await sb.rpc('decant_ajustar_ml', {p_perfume: perfume, p_ml: ml})); },
+  // Cupons (perfumaria.sql seção 5). undefined = tabela ainda não existe
+  async cupons() { const r = await sb.from('cupons').select('*').order('criado_em', {ascending: false});
+    if (r.error && /cupons/.test(r.error.message)) return undefined; return chk(r); },
+  async salvarCupom(c, novo) { chk(novo ? await sb.from('cupons').insert(c) : await sb.from('cupons').update({...c, atualizado_em: new Date().toISOString()}).eq('codigo', c.codigo)); },
+  async atualizarCupom(codigo, patch) { chk(await sb.from('cupons').update({...patch, atualizado_em: new Date().toISOString()}).eq('codigo', codigo)); },
+  async excluirCupom(codigo) { chk(await sb.from('cupons').delete().eq('codigo', codigo)); },
   async waConversas() {
     return chk(await sb.from('wa_conversas').select('*, clientes(id,nome)').order('ultima_msg_em', {ascending: false, nullsFirst: false}).limit(300));
   },
@@ -1074,6 +1083,7 @@ const API = DEMO ? demoApi() : {
       .on('postgres_changes', {event: '*', schema: 'public', table: 'tarefas'}, cb)
       .on('postgres_changes', {event: '*', schema: 'public', table: 'compras'}, cb)
       .on('postgres_changes', {event: '*', schema: 'public', table: 'decant_frascos'}, cb)
+      .on('postgres_changes', {event: '*', schema: 'public', table: 'cupons'}, cb)
       .subscribe();
   }
 };
@@ -1177,6 +1187,12 @@ function demoApi() {
   const prDemo = (re, k) => produtos.filter(p => re.test(p.site_id || '')).slice(0, 3).map(p => ({site_id: p.site_id, preco_oferta: Math.round(p.preco * k * 100) / 100}));
   const ofertaItens = [...prDemo(/\|Decant 10 ml$/, .85).map(i => ({...i, oferta_id: ofertas[0].id})), ...prDemo(/\|100 ml$/, .9).map(i => ({...i, oferta_id: ofertas[1].id}))];
   const wait = () => new Promise(r => setTimeout(r, 80));
+  const cuponsDemo = [
+    {codigo: 'PRIME10', tipo: 'percentual', valor: 10, minimo: 0, teto: 150, rotulo: '10% OFF', ativo: true, inicio: null, fim: null, limite_usos: null, um_por_cliente: false, criado_em: new Date(now - 20 * D).toISOString()},
+    {codigo: 'PRIME15', tipo: 'percentual', valor: 15, minimo: 500, teto: 300, rotulo: '15% OFF acima de R$ 500', ativo: true, inicio: null, fim: null, limite_usos: null, um_por_cliente: false, criado_em: new Date(now - 20 * D).toISOString()},
+    {codigo: 'BEMVINDO30', tipo: 'fixo', valor: 30, minimo: 199, teto: 0, rotulo: 'R$ 30 OFF acima de R$ 199', ativo: true, inicio: null, fim: null, limite_usos: null, um_por_cliente: true, criado_em: new Date(now - 20 * D).toISOString()},
+    {codigo: 'BLACK20', tipo: 'percentual', valor: 20, minimo: 300, teto: 200, rotulo: 'Black Friday 20% OFF', ativo: true, inicio: new Date(now + 2 * D).toISOString(), fim: new Date(now + 5 * D).toISOString(), limite_usos: 50, um_por_cliente: true, criado_em: new Date(now - D).toISOString()}];
+  pedidos.forEach((p, i) => { if (i % 4 === 1) { p.cupom = i % 8 === 1 ? 'PRIME10' : 'BEMVINDO30'; p.desconto = i % 8 === 1 ? Math.round(p.subtotal * 0.1 * 100) / 100 : 30; } });
   // frascos abertos para decant (ml que sobram), um por perfume que tem decant no catálogo
   // montado no 1º uso (varInfo/ehDecant são definidos mais abaixo no arquivo)
   let frascosDemo_ = null;
@@ -1245,6 +1261,12 @@ function demoApi() {
     async atualizarOferta(id, patch) { await wait(); Object.assign(ofertas.find(o => o.id === id), patch); },
     async excluirOferta(id) { await wait(); ofertas.splice(ofertas.findIndex(o => o.id === id), 1); },
     async frascos() { await wait(); return fd().map(f => ({...f})); },
+    async cupons() { await wait(); return cuponsDemo.map(c => ({...c})); },
+    async salvarCupom(c, novo) { await wait();
+      if (novo) { if (cuponsDemo.some(x => x.codigo === c.codigo)) throw new Error('duplicate key: já existe um cupom com esse código'); cuponsDemo.unshift({...c, criado_em: new Date().toISOString()}); }
+      else Object.assign(cuponsDemo.find(x => x.codigo === c.codigo), c); },
+    async atualizarCupom(codigo, patch) { await wait(); Object.assign(cuponsDemo.find(x => x.codigo === codigo), patch); },
+    async excluirCupom(codigo) { await wait(); cuponsDemo.splice(cuponsDemo.findIndex(x => x.codigo === codigo), 1); },
     async abrirFrasco(perfume, ml, frascoId) { await wait();
       let f = fd().find(x => x.perfume_id === perfume);
       if (!f) fd().push(f = {perfume_id: perfume, ml_restante: 0, ml_frasco: ml, frascos_abertos: 0});
@@ -1573,11 +1595,12 @@ function enter(s) {
 // ======================================================================
 //  ROUTER
 // ======================================================================
-const VIEWS = {dashboard: viewDashboard, pedidos: viewPedidos, atendimento: viewAtendimento, whatsapp: viewWhatsapp, mensagens: viewMensagens, clientes: viewClientes, perfumes: viewProdutos, produtos: viewProdutos, decants: viewDecants, compras: viewCompras, margem: viewMargem, prolabore: viewProlabore, ofertas: viewOfertas};
+const VIEWS = {dashboard: viewDashboard, pedidos: viewPedidos, atendimento: viewAtendimento, whatsapp: viewWhatsapp, mensagens: viewMensagens, clientes: viewClientes, perfumes: viewProdutos, produtos: viewProdutos, decants: viewDecants, compras: viewCompras, margem: viewMargem, prolabore: viewProlabore, ofertas: viewOfertas, cupons: viewCupons};
 let current = '';
 async function route(silent) {
   let r = (location.hash.slice(1) || 'dashboard').split('?')[0];
   if (r === 'produtos') r = 'perfumes';   // links antigos (notificação de estoque)
+  if (r === 'atendimento' && !ATEND_ON) r = 'pedidos';   // aceitar pedido desligado
   const v = VIEWS[r] ? r : 'dashboard';
   document.querySelectorAll('#nav a, #tabbar a').forEach(a => a.classList.toggle('on', a.dataset.r === v));
   if (v === 'pedidos') pararLembrete();
@@ -2094,7 +2117,7 @@ async function viewPedidos() {
       : pedFiltro === 'meus' ? meu(p) : pedFiltro === 'livres' ? livre(p) : p.status === pedFiltro)
     .filter(p => !q || `#${p.numero} ${p.clientes?.nome} ${p.clientes?.telefone} ${itensResumo(p.pedido_itens)}`.toLowerCase().includes(q));
   if (pedFiltro === 'fora_horario') list.sort((a, b) => String(a.agendado_para || '9').localeCompare(String(b.agendado_para || '9')));
-  const tabs = [['abertos', 'Em aberto'], ...(ATEND_ON ? [['meus', 'Meus'], ['livres', 'Sem atendente']] : []), ['todos', 'Todos'], ...Object.entries(STATUS), ['aguardando_pagamento', 'Aguardando pagamento'], ...(counts.fora_horario ? [['fora_horario', 'Fora do horário']] : [])];
+  const tabs = [['abertos', 'Em aberto'], ...(ATEND_ON ? [['meus', 'Meus'], ['livres', 'Sem atendente']] : []), ['todos', 'Todos'], ...Object.entries(STATUS), ...(counts.fora_horario ? [['fora_horario', 'Fora do horário']] : [])];
 
   [...etqSel].forEach(id => { if (!peds.some(p => p.id === id)) etqSel.delete(id); });
   $('#view').innerHTML = header('Pedidos', 'Pedidos do site e do WhatsApp entram aqui automaticamente',
@@ -2705,6 +2728,126 @@ function formAjustarMl(g) {
     const ml = Math.max(0, Math.round(+f.ml.value * 10) / 10);
     try { await API.ajustarFrasco(g.base, ml); toast(`${g.perfume}: ${fmtNum(ml, ml % 1 ? 1 : 0)} ml no frasco`); ov.remove(); viewDecants(); }
     catch (er) { toast(er.message, true); } };
+}
+
+// ======================================================================
+//  CUPONS: códigos de desconto da sacola do site (tabela cupons · perfumaria.sql seção 5).
+//  O site e o servidor de pagamento consultam loja_cupom(): o que mudar aqui vale na hora.
+//  Uso = pedido com o cupom que não foi cancelado.
+// ======================================================================
+const cupomDesc = c => c.tipo === 'percentual' ? `${fmtNum(c.valor, +c.valor % 1 ? 1 : 0)}% OFF${+c.teto ? ` (até ${brl(c.teto)})` : ''}` : `${brl(c.valor)} OFF`;
+const cupomSit = (c, usos) => {
+  const agora = Date.now();
+  if (!c.ativo) return ['off', 'Pausado'];
+  if (c.fim && Date.parse(c.fim) <= agora) return ['out', 'Expirado'];
+  if (c.limite_usos && usos >= c.limite_usos) return ['out', 'Esgotado'];
+  if (c.inicio && Date.parse(c.inicio) > agora) return ['low', 'Agendado'];
+  return ['ok', 'Valendo'];
+};
+const gerarCodigo = () => 'PRIME' + Array.from({length: 4}, () => 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random() * 32)]).join('');
+
+async function viewCupons() {
+  const [cupons, peds] = await Promise.all([API.cupons(), cache.pedidos()]);
+  if (cupons === undefined) {
+    $('#view').innerHTML = header('Cupons', 'Cupons de desconto da sacola do site.') + `<div class="card"><h3>Falta criar a tabela de cupons</h3>
+      <p class="small mut">Rode o <b>crm/perfumaria.sql</b> de novo no Supabase (SQL Editor). Ele cria a tabela já com os cupons que estavam no código do site (PRIME10, PRIME15, BEMVINDO30).</p>
+      <button class="btn pri" id="cpRetry" style="margin-top:12px">Tentar de novo</button></div>`;
+    $('#cpRetry').onclick = () => viewCupons(); return;
+  }
+  const usados = peds.filter(p => p.cupom && p.status !== 'cancelado');
+  const porCod = new Map();
+  usados.forEach(p => { const k = String(p.cupom).toUpperCase(), x = porCod.get(k) || {usos: 0, fat: 0, desc: 0, ult: null};
+    x.usos++; if (contaVenda(p)) { x.fat += +p.total; x.desc += +p.desconto || 0; } if (!x.ult || p.criado_em > x.ult) x.ult = p.criado_em; porCod.set(k, x); });
+  const desde = Date.now() - 30 * 864e5;
+  const u30 = usados.filter(p => contaVenda(p) && Date.parse(p.criado_em) >= desde);
+  const valendo = cupons.filter(c => cupomSit(c, porCod.get(c.codigo)?.usos || 0)[0] === 'ok').length;
+
+  $('#view').innerHTML = header('Cupons', 'Códigos de desconto da sacola do site. O que mudar aqui vale na hora na loja e no valor cobrado no Mercado Pago.',
+    `<button class="btn pri" id="novoCupom">+ Novo cupom</button>`) + `
+    <div class="kpis">
+      <div class="kpi hl"><span>Cupons valendo</span><b class="num">${valendo}</b><small>de ${cupons.length} cadastrados</small></div>
+      <div class="kpi"><span>Pedidos com cupom (30 dias)</span><b class="num">${u30.length}</b><small>${usados.length} no total</small></div>
+      <div class="kpi"><span>Desconto dado (30 dias)</span><b class="num">${brl(u30.reduce((s, p) => s + (+p.desconto || 0), 0))}</b><small>inclui promoção leve 3 / leve 5 do pedido</small></div>
+      <div class="kpi"><span>Vendas com cupom (30 dias)</span><b class="num">${brl(u30.reduce((s, p) => s + +p.total, 0))}</b><small>total dos pedidos</small></div>
+    </div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Código</th><th>Desconto</th><th class="r">Compra mínima</th><th>Validade</th><th class="r">Usos</th><th class="r">Vendas</th><th>Situação</th><th>Ativo</th><th></th></tr></thead>
+      <tbody>${cupons.map(c => { const x = porCod.get(c.codigo) || {usos: 0, fat: 0}, [k, s] = cupomSit(c, x.usos); return `<tr data-cod="${esc(c.codigo)}" class="${k === 'ok' || k === 'low' ? '' : 'dim'}">
+        <td><b class="num" style="letter-spacing:.08em">${esc(c.codigo)}</b><div class="small mut">${esc(c.rotulo || '')}</div></td>
+        <td>${cupomDesc(c)}${c.um_por_cliente ? '<div class="small mut">1 uso por cliente</div>' : ''}</td>
+        <td class="r num">${+c.minimo ? brl(c.minimo) : '<span class="mut">—</span>'}</td>
+        <td class="small">${c.inicio || c.fim ? `${c.inicio ? dt(c.inicio) : 'já vale'}<br><span class="mut">até ${c.fim ? dt(c.fim) : 'sem prazo'}</span>` : '<span class="mut">Sem prazo</span>'}</td>
+        <td class="r num">${x.usos}${c.limite_usos ? `<span class="mut"> / ${c.limite_usos}</span>` : ''}</td>
+        <td class="r num">${x.fat ? brl(x.fat) : '<span class="mut">—</span>'}</td>
+        <td><span class="sit ${k}">${s}</span></td>
+        <td><label class="sw" title="Ligar ou pausar o cupom"><input type="checkbox" data-ativo ${c.ativo ? 'checked' : ''}><i></i></label></td>
+        <td class="r" style="white-space:nowrap"><button class="btn sm ghost" data-copiar title="Copiar o código">Copiar</button> <button class="btn sm ghost" data-editar>Editar</button></td></tr>`; }).join('')}</tbody>
+    </table>${cupons.length ? '' : '<div class="empty">Nenhum cupom. Crie o primeiro em "+ Novo cupom".</div>'}</div>`;
+
+  $('#novoCupom').onclick = () => formCupom();
+  document.querySelectorAll('#view tr[data-cod]').forEach(tr => {
+    const c = cupons.find(x => x.codigo === tr.dataset.cod);
+    tr.querySelector('[data-ativo]').onchange = async e => {
+      try { await API.atualizarCupom(c.codigo, {ativo: e.target.checked}); toast(e.target.checked ? `${c.codigo} ligado: já vale na loja` : `${c.codigo} pausado`); viewCupons(); }
+      catch (er) { e.target.checked = !e.target.checked; toast(er.message, true); }
+    };
+    tr.querySelector('[data-editar]').onclick = () => formCupom(c, porCod.get(c.codigo)?.usos || 0);
+    tr.querySelector('[data-copiar]').onclick = () => { navigator.clipboard?.writeText(c.codigo).then(() => toast(`${c.codigo} copiado`), () => toast(c.codigo)); };
+  });
+}
+
+function formCupom(c, usos = 0) {
+  const novo = !c;
+  c = c || {codigo: gerarCodigo(), tipo: 'percentual', valor: 10, minimo: 0, teto: 0, rotulo: '', ativo: true, inicio: null, fim: null, limite_usos: null, um_por_cliente: false};
+  const ov = modal(`<form id="fcp"><div class="dh"><h2>${novo ? 'Novo cupom' : `Editar cupom ${esc(c.codigo)}`}</h2><button type="button" class="x" data-close>${ICON_X}</button></div>
+    <div class="db">
+      <div class="grid2">
+        <label class="f"><span>Código${novo ? '' : ' (não muda depois de criado)'}</span>
+          <div style="display:flex;gap:6px"><input class="in" name="codigo" required maxlength="24" pattern="[A-Za-z0-9_\-]{3,24}" style="text-transform:uppercase;letter-spacing:.08em" value="${esc(c.codigo)}" ${novo ? '' : 'readonly'}>
+          ${novo ? '<button type="button" class="btn sm" id="cpGerar" title="Gerar um código">Gerar</button>' : ''}</div></label>
+        <label class="f"><span>Tipo</span><select class="in" name="tipo"><option value="percentual" ${c.tipo === 'percentual' ? 'selected' : ''}>Porcentagem (%)</option><option value="fixo" ${c.tipo === 'fixo' ? 'selected' : ''}>Valor fixo (R$)</option></select></label>
+        <label class="f"><span id="cpValLbl">Desconto</span><input class="in" name="valor" type="number" min="0.01" step="0.01" required value="${esc(c.valor)}"></label>
+        <label class="f" id="cpTetoF"><span>Desconto máximo (R$, vazio = sem teto)</span><input class="in" name="teto" type="number" min="0" step="0.01" placeholder="sem teto" value="${+c.teto ? esc(c.teto) : ''}"></label>
+        <label class="f"><span>Compra mínima (R$, vazio = qualquer valor)</span><input class="in" name="minimo" type="number" min="0" step="0.01" placeholder="sem mínimo" value="${+c.minimo ? esc(c.minimo) : ''}"></label>
+        <label class="f"><span>Limite de usos (vazio = sem limite)</span><input class="in" name="limite_usos" type="number" min="1" step="1" placeholder="sem limite" value="${c.limite_usos ?? ''}">${usos ? `<small class="mut">Já usado ${usos} ${usos === 1 ? 'vez' : 'vezes'}</small>` : ''}</label>
+        <label class="f"><span>Começa (vazio = já vale)</span><input class="in" name="inicio" type="datetime-local" value="${c.inicio ? paraCampo(Date.parse(c.inicio)) : ''}"></label>
+        <label class="f"><span>Termina (vazio = sem prazo)</span><input class="in" name="fim" type="datetime-local" value="${c.fim ? paraCampo(Date.parse(c.fim)) : ''}"></label>
+      </div>
+      <label class="f"><span>Texto para o cliente (aparece na sacola)</span><input class="in" name="rotulo" maxlength="60" placeholder="Ex.: 10% OFF na primeira compra" value="${esc(c.rotulo || '')}"></label>
+      <label class="check"><input type="checkbox" name="um_por_cliente" ${c.um_por_cliente ? 'checked' : ''}> 1 uso por cliente (pelo WhatsApp informado no checkout)</label>
+      <label class="check"><input type="checkbox" name="ativo" ${c.ativo ? 'checked' : ''}> Ativo (vale na loja)</label>
+      <p class="small mut" id="cpPrev" style="margin-top:8px"></p>
+    </div>
+    <div class="df">${novo ? '' : '<button type="button" class="btn ghost" id="cpExcluir" style="margin-right:auto;color:var(--red)">Excluir</button>'}<button type="button" class="btn ghost" data-close>Cancelar</button><button class="btn pri">Salvar</button></div></form>`, true);
+  const f = ov.querySelector('#fcp');
+  const prev = () => {
+    const pct = f.tipo.value === 'percentual', v = +f.valor.value || 0, teto = +f.teto.value || 0, min = +f.minimo.value || 0;
+    ov.querySelector('#cpValLbl').textContent = pct ? 'Desconto (%)' : 'Desconto (R$)';
+    ov.querySelector('#cpTetoF').style.display = pct ? '' : 'none';
+    const ex = Math.max(min, 300), d = pct ? Math.min(ex * v / 100, teto || Infinity) : Math.min(v, ex);
+    ov.querySelector('#cpPrev').textContent = v ? `Exemplo: numa compra de ${brl(ex)}, o cliente ganha ${brl(d)} de desconto.` : '';
+    if (!f.rotulo.dataset.mexeu) f.rotulo.placeholder = v ? (pct ? `${v}% OFF` : `${brl(v)} OFF`) + (min ? ` acima de ${brl(min)}` : '') : '';
+  };
+  f.rotulo.oninput = () => f.rotulo.dataset.mexeu = 1;
+  ['tipo', 'valor', 'teto', 'minimo'].forEach(n => f[n].addEventListener('input', prev)); f.tipo.onchange = prev; prev();
+  ov.querySelector('#cpGerar')?.addEventListener('click', () => { f.codigo.value = gerarCodigo(); });
+  ov.querySelector('#cpExcluir')?.addEventListener('click', async () => {
+    if (usos) return toast(`${c.codigo} já foi usado em ${usos} pedido(s): pause em vez de excluir`, true);
+    try { await API.excluirCupom(c.codigo); toast(`Cupom ${c.codigo} excluído`); ov.remove(); viewCupons(); } catch (er) { toast(er.message, true); }
+  });
+  f.onsubmit = async e => { e.preventDefault();
+    const codigo = f.codigo.value.trim().toUpperCase();
+    if (!/^[A-Z0-9_-]{3,24}$/.test(codigo)) return toast('Código: 3 a 24 letras, números, - ou _ (sem espaço)', true);
+    const pct = f.tipo.value === 'percentual', valor = Math.round(+f.valor.value * 100) / 100;
+    if (!(valor > 0) || (pct && valor > 100)) return toast(pct ? 'A porcentagem vai de 0,01 a 100' : 'Informe o valor do desconto', true);
+    const inicio = f.inicio.value ? new Date(f.inicio.value).toISOString() : null, fim = f.fim.value ? new Date(f.fim.value).toISOString() : null;
+    if (inicio && fim && fim <= inicio) return toast('O fim precisa ser depois do começo', true);
+    const row = {codigo, tipo: f.tipo.value, valor, teto: pct ? Math.max(0, +f.teto.value || 0) : 0, minimo: Math.max(0, +f.minimo.value || 0),
+      limite_usos: f.limite_usos.value ? Math.max(1, Math.floor(+f.limite_usos.value)) : null, inicio, fim,
+      rotulo: f.rotulo.value.trim() || f.rotulo.placeholder || codigo, um_por_cliente: f.um_por_cliente.checked, ativo: f.ativo.checked};
+    try { await API.salvarCupom(row, novo); toast(`Cupom ${codigo} salvo · já vale na loja`); ov.remove(); viewCupons(); }
+    catch (er) { toast(/duplicate|unique|já existe/i.test(er.message) ? 'Já existe um cupom com esse código' : er.message, true); }
+  };
 }
 
 function formProduto(p = {ativo: true}) {

@@ -15,7 +15,7 @@
 
 import { enviarEmailCheckout } from './_lib/checkout-email.js';
 import { validarSacola } from './_lib/catalogo.js';
-import { validarCupom } from './_lib/cupons.js';
+import { validarCupomAoVivo } from './_lib/cupons.js';
 import { descontoDecants } from './_lib/promocoes.js';
 import { calcularFrete } from './_lib/frete.js';
 import { catalogoAoVivo } from './_lib/crm.js';
@@ -85,7 +85,7 @@ export default async function handler(req, res) {
         var promo = descontoDecants(items);
         var promoAplicada = promo.desconto > 0 ? promo : null;
         var comPromo = subtotal - promo.desconto;
-        var cupom = validarCupom(body.cupom, comPromo);
+        var cupom = await validarCupomAoVivo(body.cupom, comPromo, { telefone: entrega.fone });
         var aplicado = cupom.ok && cupom.desconto > 0 ? cupom : null;
         var frete = calcularFrete(subtotal);
         var total = Math.round(((aplicado ? comPromo - aplicado.desconto : comPromo) + frete) * 100) / 100;

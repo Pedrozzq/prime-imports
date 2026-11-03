@@ -298,3 +298,17 @@ O iPhone só notifica o CRM **instalado pelo Safari** (iOS 16.4 ou mais novo). A
 No menu **Notificações** dá para escolher os tipos, mandar um teste ou desligar. No Android e no computador (Chrome, Edge, Safari) funciona direto pelo navegador, sem instalar.
 
 **Não chegou?** Confira: Ajustes > Notificações > Prime CRM ligado; modo Foco/Não Perturbe desligado; em Supabase > Edge Functions > push > Logs aparece cada envio.
+
+### Cupons de desconto (menu Cupons)
+
+Crie, pause e edite os cupons da sacola do site: porcentagem (com teto) ou valor fixo, compra mínima,
+validade, limite de usos e 1 uso por cliente. Vale na hora: a sacola e o servidor do Mercado Pago
+consultam a função `loja_cupom` (perfumaria.sql, seção 5). Sem resposta do CRM, valem os cupons
+fixos de `api/_lib/cupons.js`.
+
+### Status do pedido
+
+Aguardando pagamento → Pagamento aprovado → Enviado → Entregue, além de Pagamento recusado e
+Venda cancelada. O Mercado Pago muda sozinho: Pix pago vira "Pagamento aprovado", cartão
+recusado ou Pix vencido vira "Pagamento recusado", e estorno vira "Venda cancelada" (o estoque volta).
+Só "Pagamento aprovado", "Enviado" e "Entregue" contam como venda e baixam estoque.

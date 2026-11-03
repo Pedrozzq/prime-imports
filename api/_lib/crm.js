@@ -68,6 +68,25 @@ export async function catalogoAoVivo() {
     }
 }
 
+/**
+ * Regras de um cupom no CRM (CRM > Cupons → função loja_cupom).
+ * @returns {Promise<object|null|undefined>} regras {codigo, tipo, valor, minimo, teto, rotulo};
+ *   {ok:false, motivo} = cupom não vale; undefined = CRM indisponível (use a lista fixa)
+ */
+export async function cupomAoVivo(codigo, telefone, ignorarLimites) {
+    try {
+        const r = await rpc('loja_cupom', {
+            p_codigo: String(codigo || ''),
+            p_telefone: telefone ? String(telefone) : null,
+            p_ignorar_limites: !!ignorarLimites
+        }, 3500);
+        return r && typeof r === 'object' ? r : undefined;
+    } catch (e) {
+        console.warn('Cupom: CRM indisponível, usando a lista fixa:', e && e.message);
+        return undefined;
+    }
+}
+
 /** Itens do jeito que vão no metadata do Mercado Pago (curto): [[id, qtd, preço], ...] */
 export function itensParaMetadata(itens) {
     return JSON.stringify((itens || []).map(function (i) { return [i.id, i.qty, i.price]; }));
