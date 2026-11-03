@@ -96,17 +96,213 @@
       dados = await r.json();
     } catch (e) { return; }
     if (!dados || !Array.isArray(dados.produtos)) return;
-    var nova = JSON.stringify(dados.produtos);
+    if (dados.agora) DESVIO = Date.parse(dados.agora) - Date.now();   // acerta o relógio do aparelho
+    agendarProxima(dados);
+    var ofertas = Array.isArray(dados.ofertas) ? dados.ofertas : [];
+    var nova = JSON.stringify([dados.produtos, ofertas]);
     if (nova === assinatura) return;
-    var primeira = !assinatura;
     assinatura = nova;
-    OFERTAS = Array.isArray(dados.ofertas) ? dados.ofertas : [];
+    OFERTAS = ofertas;
     aplicar(new Map(dados.produtos.map(function (p) { return [String(p.id), p]; })));
+    montarRelampago();
     corrigirSacola();
     repintar();
     pintarCarrinho();
-    if (primeira && OFERTAS.length) avisar(OFERTAS[0].titulo + (OFERTAS[0].subtitulo ? " · " + OFERTAS[0].subtitulo : ""));
+    marcarCartoes();
   }
+
+  // ---------- OFERTA RELÂMPAGO (CRM > Ofertas) ----------
+  // Faixa abaixo do cabeçalho com o cronômetro até o fim da oferta, selo -% animado e
+  // "termina em" nos cartões dos produtos em oferta. Na hora do fim (ou do começo de uma
+  // agendada) a loja confere o CRM de novo e o preço volta sozinho.
+  var DESVIO = 0, timerProxima = null, RELAMPAGO = new Map();   // produto → {fim, pct}
+  function agora() { return Date.now() + DESVIO; }
+
+  function agendarProxima(dados) {
+    var alvos = (dados.ofertas || []).map(function (o) { return Date.parse(o.fim); });
+    if (dados.proxima) alvos.push(Date.parse(dados.proxima));
+    alvos = alvos.filter(function (x) { return x > agora(); });
+    clearTimeout(timerProxima);
+    if (alvos.length) {
+      var ms = Math.min.apply(null, alvos) - agora() + 1500;
+      if (ms < 2147483000) timerProxima = setTimeout(sincronizar, ms);
+    }
+  }
+
+  function escHtml(s) {
+    return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;" }[c]; });
+  }
+
+  function montarRelampago() {
+    RELAMPAGO = new Map();
+    OFERTAS.forEach(function (o) {
+      var fim = Date.parse(o.fim);
+      (o.itens || []).forEach(function (i) {
+        var pid = String(i.id).split("|")[0], ml = String(i.id).slice(pid.length + 1);
+        var p = acharProduto(pid), t = p && p.tamanhos.find(function (x) { return x.ml === ml; });
+        if (!t || !t.precoAntigo) return;                  // fora do site ou sem desconto de verdade
+        var pct = Math.round((1 - t.preco / t.precoAntigo) * 100);
+        var r = RELAMPAGO.get(pid) || { fim: fim, pct: 0 };
+        r.fim = Math.min(r.fim, fim); r.pct = Math.max(r.pct, pct);
+        RELAMPAGO.set(pid, r);
+      });
+    });
+    var faixa = document.getElementById("relampago");
+    var o = OFERTAS.filter(function (x) { return Date.parse(x.fim) > agora(); })[0];
+    if (!o || !RELAMPAGO.size) { if (faixa) faixa.remove(); return; }
+    var pctMax = Math.max.apply(null, Array.from(RELAMPAGO.values()).map(function (r) { return r.pct; }));
+    if (!faixa) {
+      faixa = document.createElement("section");
+      faixa.id = "relampago"; faixa.className = "relampago"; faixa.setAttribute("aria-label", "Oferta relâmpago");
+      var topo = document.querySelector("header.topo");
+      if (topo) topo.insertAdjacentElement("afterend", faixa); else document.body.prepend(faixa);
+    }
+    var fim = Date.parse(o.fim);
+    faixa.innerHTML =
+      "<div class=\"relampago__env\">" +
+        "<span class=\"relampago__raio\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><defs><linearGradient id=\"relOuro\" x1=\"0\" y1=\"0\" x2=\"1\" y2=\"1\"><stop offset=\"0\" stop-color=\"#fff4d2\"/><stop offset=\".45\" stop-color=\"#e8c27a\"/><stop offset=\"1\" stop-color=\"#a87b2e\"/></linearGradient></defs><path fill=\"url(#relOuro)\" d=\"M13.5 2 4 13.5h6.2L9 22l10-12.2h-6.3L13.5 2Z\"/></svg></span>" +
+        "<div class=\"relampago__txt\"><small class=\"relampago__ouro\">Oferta relâmpago</small><b>" + escHtml(o.titulo || "Oferta relâmpago") + "</b>" +
+          (o.subtitulo ? "<span>" + escHtml(o.subtitulo) + "</span>" : "") + "</div>" +
+        "<span class=\"relampago__pct\"><small>até</small><b class=\"relampago__ouro\">-" + pctMax + "%</b><small>off</small></span>" +
+        "<div class=\"relampago__tempo\"><small>Termina em</small><span class=\"relampago__relogio\" data-relampago-fim=\"" + fim + "\"></span>" +
+          "<em class=\"relampago__hora\">até as " + new Date(fim).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }) + "</em></div>" +
+        "<a class=\"relampago__btn\" href=\"#/promocoes\">Ver ofertas <span aria-hidden=\"true\">→</span></a>" +
+      "</div>";
+    tic();
+  }
+
+  function marcarCartoes() {
+    document.querySelectorAll("article.produto[data-produto]").forEach(function (a) {
+      var r = RELAMPAGO.get(a.dataset.produto);
+      var chip = a.querySelector(".relampago-chip");
+      a.classList.toggle("produto--relampago", !!r);
+      if (!r) {
+        if (chip) chip.remove();
+        a.querySelectorAll(".relampago-brilho").forEach(function (x) { x.remove(); });
+        var f0 = a.querySelector(".produto__fita--relampago"); if (f0) f0.classList.remove("produto__fita--relampago");
+        return;
+      }
+      var fita = a.querySelector(".produto__fita");
+      if (!fita) { fita = document.createElement("span"); fita.className = "produto__fita"; a.prepend(fita); }
+      if (fita.textContent !== "-" + r.pct + "%") fita.textContent = "-" + r.pct + "%";
+      fita.classList.add("produto__fita--relampago");
+      if (!chip) {
+        chip = document.createElement("span"); chip.className = "relampago-chip";
+        chip.innerHTML = "<i aria-hidden=\"true\">⚡</i><span data-relampago-fim=\"" + r.fim + "\"></span>";
+        var brilho = document.createElement("span"); brilho.className = "relampago-brilho"; brilho.setAttribute("aria-hidden", "true");
+        var md = a.querySelector(".produto__midia"); if (md && !md.querySelector(".relampago-brilho")) md.appendChild(brilho);
+        var midia = a.querySelector(".produto__midia"); (midia || a).appendChild(chip);
+      }
+    });
+    tic();
+  }
+
+  function fmtRelogio(ms) {
+    var s = Math.max(0, Math.floor(ms / 1000)), d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60), x = s % 60;
+    function dd(n) { return (n < 10 ? "0" : "") + n; }
+    return (d ? d + "d " : "") + dd(h) + ":" + dd(m) + ":" + dd(x);
+  }
+  var esperandoFim = false;
+  function tic() {
+    var acabou = false;
+    document.querySelectorAll("[data-relampago-fim]").forEach(function (el) {
+      var falta = Number(el.dataset.relampagoFim) - agora();
+      if (falta <= 0) acabou = true;
+      var txt = fmtRelogio(falta);
+      if (el.classList.contains("relampago__relogio")) {
+        var s = Math.max(0, Math.floor(falta / 1000)), partes = [];
+        if (s >= 86400) partes.push([Math.floor(s / 86400), "dias"]);
+        partes.push([Math.floor(s % 86400 / 3600), "h"], [Math.floor(s % 3600 / 60), "min"], [s % 60, "seg"]);
+        if (el.querySelectorAll(".u").length !== partes.length) el.innerHTML = partes.map(function (x) { return "<span class=\"u\"><b></b><small>" + x[1] + "</small></span>"; }).join("<i>:</i>");
+        var bs = el.querySelectorAll("b");
+        partes.forEach(function (x, k) {
+          var v = (x[0] < 10 ? "0" : "") + x[0];
+          if (bs[k].textContent !== v) { bs[k].textContent = v; bs[k].classList.remove("vira"); void bs[k].offsetWidth; bs[k].classList.add("vira"); }
+        });
+        el.closest(".relampago").classList.toggle("relampago--final", falta < 10 * 60 * 1000);
+      } else el.textContent = falta > 0 ? "termina em " + txt : "encerrada";
+    });
+    if (acabou && !esperandoFim) { esperandoFim = true; setTimeout(function () { esperandoFim = false; assinatura = ""; sincronizar(); }, 1500); }
+  }
+  setInterval(tic, 1000);
+
+  // a vitrine é redesenhada pelo index.html (filtros, rotas, virar cartão): marca os cartões de novo
+  var palcoEl = document.getElementById("palco");
+  if (palcoEl && window.MutationObserver) {
+    var pendente = false;
+    new MutationObserver(function (lista) {
+      if (pendente || !RELAMPAGO.size) return;
+      // ignora o próprio cronômetro e o selo (mudam a cada segundo)
+      if (!lista.some(function (m) { return !(m.target.closest && m.target.closest(".relampago-chip,.produto__fita,.relampago-brilho")); })) return;
+      pendente = true;
+      requestAnimationFrame(function () { pendente = false; marcarCartoes(); });
+    }).observe(palcoEl, { childList: true, subtree: true });
+  }
+
+  (function estilos() {
+    var css = document.createElement("style");
+    css.textContent = [
+      ":root{--rel-ouro:linear-gradient(110deg,#a87b2e 0%,#f3d58f 22%,#fff6da 32%,#e2b863 46%,#a87b2e 62%,#f0cf86 80%,#a87b2e 100%)}",
+      ".relampago{position:relative;overflow:hidden;color:#f6efe2;background:radial-gradient(60% 160% at 12% 50%,rgba(217,179,108,.20),transparent 60%),radial-gradient(50% 160% at 88% 50%,rgba(192,57,43,.22),transparent 65%),linear-gradient(180deg,#0d0a06,#050403);animation:relEntra .8s cubic-bezier(.2,.9,.25,1.15) both}",
+      ".relampago::before,.relampago::after{content:\"\";position:absolute;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,#d9b36c 20%,#fff3cf 50%,#d9b36c 80%,transparent);background-size:200% 100%;animation:relLinha 4s linear infinite}",
+      ".relampago::before{top:0}.relampago::after{bottom:0;animation-direction:reverse}",
+      ".relampago__env{position:relative;z-index:1;max-width:1240px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;gap:12px 26px;flex-wrap:wrap;justify-content:center}",
+      ".relampago__env::after{content:\"\";position:absolute;inset:0;background:linear-gradient(105deg,transparent 35%,rgba(255,243,207,.10) 50%,transparent 65%);transform:translateX(-120%);animation:relVarre 5s ease-in-out infinite;pointer-events:none}",
+      ".relampago__ouro{background:var(--rel-ouro);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:relFoil 6s linear infinite}",
+      ".relampago__raio{position:relative;flex:none;width:44px;height:44px;display:grid;place-items:center;border-radius:50%;background:radial-gradient(circle,#1d160b,#0a0805);border:1px solid rgba(217,179,108,.55);box-shadow:0 0 0 0 rgba(217,179,108,.5),inset 0 0 12px rgba(217,179,108,.25);animation:relAnel 2.2s ease-out infinite}",
+      ".relampago__raio svg{width:24px;height:24px;filter:drop-shadow(0 0 6px rgba(243,213,143,.8));animation:relRaio 2.2s infinite}",
+      ".relampago__txt{display:flex;flex-direction:column;line-height:1.2;min-width:0}",
+      ".relampago__txt small{font-size:10px;letter-spacing:.34em;text-transform:uppercase;font-weight:700}",
+      ".relampago__txt b{margin-top:3px;font-family:\"Cormorant Garamond\",Georgia,serif;font-size:22px;font-weight:600;letter-spacing:.06em;color:#fff}",
+      ".relampago__txt span{margin-top:2px;font-size:12px;letter-spacing:.04em;color:#bfb29a}",
+      ".relampago__pct{position:relative;display:flex;align-items:baseline;gap:5px;padding:6px 16px;border:1px solid rgba(217,179,108,.6);background:linear-gradient(180deg,rgba(217,179,108,.12),rgba(217,179,108,.02));animation:relPulso 2s ease-in-out infinite}",
+      ".relampago__pct small{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#d9b36c}",
+      ".relampago__pct b{font-family:\"Cormorant Garamond\",Georgia,serif;font-size:32px;line-height:1;font-weight:700}",
+      ".relampago__tempo{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center}",
+      ".relampago__tempo>small{font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:#d9b36c;font-weight:600}",
+      ".relampago__relogio{display:inline-flex;align-items:flex-start;gap:5px}",
+      ".relampago__relogio .u{display:flex;flex-direction:column;align-items:center;gap:3px}",
+      ".relampago__relogio b{display:block;min-width:42px;padding:7px 4px 6px;text-align:center;font-size:21px;font-weight:600;font-variant-numeric:tabular-nums;color:#fff;border:1px solid rgba(217,179,108,.45);background:linear-gradient(180deg,#221a0e 0%,#120e08 50%,#0a0805 50%,#17120a 100%);box-shadow:inset 0 1px 0 rgba(255,243,207,.12),0 6px 16px -8px rgba(0,0,0,.9)}",
+      ".relampago__relogio b.vira{animation:relVira .45s cubic-bezier(.3,1.4,.5,1)}",
+      ".relampago__relogio small{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#a99d86}",
+      ".relampago__relogio>i{font-style:normal;font-size:20px;line-height:36px;color:#d9b36c;animation:relPisca 1s steps(1) infinite}",
+      ".relampago__hora{font-style:normal;font-size:11px;letter-spacing:.06em;color:#a99d86}",
+      ".relampago--final .relampago__relogio b{color:#ffd9cf;border-color:rgba(255,99,71,.8);box-shadow:0 0 16px -2px rgba(255,80,50,.65)}",
+      ".relampago--final .relampago__tempo>small{color:#ff8a6b;animation:relPisca 1s steps(1) infinite}",
+      ".relampago__btn{position:relative;overflow:hidden;padding:12px 22px;background:linear-gradient(135deg,#f6dc9c,#d9b36c 45%,#a87b2e);color:#140f07;font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;text-decoration:none;box-shadow:0 10px 26px -12px rgba(217,179,108,.9);transition:transform .25s,box-shadow .25s}",
+      ".relampago__btn::after{content:\"\";position:absolute;top:0;bottom:0;width:40%;left:-60%;background:linear-gradient(105deg,transparent,rgba(255,255,255,.7),transparent);transform:skewX(-20deg);animation:relBotao 3s ease-in-out infinite}",
+      ".relampago__btn:hover{transform:translateY(-2px);box-shadow:0 16px 30px -12px rgba(217,179,108,1)}",
+      ".relampago__btn span{display:inline-block;transition:transform .25s}.relampago__btn:hover span{transform:translateX(4px)}",
+      ".produto--relampago{z-index:1;border-color:transparent!important;box-shadow:0 0 0 1px rgba(217,179,108,.9),0 18px 40px -18px rgba(217,179,108,.75);animation:relCartao 2.6s ease-in-out infinite}",
+      ".produto--relampago:hover{transform:translateY(-6px)}",
+      ".produto--relampago .produto__nome{letter-spacing:.14em}",
+      ".produto--relampago .produto__preco{font-size:1.25em;font-weight:700;background:linear-gradient(110deg,#b3261e,#e0452f 35%,#ff7a4d 50%,#e0452f 65%,#b3261e);background-size:220% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:relPreco .8s cubic-bezier(.2,.9,.3,1.4) both,relFoil 3.5s linear infinite}",
+      ".produto--relampago .produto__antigo{position:relative;display:inline-block;text-decoration:none}",
+      ".produto--relampago .produto__antigo::after{content:\"\";position:absolute;left:-2px;right:-2px;top:52%;height:1.5px;background:#c0392b;transform-origin:left;transform:rotate(-6deg);animation:relRisco .7s .25s ease-out both}",
+      ".produto__fita--relampago{padding:7px 12px!important;background:linear-gradient(135deg,#7d0f0a,#c0392b 50%,#e0452f)!important;border:1px solid rgba(243,213,143,.85);color:#fff6da!important;font-size:13px!important;letter-spacing:.08em!important;box-shadow:0 8px 20px -6px rgba(192,57,43,.9),inset 0 1px 0 rgba(255,255,255,.25)!important;overflow:hidden;animation:relSelo 1.8s ease-in-out infinite}",
+      ".produto__fita--relampago::after{content:\"\";position:absolute;top:0;bottom:0;width:45%;left:-70%;background:linear-gradient(105deg,transparent,rgba(255,255,255,.65),transparent);transform:skewX(-20deg);animation:relBotao 2.4s ease-in-out infinite}",
+      ".relampago-brilho{position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(115deg,transparent 40%,rgba(255,246,218,.55) 50%,transparent 60%);transform:translateX(-120%);animation:relVarre 3.6s ease-in-out infinite}",
+      ".relampago-chip{position:absolute;left:10px;top:46px;z-index:3;width:max-content;display:inline-flex;align-items:center;gap:6px;padding:5px 10px;background:rgba(10,8,5,.88);border:1px solid rgba(217,179,108,.7);color:#f3d58f;font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;font-variant-numeric:tabular-nums;box-shadow:0 6px 16px -8px rgba(0,0,0,.9)}",
+      ".relampago-chip i{font-style:normal;filter:drop-shadow(0 0 4px rgba(243,213,143,.9));animation:relRaio 2.2s infinite}",
+      "@keyframes relEntra{from{clip-path:inset(0 50% 0 50%);opacity:0}to{clip-path:inset(0 0 0 0);opacity:1}}",
+      "@keyframes relLinha{to{background-position:-200% 0}}",
+      "@keyframes relVarre{55%,100%{transform:translateX(120%)}}",
+      "@keyframes relFoil{to{background-position:-250% 0}}",
+      "@keyframes relAnel{0%{box-shadow:0 0 0 0 rgba(217,179,108,.55),inset 0 0 12px rgba(217,179,108,.25)}70%,100%{box-shadow:0 0 0 14px rgba(217,179,108,0),inset 0 0 12px rgba(217,179,108,.25)}}",
+      "@keyframes relRaio{0%,100%{transform:scale(1)}8%{transform:scale(1.18) rotate(-6deg);opacity:.55}16%{transform:scale(1.08);opacity:1}24%{transform:scale(1)}}",
+      "@keyframes relPulso{0%,100%{box-shadow:0 0 0 0 rgba(217,179,108,0)}50%{box-shadow:0 0 22px -4px rgba(217,179,108,.55)}}",
+      "@keyframes relPisca{50%{opacity:.25}}",
+      "@keyframes relVira{0%{transform:rotateX(90deg);opacity:.2}100%{transform:none;opacity:1}}",
+      "@keyframes relBotao{0%{left:-60%}55%,100%{left:130%}}",
+      "@keyframes relCartao{0%,100%{box-shadow:0 0 0 1px rgba(217,179,108,.9),0 18px 40px -18px rgba(217,179,108,.55)}50%{box-shadow:0 0 0 1px rgba(243,213,143,1),0 22px 50px -14px rgba(217,179,108,.95)}}",
+      "@keyframes relSelo{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}",
+      "@keyframes relPreco{from{transform:scale(.6);opacity:0}}",
+      "@keyframes relRisco{from{transform:rotate(-6deg) scaleX(0)}}",
+      "@media(max-width:760px){.relampago__env{padding:12px 14px;gap:10px 14px}.relampago__raio{width:36px;height:36px}.relampago__txt b{font-size:18px}.relampago__txt span,.relampago__hora{display:none}.relampago__pct b{font-size:24px}.relampago__relogio b{min-width:34px;font-size:17px;padding:6px 3px 5px}.relampago__btn{padding:10px 16px}}",
+      "@media(prefers-reduced-motion:reduce){.relampago,.relampago *,.relampago::before,.relampago::after,.relampago__env::after,.produto--relampago,.produto--relampago *,.produto__fita--relampago,.produto__fita--relampago::after,.relampago-brilho{animation:none!important}}"
+    ].join("\n");
+    document.head.appendChild(css);
+  })();
 
   // não deixa colocar na sacola mais do que tem em estoque
   var adicionarOriginal = adicionar;

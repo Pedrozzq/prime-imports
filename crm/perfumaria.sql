@@ -228,8 +228,13 @@ language sql stable security definer set search_path = public as $$
     'produtos', coalesce((select jsonb_agg(jsonb_build_object(
         'id', p.site_id, 'preco', p.preco, 'ativo', p.ativo, 'estoque', p.estoque, 'oferta', public._preco_oferta(p.site_id)))
       from public.produtos p where p.site_id is not null and not p.excluido), '[]'::jsonb),
-    'ofertas', coalesce((select jsonb_agg(jsonb_build_object('titulo', o.titulo, 'subtitulo', o.subtitulo, 'inicio', o.inicio, 'fim', o.fim) order by o.fim)
-      from public.ofertas o where o.ativo and now() >= o.inicio and now() < o.fim), '[]'::jsonb))
+    -- ofertas relâmpago no ar: o site mostra a faixa com o cronômetro até o fim e o selo -% nos produtos
+    'ofertas', coalesce((select jsonb_agg(jsonb_build_object('id', o.id, 'titulo', o.titulo, 'subtitulo', o.subtitulo, 'inicio', o.inicio, 'fim', o.fim,
+          'itens', coalesce((select jsonb_agg(jsonb_build_object('id', i.site_id, 'preco', i.preco_oferta)) from public.oferta_itens i where i.oferta_id = o.id), '[]'::jsonb))
+        order by o.fim)
+      from public.ofertas o where o.ativo and now() >= o.inicio and now() < o.fim), '[]'::jsonb),
+    -- próxima oferta agendada: o site recarrega sozinho na hora em que ela começa
+    'proxima', (select min(o.inicio) from public.ofertas o where o.ativo and o.inicio > now()))
 $$;
 revoke all on function public.loja_catalogo() from public;
 grant execute on function public.loja_catalogo() to anon, authenticated;
