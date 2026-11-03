@@ -44,6 +44,15 @@ if (!Array.isArray(PRODUTOS) || !PRODUTOS.length) {
     throw new Error('PRODUTOS foi lido mas veio vazio.');
 }
 
+// Linhas do site (subseções Árabes / Importados / Nicho): mesmas listas do index.html
+function listaDoHtml(nome) {
+    const m = html.match(new RegExp('const ' + nome + ' = (\\[[^\\]]*\\]);'));
+    return m ? JSON.parse(m[1]) : [];
+}
+const MARCAS_ARABES = listaDoHtml('MARCAS_ARABES');
+const MARCAS_NICHO = listaDoHtml('MARCAS_NICHO');
+const linhaDa = marca => MARCAS_NICHO.includes(marca) ? 'nicho' : MARCAS_ARABES.includes(marca) ? 'arabe' : 'importado';
+
 const catalogo = {};
 const crm = [];
 let variantes = 0;
@@ -65,7 +74,10 @@ for (const p of PRODUTOS) {
             marca: p.marca || '',
             preco: preco
         };
-        crm.push({ id: chave, name: catalogo[chave].nome, category: p.marca || 'Outros', price: preco });
+        // seção do site (masculino, feminino, cosmeticos, bodysplash...), seções extras e linha da marca
+        crm.push({ id: chave, name: catalogo[chave].nome, category: p.marca || 'Outros', price: preco,
+            secao: p.cat || 'outros', extra: Array.isArray(p.extra) && p.extra.length ? p.extra : undefined,
+            familia: p.familia || undefined, linha: linhaDa(p.marca) });
         variantes++;
     }
 }

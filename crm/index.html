@@ -506,6 +506,7 @@ details.box[open] summary{margin-bottom:10px}
 .dc-pr small{font-size:11px;color:var(--mut2);white-space:nowrap}.dc-pr small.neg{color:var(--red)}
 .dc-pr .in.cell{width:84px}
 .dc-acts{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap}
+.tabs-sub button{font-size:12px;padding-top:5px;padding-bottom:5px}
 
 /* Kit Prime do Mês */
 
@@ -2392,7 +2393,40 @@ const estoqueCombo = (p, prods) => {
   }
   return min;
 };
-const PROD = {cat: null, q: '', f: 'todos', ord: 'nome'};
+const PROD = {sec: 'todos', lin: '', marca: '', q: '', f: 'todos', ord: 'nome'};
+// Seções iguais às do site (crm/produtos.js traz secao/extra/linha de cada produto do index.html):
+// Masculino / Feminino / Cosméticos / Body Splash e, dentro, Árabes / Importados / Nicho
+const SITE_INFO = new Map((window.ZOO_CATALOGO || []).map(p => [p.id, p]));
+const SECOES = [['masculino', 'Masculino'], ['feminino', 'Feminino'], ['unissex', 'Unissex'], ['cosmeticos', 'Cosméticos'], ['bodysplash', 'Body Splash'], ['outros', 'Outros']];
+const LINHAS = [['arabe', 'Árabes'], ['importado', 'Importados'], ['nicho', 'Nicho']];
+const infoSite = p => SITE_INFO.get(p?.site_id) || {};
+const naSecao = (p, s) => { const i = infoSite(p); return s === 'todos' || (i.secao || 'outros') === s || (i.extra || []).includes(s); };
+const naLinha = (p, l, sec) => { if (!l) return true; const i = infoSite(p);
+  if (l === 'bodysplash') return i.secao === 'bodysplash';
+  return (sec === 'todos' || i.secao === sec) && i.secao !== 'bodysplash' && (i.linha || 'importado') === l; };
+const passaSecao = (p, st) => naSecao(p, st.sec) && naLinha(p, st.lin, st.sec) && (!st.marca || p.categoria === st.marca);
+// barra de seções + subseções + marca. lista = itens da tela; prodDe(item) = produto; chave(item) = perfume (conta 1 por perfume)
+const filtroSecao = (st, lista, prodDe, chave) => {
+  const n = f => new Set(lista.filter(f).map(chave)).size;
+  const secs = SECOES.filter(([k]) => lista.some(x => naSecao(prodDe(x), k)));
+  if (st.sec !== 'todos' && !secs.some(([k]) => k === st.sec)) st.sec = 'todos';
+  const subs = ['cosmeticos', 'bodysplash', 'outros'].includes(st.sec) ? []
+    : [...LINHAS, ...(st.sec === 'feminino' ? [['bodysplash', 'Body Splash']] : [])]
+      .filter(([k]) => lista.some(x => naSecao(prodDe(x), st.sec) && naLinha(prodDe(x), k, st.sec)));
+  if (st.lin && !subs.some(([k]) => k === st.lin)) st.lin = '';
+  const marcas = [...new Set(lista.filter(x => passaSecao(prodDe(x), {...st, marca: ''})).map(x => prodDe(x).categoria))].sort((a, b) => a.localeCompare(b, 'pt-BR'));
+  if (st.marca && !marcas.includes(st.marca)) st.marca = '';
+  return `<div class="bar">
+      <div class="tabs">${[['todos', 'Todos'], ...secs].map(([k, l]) => `<button class="${st.sec === k ? 'on' : ''}" data-sec="${k}">${l}<em>${n(x => naSecao(prodDe(x), k))}</em></button>`).join('')}</div>
+      <select class="in" data-marca style="width:auto"><option value="">Todas as marcas</option>${marcas.map(m => `<option ${st.marca === m ? 'selected' : ''}>${esc(m)}</option>`).join('')}</select>
+    </div>
+    ${subs.length ? `<div class="bar"><div class="tabs tabs-sub">${[['', st.sec === 'todos' ? 'Todas as linhas' : 'Todos'], ...subs].map(([k, l]) => `<button class="${st.lin === k ? 'on' : ''}" data-lin="${k}">${l}<em>${n(x => naSecao(prodDe(x), st.sec) && naLinha(prodDe(x), k, st.sec))}</em></button>`).join('')}</div></div>` : ''}`;
+};
+const ligarSecao = (st, redesenhar) => {
+  document.querySelectorAll('#view [data-sec]').forEach(b => b.onclick = () => { st.sec = b.dataset.sec; st.lin = ''; redesenhar(); });
+  document.querySelectorAll('#view [data-lin]').forEach(b => b.onclick = () => { st.lin = b.dataset.lin; redesenhar(); });
+  const s = document.querySelector('#view [data-marca]'); if (s) s.onchange = () => { st.marca = s.value; redesenhar(); };
+};
 // Variante do catálogo: site_id = "<perfume>|<tamanho>" (ex.: "atheeri|Decant 10 ml", "atheeri|100 ml")
 const varInfo = p => {
   const sid = String(p.site_id || ''), k = sid.indexOf('|');
@@ -2422,13 +2456,11 @@ async function viewProdutos(silent) {
   const prods = all.filter(p => !ehDecant(p));
   const vend = vendidosPorProduto(peds);
   const cats = [...new Set(prods.map(p => p.categoria))].sort((a, b) => a.localeCompare(b, 'pt-BR'));
-  if (!PROD.cat || (PROD.cat !== 'todas' && !cats.includes(PROD.cat))) PROD.cat = 'todas';
   const ativos = prods.filter(p => p.ativo);
   const alerta = ativos.filter(p => !p.combo && p.estoque != null && p.estoque <= BAIXO);
   const frascos = ativos.reduce((s, p) => s + (p.combo ? 0 : +p.estoque || 0), 0);
   const valorEst = ativos.reduce((s, p) => s + (p.combo ? 0 : (+p.estoque || 0) * +p.preco), 0);
   const vend30 = prods.reduce((s, p) => s + (vend.get(p.id) || 0), 0);
-  const nPerf = c => new Set(prods.filter(p => c === 'todas' || p.categoria === c).map(p => varInfo(p).base)).size;
 
   $('#view').innerHTML = header('Perfumes', 'Frascos e kits de cada marca. Preço e estoque mudam na hora; estoque zerado tira o perfume do site. Os decants ficam no menu Decants.',
     `<span class="live"><i></i>${DEMO ? 'Demo' : 'Ao vivo'}</span><button class="btn" id="syncProd" title="Cadastra os perfumes novos incluídos no site (produtos.js)">Buscar novos do site</button><button class="btn pri" id="novoProd">+ Perfume</button>`) + `
@@ -2439,12 +2471,7 @@ async function viewProdutos(silent) {
       <div class="kpi"><span>Vendidos em 30 dias</span><b class="num">${vend30}</b><small>${alerta.length ? `<span style="color:var(--amber)">${alerta.length} para repor</span>` : 'estoque em dia'}</small></div>
     </div>
     ${alerta.length ? `<div class="demo-bar"><b>Repor estoque:</b> ${alerta.map(p => `${esc(p.nome)} (${p.estoque})`).join(' · ')}</div>` : ''}
-    <div class="bar">
-      <div class="tabs" id="catTabs">${['todas', ...cats].map(c => {
-        const out = prods.filter(p => (c === 'todas' || p.categoria === c) && p.ativo && p.estoque === 0).length;
-        return `<button class="${PROD.cat === c ? 'on' : ''}" data-cat="${esc(c)}">${c === 'todas' ? 'Todas as marcas' : esc(c)}<em>${nPerf(c)}</em>${out ? `<em style="color:var(--red)">· ${out} esgot.</em>` : ''}</button>`;
-      }).join('')}</div>
-    </div>
+    ${filtroSecao(PROD, prods, p => p, p => varInfo(p).base)}
     <div class="bar">
       <div class="tabs" id="prodFil">${PROD_FILTROS.map(([k, l]) => `<button class="${PROD.f === k ? 'on' : ''}" data-f="${k}">${l}</button>`).join('')}</div>
       <select class="in" id="prodOrd" style="width:auto">${PROD_ORD.map(([k, l]) => `<option value="${k}" ${PROD.ord === k ? 'selected' : ''}>Ordenar: ${l}</option>`).join('')}</select>
@@ -2459,16 +2486,16 @@ async function viewProdutos(silent) {
       : PROD.f === 'esgot' ? p.estoque === 0 : PROD.f === 'off' ? !p.ativo : true;
     const cmp = {nome: (a, b) => a.nome.localeCompare(b.nome, 'pt-BR'), vendas: (a, b) => (vend.get(b.id) || 0) - (vend.get(a.id) || 0),
       preco: (a, b) => b.preco - a.preco, estoque: (a, b) => (a.estoque ?? 1e9) - (b.estoque ?? 1e9)}[PROD.ord];
-    const list = prods.filter(p => (PROD.cat === 'todas' || p.categoria === PROD.cat) && passa(p)
+    const list = prods.filter(p => passaSecao(p, PROD) && passa(p)
         && (!q || (p.nome + ' ' + p.categoria).toLowerCase().includes(q)))
       .sort((x, y) => (y.ativo ? 1 : 0) - (x.ativo ? 1 : 0) || cmp(x, y));
     const iDesat = list.findIndex(p => !p.ativo), nDesat = iDesat < 0 ? 0 : list.length - iDesat;
-    const colsProd = PROD.cat === 'todas' ? 9 : 8;
+    const colsProd = !PROD.marca ? 9 : 8;
     $('#prodTbl').innerHTML = `<table>
-      <thead><tr><th>Perfume</th>${PROD.cat === 'todas' ? '<th>Marca</th>' : ''}<th>Tamanho</th><th class="r">Preço (R$)</th><th class="r">Frascos</th><th class="r" title="Unidades vendidas nos últimos 30 dias">Vendas 30d</th><th>No site</th><th>Situação</th><th></th></tr></thead>
+      <thead><tr><th>Perfume</th>${!PROD.marca ? '<th>Marca</th>' : ''}<th>Tamanho</th><th class="r">Preço (R$)</th><th class="r">Frascos</th><th class="r" title="Unidades vendidas nos últimos 30 dias">Vendas 30d</th><th>No site</th><th>Situação</th><th></th></tr></thead>
       <tbody>${list.map((p, i) => { const [k, t] = situacao(p); return `${i === iDesat ? `<tr class="grp-desat"><td colspan="${colsProd}">Desativados <em>${nDesat}</em> <span class="mut">· não aparecem no site</span></td></tr>` : ''}<tr data-id="${p.id}" class="${p.ativo && p.estoque !== 0 ? '' : 'dim'}">
         <td class="strong">${esc(varInfo(p).perfume)}${p.combo ? ' <span class="tag" title="Preço e estoque calculados pelos itens do kit">Kit</span>' : ''}</td>
-        ${PROD.cat === 'todas' ? `<td><span class="tag">${esc(p.categoria)}</span></td>` : ''}
+        ${!PROD.marca ? `<td><span class="tag">${esc(p.categoria)}</span></td>` : ''}
         <td class="small">${esc(varInfo(p).tam || '—')}</td>
         <td class="r">${p.combo ? `<span class="num">${brl(p.preco)}</span>` : `<input class="in cell num" data-f="preco" type="number" step="0.01" min="0" value="${(+p.preco).toFixed(2)}">`}</td>
         <td class="r">${p.combo ? `<span class="num mut">${p.estoque ?? '∞'}</span>` : `<div class="stock">
@@ -2516,16 +2543,13 @@ async function viewProdutos(silent) {
   };
   render();
   $('#prodQ').oninput = e => { PROD.q = e.target.value; render(); };
-  document.querySelectorAll('#catTabs [data-cat]').forEach(b => b.onclick = () => {
-    PROD.cat = b.dataset.cat;
-    document.querySelectorAll('#catTabs button').forEach(x => x.classList.toggle('on', x === b)); render();
-  });
+  ligarSecao(PROD, () => viewProdutos());
   document.querySelectorAll('#prodFil [data-f]').forEach(b => b.onclick = () => {
     PROD.f = b.dataset.f;
     document.querySelectorAll('#prodFil button').forEach(x => x.classList.toggle('on', x === b)); render();
   });
   $('#prodOrd').onchange = e => { PROD.ord = e.target.value; render(); };
-  $('#novoProd').onclick = () => formProduto({ativo: true, categoria: PROD.cat !== 'todas' ? PROD.cat : undefined});
+  $('#novoProd').onclick = () => formProduto({ativo: true, categoria: PROD.marca || undefined});
   $('#syncProd').onclick = async e => { e.target.disabled = true;
     try { const r = await API.sincronizarProdutos(); toast(r.novos || r.inativados ? `${r.novos} novo(s) cadastrado(s)${r.inativados ? ` · ${r.inativados} inativado(s)` : ''}` : 'Nenhum perfume novo no site'); VIEWS[current](); }
     catch (er) { toast(er.message, true); e.target.disabled = false; } };
@@ -2537,7 +2561,7 @@ async function viewProdutos(silent) {
 //  os ml do frasco sozinho (cancelou, devolve) e o estoque de cada tamanho = quantos ainda rendem.
 //  "Abrir frasco" soma um frasco novo (e pode tirar 1 frasco lacrado do estoque de Perfumes).
 // ======================================================================
-const DEC = {cat: 'todas', q: '', f: 'todos'};
+const DEC = {sec: 'todos', lin: '', marca: '', q: '', f: 'todos'};
 const DEC_ACABANDO = 15;   // ml: abaixo disso o frasco está acabando
 const DEC_TAMS = [5, 10, 15];
 const DEC_FILTROS = [['todos', 'Todos'], ['acabando', 'Acabando'], ['sem', 'Sem frasco aberto'], ['off', 'Fora do site']];
@@ -2568,8 +2592,7 @@ async function viewDecants(silent) {
       return {...g, f, ml: f ? +f.ml_restante : null, ativo: decs.some(p => p.ativo), custoMl, un30, ml30};
     })
     .sort((a, b) => a.perfume.localeCompare(b.perfume, 'pt-BR'));
-  const cats = [...new Set(lista.map(g => g.marca))].sort((a, b) => a.localeCompare(b, 'pt-BR'));
-  if (DEC.cat !== 'todas' && !cats.includes(DEC.cat)) DEC.cat = 'todas';
+  const decRef = g => Object.values(g.dec)[0];   // um decant do perfume: diz a seção e a marca
   const acabando = lista.filter(g => g.ativo && g.ml != null && g.ml < DEC_ACABANDO);
   const mlTot = lista.reduce((s, g) => s + (g.ml || 0), 0);
   const un30 = lista.reduce((s, g) => s + g.un30, 0), ml30 = lista.reduce((s, g) => s + g.ml30, 0);
@@ -2586,9 +2609,7 @@ async function viewDecants(silent) {
       <div class="kpi"><span>Frascos acabando</span><b class="num" style="${acabando.length ? 'color:var(--amber)' : ''}">${acabando.length}</b><small>menos de ${DEC_ACABANDO} ml</small></div>
     </div>
     ${acabando.length ? `<div class="demo-bar"><b>Abrir frasco novo:</b> ${acabando.map(g => `${esc(g.perfume)} (${fmtNum(g.ml, 0)} ml)`).join(' · ')}</div>` : ''}
-    <div class="bar">
-      <div class="tabs" id="dcCats">${['todas', ...cats].map(c => `<button class="${DEC.cat === c ? 'on' : ''}" data-cat="${esc(c)}">${c === 'todas' ? 'Todas as marcas' : esc(c)}<em>${c === 'todas' ? lista.length : lista.filter(g => g.marca === c).length}</em></button>`).join('')}</div>
-    </div>
+    ${filtroSecao(DEC, lista, decRef, g => g.base)}
     <div class="bar">
       <div class="tabs" id="dcFil">${DEC_FILTROS.map(([k, l]) => `<button class="${DEC.f === k ? 'on' : ''}" data-f="${k}">${l}</button>`).join('')}</div>
       <div class="search">${ICON_SEARCH}<input class="in" id="dcQ" placeholder="Buscar perfume ou marca" value="${esc(DEC.q)}"></div>
@@ -2609,7 +2630,7 @@ async function viewDecants(silent) {
   const render = () => {
     const q = DEC.q.trim().toLowerCase();
     const passa = g => DEC.f === 'acabando' ? g.ml != null && g.ml < DEC_ACABANDO : DEC.f === 'sem' ? !g.ml : DEC.f === 'off' ? !g.ativo : true;
-    const list = lista.filter(g => (DEC.cat === 'todas' || g.marca === DEC.cat) && passa(g) && (!q || (g.perfume + ' ' + g.marca).toLowerCase().includes(q)))
+    const list = lista.filter(g => passaSecao(decRef(g), DEC) && passa(g) && (!q || (g.perfume + ' ' + g.marca).toLowerCase().includes(q)))
       .sort((a, b) => (b.ativo ? 1 : 0) - (a.ativo ? 1 : 0) || a.perfume.localeCompare(b.perfume, 'pt-BR'));
     $('#dcTbl').innerHTML = `<table>
       <thead><tr><th>Perfume</th><th>Frasco aberto</th>${DEC_TAMS.map(m => `<th class="r">${m} ml (R$)</th>`).join('')}<th class="r" title="Decants vendidos nos últimos 30 dias">Vendas 30d</th><th>No site</th><th></th></tr></thead>
@@ -2648,8 +2669,7 @@ async function viewDecants(silent) {
   };
   render();
   $('#dcQ').oninput = e => { DEC.q = e.target.value; render(); };
-  document.querySelectorAll('#dcCats [data-cat]').forEach(b => b.onclick = () => {
-    DEC.cat = b.dataset.cat; document.querySelectorAll('#dcCats button').forEach(x => x.classList.toggle('on', x === b)); render(); });
+  ligarSecao(DEC, () => viewDecants());
   document.querySelectorAll('#dcFil [data-f]').forEach(b => b.onclick = () => {
     DEC.f = b.dataset.f; document.querySelectorAll('#dcFil button').forEach(x => x.classList.toggle('on', x === b)); render(); });
 }
