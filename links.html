@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Prime Perfumes — Links</title>
+<title>Prime Perfumes — Black November</title>
 <meta name="description" content="Perfumes importados 100% originais, decants e cosméticos. Fale com a Prime Perfumes no WhatsApp, veja o catálogo e siga no Instagram.">
-<meta name="theme-color" content="#03070e">
+<meta name="theme-color" content="#000000">
 <meta property="og:title" content="Prime Perfumes — Perfumes importados originais">
-<meta property="og:description" content="O melhor lugar para encontrar seus perfumes e cosméticos.">
+<meta property="og:description" content="Black November: leve 3 e o de menor valor sai com 50% OFF; leve 5 e o de menor valor sai de graça.">
 <meta property="og:image" content="img/logo.webp">
 <link rel="icon" href="img/logo-mark.webp">
 <link rel="preload" as="image" href="img/logo-mark.webp">
@@ -505,7 +505,129 @@ body.pronto .entra{animation:entra .9s cubic-bezier(.2,.8,.2,1) forwards;animati
   .pagina{padding-top:48px}
   .botao{transform-style:preserve-3d;will-change:transform}
 }
+
+/* ============================================================
+   BLACK NOVEMBER — tema da campanha (novembro/2026)
+   Preto puro + dourado. A partir de 01/12 00:00 (Brasília) a página
+   ganha a classe "bn-encerrada": a faixa, o cartão da promoção e os
+   textos .bn-so somem e os textos .bn-nao voltam sozinhos.
+   Para tirar o tema de vez: apague este bloco, a .bn-faixa, o .bn-card
+   e os scripts marcados "Black November".
+   ============================================================ */
+@property --bn-ang{syntax:"<angle>";initial-value:0deg;inherits:false}
+@keyframes bnBorda{to{--bn-ang:360deg}}
+:root{--breu:#000;--breu-2:#0a0a0a;--noite:#0a0a0a;--linha:rgba(217,179,108,.32)}
+body{background:#000}
+.bn-nao{display:none}
+.bn-encerrada .bn-nao{display:revert}
+.bn-encerrada .bn-so,.bn-encerrada .bn-faixa,.bn-encerrada .bn-card{display:none}
+
+/* fundo e superfícies: sai o azul-noite, entra preto com brilho âmbar */
+.fundo::before{background:
+  radial-gradient(45% 32% at 50% 6%,rgba(217,179,108,.20),transparent 70%),
+  radial-gradient(35% 35% at 88% 58%,rgba(195,154,78,.10),transparent 70%),
+  radial-gradient(35% 35% at 8% 88%,rgba(138,109,60,.16),transparent 70%)}
+.pre{background:radial-gradient(70% 55% at 50% 42%,#15110a 0%,#070604 55%,#000 100%)}
+.pre__frase .bn-so{color:var(--ouro);font-weight:500}
+.botao:not([class*="botao--"]){background:linear-gradient(180deg,rgba(22,19,13,.55),rgba(4,4,4,.62))}
+.peca{background:radial-gradient(90% 70% at 50% 30%,rgba(217,179,108,.16),transparent 70%),linear-gradient(180deg,#12100b,#030303)}
+.decant{background:linear-gradient(120deg,#16120a 0%,#050505 60%,#1a1408 100%)}
+.ig{background:linear-gradient(180deg,rgba(20,18,14,.6),rgba(4,4,4,.78))}
+.ig__avatar img{border-color:#050505}
+.selo{border-color:rgba(217,179,108,.22);background:linear-gradient(180deg,rgba(217,179,108,.08),rgba(217,179,108,.01))}
+.selo svg{stroke:var(--ouro);filter:drop-shadow(0 0 6px rgba(217,179,108,.35))}
+.selo span{background:linear-gradient(90deg,#8a6d3c,#fff3d1 45%,#d9b36c 70%,#8a6d3c);-webkit-background-clip:text;background-clip:text;color:transparent}
+.peca__fita{color:var(--ouro-claro);background:#000;border:1px solid var(--ouro)}
+
+/* faixa corrida no topo */
+.bn-faixa{position:relative;z-index:2;overflow:hidden;padding:9px 0;background:linear-gradient(90deg,#0b0905,#1a140a 50%,#0b0905);
+  border-bottom:1px solid rgba(217,179,108,.4);box-shadow:0 8px 24px -14px rgba(217,179,108,.5)}
+.bn-faixa__fita{display:flex;width:max-content;animation:corre 32s linear infinite}
+.bn-faixa__fita span{display:flex;align-items:center;font-size:10.5px;font-weight:500;letter-spacing:.24em;text-transform:uppercase;color:var(--creme);white-space:nowrap}
+.bn-faixa__fita span::after{content:"✦";margin:0 26px;font-size:9px;color:var(--ouro)}
+.bn-faixa__fita b{margin-right:.6em;font-weight:600;color:var(--ouro-claro)}
+
+/* "BLACK NOVEMBER" com brilho correndo pelas letras + selo % */
+.bn-tag{display:block;width:max-content;font-size:11px;font-weight:700;letter-spacing:.3em;text-transform:uppercase;
+  background:linear-gradient(100deg,var(--ouro) 0%,var(--ouro) 38%,#fff6dc 50%,var(--ouro) 62%,var(--ouro) 100%);background-size:250% 100%;
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:bnBrilho 2.6s linear infinite}
+@keyframes bnBrilho{from{background-position:100% 0}to{background-position:-150% 0}}
+.bn-selo{flex:none;width:30px;height:30px;display:grid;place-items:center;border-radius:50%;background:var(--dourado);color:#000;font-weight:700;font-size:14px;animation:bnSelo 2.6s ease-in-out infinite}
+@keyframes bnSelo{0%,100%{transform:scale(1) rotate(0)}50%{transform:scale(1.12) rotate(-8deg)}}
+
+/* cartão da promoção */
+.bn-card{position:relative;overflow:hidden;margin-top:22px;padding:18px 18px 16px;border:1.5px solid transparent;
+  background:linear-gradient(160deg,rgba(14,11,7,.96),rgba(2,2,2,.98)) padding-box,conic-gradient(from var(--bn-ang),#8a6d3c,#f0dcae,#c39a4e,#3a2c14,#f0dcae,#8a6d3c) border-box;
+  box-shadow:0 24px 50px -22px rgba(0,0,0,.9),0 0 46px -18px rgba(217,179,108,.6);animation:bnBorda 6s linear infinite}
+.bn-card::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(100deg,transparent 35%,rgba(240,220,174,.12) 50%,transparent 65%);transform:translateX(-120%);animation:bnVarrer 4.5s ease-in-out infinite}
+@keyframes bnVarrer{0%,55%{transform:translateX(-120%)}100%{transform:translateX(120%)}}
+.bn-card__topo{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.bn-card__titulo{margin:6px 0 4px;font-family:var(--serif);font-size:27px;font-weight:600;line-height:1.1;color:var(--creme)}
+.bn-card__titulo em{font-style:italic;color:var(--ouro-claro)}
+.bn-card__sub{margin:0 0 10px;font-size:12.5px;line-height:1.45;color:rgba(245,232,216,.62)}
+.bn-nivel{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;padding:10px 0;border-top:1px solid rgba(217,179,108,.18)}
+.bn-nivel__qtd{width:42px;height:42px;display:grid;place-items:center;border:1px solid var(--ouro);color:var(--ouro-claro);font-family:var(--serif);font-size:24px;font-weight:600;line-height:1}
+.bn-nivel b{display:block;font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--creme)}
+.bn-nivel div span{display:block;margin-top:2px;font-size:12.5px;line-height:1.35;color:#b9ae9b}
+.bn-nivel__selo{padding:6px 9px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;color:#000;background:var(--ouro)}
+.bn-nivel--top .bn-nivel__qtd{background:var(--ouro);color:#000}
+.bn-nivel--top .bn-nivel__selo{background:linear-gradient(120deg,#fff3d1,var(--ouro) 60%);box-shadow:0 0 18px -2px rgba(217,179,108,.7)}
+.bn-relogio{display:grid;grid-template-columns:auto repeat(4,1fr);align-items:center;gap:6px;padding:12px 0 4px;border-top:1px solid rgba(217,179,108,.18)}
+.bn-relogio__rot{padding-right:4px;font-size:9.5px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;line-height:1.3;color:var(--ouro)}
+.bn-relogio__num{display:flex;flex-direction:column;align-items:center;padding:6px 0 5px;border:1px solid rgba(217,179,108,.3);background:rgba(217,179,108,.05)}
+.bn-relogio__num b{font-family:var(--serif);font-size:22px;font-weight:600;line-height:1;color:#fff;font-variant-numeric:tabular-nums}
+.bn-relogio__num small{margin-top:3px;font-size:8.5px;letter-spacing:.16em;text-transform:uppercase;color:#b9ae9b}
+.bn-card__cta{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:12px;padding:14px 16px;font-size:11.5px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;
+  color:#000;background:linear-gradient(120deg,var(--ouro-claro),var(--ouro) 55%,var(--ouro-forte));transition:filter .2s,transform .2s}
+.bn-card__cta:hover{filter:brightness(1.08);transform:translateY(-1px)}
+
+/* "Compre pelo site" vira o botão da campanha: preto com borda dourada girando */
+html:not(.bn-encerrada) .botao.botao--black{border:1.5px solid transparent;
+  background:linear-gradient(180deg,#0e0b07,#020202) padding-box,conic-gradient(from var(--bn-ang),#8a6d3c,#f0dcae,#c39a4e,#3a2c14,#f0dcae,#8a6d3c) border-box;
+  box-shadow:0 18px 38px -16px rgba(217,179,108,.55),inset 0 1px 0 rgba(255,255,255,.04)}
+/* a borda só gira depois da entrada (senão esta animação substituiria a "entra" e o botão ficaria invisível) */
+html:not(.bn-encerrada) .botao.botao--black:not(.entra){animation:bnBorda 5s linear infinite}
+html:not(.bn-encerrada) .botao--black::before{background:
+    linear-gradient(var(--ouro),var(--ouro)) top left/10px 1px no-repeat,linear-gradient(var(--ouro),var(--ouro)) top left/1px 10px no-repeat,
+    linear-gradient(var(--ouro),var(--ouro)) bottom right/10px 1px no-repeat,linear-gradient(var(--ouro),var(--ouro)) bottom right/1px 10px no-repeat;opacity:.7}
+html:not(.bn-encerrada) .botao--black::after{background:linear-gradient(105deg,transparent 0%,rgba(240,220,174,.14) 45%,rgba(255,247,227,.3) 50%,rgba(240,220,174,.14) 55%,transparent 100%)}
+html:not(.bn-encerrada) .botao--black:hover,html:not(.bn-encerrada) .botao--black:focus-visible{box-shadow:0 24px 46px -14px rgba(217,179,108,.8)}
+html:not(.bn-encerrada) .botao--black .botao__icone{border-color:rgba(217,179,108,.55);background:radial-gradient(circle at 30% 25%,rgba(240,220,174,.22),rgba(217,179,108,.04) 70%)}
+html:not(.bn-encerrada) .botao--black .botao__titulo{color:var(--ouro-claro);font-weight:600}
+html:not(.bn-encerrada) .botao--black .botao__desc{color:rgba(245,232,216,.78)}
+html:not(.bn-encerrada) .botao--black .botao__seta{stroke:var(--ouro)}
+
+/* doca do celular em dourado */
+@media(max-width:899px){
+  .barra{background:linear-gradient(180deg,rgba(18,15,10,.82),rgba(3,3,3,.92))}
+  .barra::before{background:linear-gradient(110deg,rgba(240,220,174,.4),rgba(217,179,108,.3) 40%,rgba(255,255,255,.04) 60%,rgba(195,154,78,.35))}
+  .doca--prata .doca__ico{background:linear-gradient(135deg,#f5deb0,#c39a4e 55%,#8a6d3c);box-shadow:0 4px 12px -4px rgba(217,179,108,.55),inset 0 1px 0 rgba(255,255,255,.6)}
+  .doca--prata .doca__ico svg{stroke:#1a1206}
+  .doca--perfumes .doca__ico{background:linear-gradient(135deg,#fff3d1,#e0bd78 35%,#c39a4e 70%,#f0dcae);background-size:200% 200%;
+    box-shadow:0 0 0 3px rgba(3,3,3,.96),0 0 0 4px rgba(217,179,108,.35),0 10px 20px -8px rgba(217,179,108,.6),inset 0 1px 0 #fff,inset 0 -2px 0 rgba(90,64,20,.4)}
+  .doca--perfumes .doca__ico svg{stroke:#1a1206}
+  .bn-card{margin-top:16px;padding:14px 14px 12px}
+  .bn-card__titulo{font-size:22px}
+  .bn-card__sub{font-size:11.5px;margin-bottom:6px}
+  .bn-nivel{gap:10px;padding:8px 0}
+  .bn-nivel__qtd{width:34px;height:34px;font-size:19px}
+  .bn-nivel b{font-size:11px;letter-spacing:.1em}
+  .bn-nivel div span{font-size:11.5px}
+  .bn-nivel__selo{padding:5px 7px;font-size:10px}
+  .bn-relogio__num b{font-size:18px}
+  .bn-card__cta{padding:12px 14px;font-size:10.5px}
+  .bn-faixa{padding:7px 0}
+  .bn-faixa__fita span{font-size:9.5px;letter-spacing:.18em}
+}
+@media(max-width:374px){.bn-relogio{grid-template-columns:repeat(4,1fr)}.bn-relogio__rot{grid-column:1/-1;text-align:center;padding:0 0 2px}.bn-relogio__rot br{display:none}}
+@media(prefers-reduced-motion:reduce){.bn-card,.bn-card::before,.bn-tag,.bn-selo,.bn-faixa__fita,html:not(.bn-encerrada) .botao.botao--black:not(.entra){animation:none}}
 </style>
+<script>
+/* Black November: encerra sozinha em 01/12/2026 00:00 (Brasília) — antes de desenhar, sem piscar */
+var BN_FIM = Date.UTC(2026, 11, 1, 3);
+if (Date.now() >= BN_FIM) document.documentElement.classList.add("bn-encerrada");
+</script>
 </head>
 <body class="carregando">
 
@@ -515,7 +637,7 @@ body.pronto .entra{animation:entra .9s cubic-bezier(.2,.8,.2,1) forwards;animati
     <img class="pre__logo" src="img/logo-mark-centro.webp" alt="">
     <span class="pre__fio"></span>
     <span class="pre__nome"><i style="--n:0">P</i><i style="--n:1">R</i><i style="--n:2">I</i><i style="--n:3">M</i><i style="--n:4">E</i></span>
-    <span class="pre__frase">Perfumes importados</span>
+    <span class="pre__frase"><span class="bn-so">Black November</span><span class="bn-nao">Perfumes importados</span></span>
     <span class="pre__barra"></span>
   </div>
 </div>
@@ -527,6 +649,11 @@ body.pronto .entra{animation:entra .9s cubic-bezier(.2,.8,.2,1) forwards;animati
 <div class="lateral lateral--2" data-prof="16" aria-hidden="true"><img src="img/sauvage-edp-200.webp" alt=""></div>
 <div class="lateral lateral--3" data-prof="32" aria-hidden="true"><img src="img/onemillion-edp.webp" alt=""></div>
 <div class="lateral lateral--4" data-prof="18" aria-hidden="true"><img src="img/la-vie-est-belle-200.webp" alt=""></div>
+
+<!-- Black November: faixa corrida -->
+<div class="bn-faixa" role="note" aria-label="Black November: leve 3 e o de menor valor sai com 50% OFF; leve 5 e o de menor valor sai de graça. Só em novembro.">
+  <div class="bn-faixa__fita" aria-hidden="true"><span><b>Black November</b>Leve 3 · o de menor valor com 50% OFF</span><span><b>Leve 5</b>o de menor valor é presente</span><span>Perfumes · decants · cosméticos</span><span>Só em novembro</span><span><b>Black November</b>Leve 3 · o de menor valor com 50% OFF</span><span><b>Leve 5</b>o de menor valor é presente</span><span>Perfumes · decants · cosméticos</span><span>Só em novembro</span></div>
+</div>
 
 <main class="pagina">
   <header class="topo">
@@ -540,16 +667,16 @@ body.pronto .entra{animation:entra .9s cubic-bezier(.2,.8,.2,1) forwards;animati
 
 
   <nav class="links" aria-label="Links principais">
-    <a class="botao botao--zap entra" style="--i:5;--d:.4s" href="https://wa.me/5521996931199?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20quero%20conhecer%20os%20perfumes." target="_blank" rel="noopener">
+    <a class="botao botao--zap entra" style="--i:5;--d:.4s" href="https://wa.me/5521996931199?text=Ol%C3%A1!%20Vim%20pelo%20link%20e%20quero%20aproveitar%20a%20Black%20November." data-fim-href="https://wa.me/5521996931199?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20quero%20conhecer%20os%20perfumes." target="_blank" rel="noopener">
       <span class="pulso" aria-hidden="true">Online</span>
       <span class="botao__icone"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 01-13.3 7.9L3 21l1.2-4.5A9 9 0 1121 12z"/><path d="M9 9.5c0 3 2.5 5.5 5.5 5.5l1.2-1.4-1.9-.9-.8.8c-1-.4-2-1.4-2.4-2.4l.8-.8-.9-1.9L9 9.5z"/></svg></span>
-      <span class="botao__texto"><span class="botao__titulo">Fale conosco no WhatsApp</span><span class="botao__desc">Consultoria para escolher seu perfume</span></span>
+      <span class="botao__texto"><span class="botao__titulo">Fale conosco no WhatsApp</span><span class="botao__desc"><span class="bn-so">Monte seu combo Black November com a gente</span><span class="bn-nao">Consultoria para escolher seu perfume</span></span></span>
       <svg class="botao__seta" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
     </a>
 
-    <a class="botao botao--prata entra" style="--i:6;--d:1.1s" href="index.html">
+    <a class="botao botao--prata botao--black entra" style="--i:6;--d:1.1s" href="index.html">
       <span class="botao__icone"><img src="img/jadore-edp-200.webp" alt=""></span>
-      <span class="botao__texto"><span class="botao__titulo">Compre pelo site</span><span class="botao__desc">Loja online · Dior, Prada, Lattafa e mais</span></span>
+      <span class="botao__texto"><span class="botao__titulo">Compre pelo site</span><span class="botao__desc"><span class="bn-so">Leve 3: 50% OFF · Leve 5: 1 grátis</span><span class="bn-nao">Loja online · Dior, Prada, Lattafa e mais</span></span></span>
       <svg class="botao__seta" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
     </a>
 
@@ -567,8 +694,35 @@ body.pronto .entra{animation:entra .9s cubic-bezier(.2,.8,.2,1) forwards;animati
     </a>
   </nav>
 
+  <!-- Black November: cartão da promoção (regra espelhada de api/_lib/promocoes.js) -->
+  <section class="bn-card entra" style="--i:9" aria-labelledby="bnTitulo">
+    <div class="bn-card__topo">
+      <span class="bn-tag">Black November</span>
+      <span class="bn-selo" aria-hidden="true">%</span>
+    </div>
+    <h2 class="bn-card__titulo" id="bnTitulo">Leve mais, <em>pague menos</em></h2>
+    <p class="bn-card__sub">Vale para perfumes, decants e cosméticos — misture como quiser.</p>
+    <div class="bn-nivel">
+      <span class="bn-nivel__qtd">3</span>
+      <div><b>Leve 3</b><span>O de menor valor sai pela metade</span></div>
+      <span class="bn-nivel__selo">50% OFF</span>
+    </div>
+    <div class="bn-nivel bn-nivel--top">
+      <span class="bn-nivel__qtd">5</span>
+      <div><b>Leve 5</b><span>O de menor valor é presente</span></div>
+      <span class="bn-nivel__selo">Grátis</span>
+    </div>
+    <div class="bn-relogio" id="bnRelogio">
+      <span class="bn-relogio__rot">Termina<br>em</span>
+      <span class="bn-relogio__num"><b data-u="d">--</b><small>dias</small></span>
+      <span class="bn-relogio__num"><b data-u="h">--</b><small>horas</small></span>
+      <span class="bn-relogio__num"><b data-u="m">--</b><small>min</small></span>
+      <span class="bn-relogio__num"><b data-u="s">--</b><small>seg</small></span>
+    </div>
+    <a class="bn-card__cta" href="index.html">Montar meu combo <span aria-hidden="true">→</span></a>
+  </section>
 
-  <h2 class="secao-titulo entra" style="--i:10">Mais desejados <small>Originais</small></h2>
+  <h2 class="secao-titulo entra" style="--i:10">Mais desejados <small><span class="bn-so">Entram no combo</span><span class="bn-nao">Originais</span></small></h2>
   <div class="vitrine">
     <a class="peca entra" style="--i:11" href="index.html#/feminino?produto=khamrah"><span class="peca__fita">Best-seller</span><img src="img/khamrah.webp" alt="Lattafa Khamrah" loading="lazy"><span class="peca__marca">Lattafa</span><span class="peca__nome">Khamrah</span></a>
     <a class="peca entra" style="--i:12" href="index.html#/masculino?produto=sauvage-edp-200"><img src="img/sauvage-edp-200.webp" alt="Dior Sauvage" loading="lazy"><span class="peca__marca">Dior</span><span class="peca__nome">Sauvage</span></a>
@@ -583,9 +737,9 @@ body.pronto .entra{animation:entra .9s cubic-bezier(.2,.8,.2,1) forwards;animati
   <a class="decant entra" style="--i:15" href="index.html#/decants">
     <img src="img/decant/decant.webp" alt="Frasco de decant Prime Perfumes" loading="lazy">
     <div>
-      <span class="decant__rotulo">Decants</span>
-      <h3>Prove antes de levar o frasco</h3>
-      <p>Perfumes originais fracionados em 5, 10 e 15 ml.</p>
+      <span class="decant__rotulo">Decants<span class="bn-so"> · Black November</span></span>
+      <h3><span class="bn-so">Leve 5 decants, o 5º é presente</span><span class="bn-nao">Prove antes de levar o frasco</span></h3>
+      <p>Perfumes originais fracionados em 5, 10 e 15 ml.<span class="bn-so"> Leve 3 e o de menor valor sai pela metade.</span></p>
       <span class="decant__cta">Ver decants</span>
     </div>
   </a>
@@ -649,12 +803,38 @@ body.pronto .entra{animation:entra .9s cubic-bezier(.2,.8,.2,1) forwards;animati
   <a class="doca doca--prata" href="index.html#/cosmeticos" aria-label="Cosméticos">
     <span class="doca__ico"><svg viewBox="0 0 24 24"><rect x="5" y="12" width="14" height="9" rx="2"/><path d="M7 12V9.5A1.5 1.5 0 018.5 8h7A1.5 1.5 0 0117 9.5V12"/><path d="M10 8V4.5c0-.8.6-1.5 1.4-1.5h1.2c.8 0 1.4.7 1.4 1.5V8"/><path d="M8.5 16.5h7"/></svg></span>Cosméticos
   </a>
-  <a class="doca doca--zap" href="https://wa.me/5521996931199?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20quero%20conhecer%20os%20perfumes." target="_blank" rel="noopener" aria-label="Falar no WhatsApp">
+  <a class="doca doca--zap" href="https://wa.me/5521996931199?text=Ol%C3%A1!%20Vim%20pelo%20link%20e%20quero%20aproveitar%20a%20Black%20November." data-fim-href="https://wa.me/5521996931199?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20quero%20conhecer%20os%20perfumes." target="_blank" rel="noopener" aria-label="Falar no WhatsApp">
     <span class="doca__ico"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 01-13.3 7.9L3 21l1.2-4.5A9 9 0 1121 12z"/><path d="M9 9.5c0 3 2.5 5.5 5.5 5.5l1.2-1.4-1.9-.9-.8.8c-1-.4-2-1.4-2.4-2.4l.8-.8-.9-1.9L9 9.5z"/></svg></span>WhatsApp
   </a>
 </nav>
 
 <script>
+/* Black November: contagem regressiva até 30/11 23:59:59 (Brasília); ao zerar, encerra a campanha na página */
+(function(){
+  function encerrar(){
+    document.documentElement.classList.add("bn-encerrada");
+    document.querySelectorAll("[data-fim-href]").forEach(function(a){ a.href = a.getAttribute("data-fim-href"); });
+  }
+  if (Date.now() >= BN_FIM) { encerrar(); return; }
+  var rel = document.getElementById("bnRelogio");
+  if (!rel) return;
+  var el = {};
+  ["d","h","m","s"].forEach(function(u){ el[u] = rel.querySelector('[data-u="' + u + '"]'); });
+  var dois = function(n){ return (n < 10 ? "0" : "") + n; };
+  var timer;
+  function tique(){
+    var falta = BN_FIM - Date.now();
+    if (falta <= 0) { clearInterval(timer); encerrar(); return; }
+    var s = Math.floor(falta / 1000);
+    el.d.textContent = dois(Math.floor(s / 86400));
+    el.h.textContent = dois(Math.floor(s % 86400 / 3600));
+    el.m.textContent = dois(Math.floor(s % 3600 / 60));
+    el.s.textContent = dois(s % 60);
+  }
+  tique();
+  timer = setInterval(tique, 1000);
+})();
+
 /* partículas douradas subindo no fundo */
 (function(){
   var fundo = document.getElementById("fundo");
