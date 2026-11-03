@@ -2,7 +2,9 @@
 
 CRM com login para clientes e pedidos, alimentado automaticamente pelo agente de WhatsApp (n8n).
 
-Mesma CRM da Zoo, com a identidade da Prime (dourado `#D4AF37` + brasão). Abre em `/crm/`.
+CRM de perfumaria da Prime (dourado `#D4AF37` + brasão), com perfumes, decants, clientes e pedidos. Abre em `/crm/`.
+
+> **Rode o `perfumaria.sql`** no Supabase (SQL Editor, depois do `schema.sql` e do `site-pedidos.sql`). Ele liga o controle de ml dos decants, tira as regras e os produtos de exemplo da tabacaria e deixa o aniversário no lugar da maioridade.
 
 ```
 crm/
@@ -27,7 +29,9 @@ crm/
 - **Clientes**: nome, telefone, e-mail, endereço, **quantidade de pedidos**, **total gasto**, último pedido, busca, ordenação e exportação CSV
 - **Ficha do cliente**: dados, produtos favoritos e **histórico completo de pedidos com os itens**
 - **Pedidos**: filtro por status, troca de status direto na lista, pedido manual
-- **Produtos**: catálogo com preços (o agente consulta por aqui)
+- **Perfumes**: frascos e kits por marca, com preço e estoque editáveis na lista, vendas dos últimos 30 dias, valor do estoque, filtros (estoque baixo, esgotados, fora do site) e ordenação por mais vendidos
+- **Decants**: um frasco aberto por perfume, com os **ml que sobram**, quantos decants de 5/10/15 ml ainda rendem, preço de cada tamanho e **lucro por decant** (pelo custo por ml do frasco da Margem de lucro). Cada decant vendido desconta os ml sozinho (cancelou, devolve), e o estoque de cada tamanho é recalculado pelos ml. **Abrir frasco** soma um frasco novo e pode tirar 1 frasco lacrado do estoque; **Ajustar ml** corrige depois de medir. Frasco com menos de 15 ml aparece como *acabando*.
+- **Clientes**: aniversário (com aviso e botão *Mandar parabéns* no WhatsApp), aniversariantes do mês e preferências olfativas (tags como Amadeirado, Doce, Árabes)
 - **Margem de lucro**: a planilha *Prime Perfumes - Por Secoes* dentro do CRM. Custo, frete, impostos, lucro líquido e margem de cada produto, editáveis direto na tabela, com fornecedor, custo pela caixa, preço pela margem desejada e exportação CSV. Rode o `margem.sql` (depois do `site-pedidos.sql`). Os custos ficam na tabela `produto_custos`, que só a equipe logada lê (a tabela `produtos` é pública para a vitrine do site).
 - **Mensagens prontas**: textos com os dados do pedido para copiar ou abrir no WhatsApp. Dá para editar os textos, criar novos e excluir direto no CRM (botões **Editar** e **+ Nova mensagem**); variáveis como `{nome}`, `{pedido}`, `{itens}` e `{valores}` viram os dados do pedido. Rode o `mensagens-prontas.sql` uma vez para os textos ficarem salvos para toda a equipe.
 - **Atendimento (quem aceitou o pedido)**: cada pedido em aberto tem o botão **✓ Aceitar**; quem aceita vira o responsável e o nome aparece na Visão geral, em Pedidos (coluna *Atendente*, abas *Meus* e *Sem atendente*) e no detalhe (com **Devolver para a fila** e **Assumir pedido**). Se dois funcionários clicarem juntos, só o primeiro fica. Quem muda o status de um pedido sem dono vira o responsável automaticamente. A seção **Atendimento** (menu lateral) mostra o ranking de quem atendeu mais pedidos (pedidos, faturamento, clientes e tempo médio para aceitar), por mês, últimos 30 dias ou tudo; a ficha do cliente mostra **Atendido por** e quem atendeu cada pedido do histórico. No status do pedido aparece uma etapa para cada funcionário (ex.: **Atendimento (Lino)**, **Atendimento (Pedro)**): escolher uma deixa o pedido com aquele responsável; escolher **Novo** devolve para a fila. Os funcionários são os logins do CRM; cada um troca o próprio nome clicando nele, embaixo do menu. Rode o `atendimento.sql` (depois do `site-pedidos.sql`). Sem ele, o CRM funciona normalmente, só sem essa parte.
@@ -230,23 +234,6 @@ No site:
 - Na hora de começar ou terminar, o site muda sozinho, sem recarregar. Pausar, encerrar ou editar no CRM também muda o site na hora.
 
 Obs.: o agente de WhatsApp (n8n) ainda usa o preço normal.
-
-## 8. Kit Prime do Mês (assinatura)
-
-Substituiu o *Monte seu Kit*. Preço fixo (R$ 29,90/mês) com **1 seda + 1 piteira + 1 isqueiro personalizado**.
-
-- **SQL**: está no `site-pedidos.sql` (rode de novo no SQL Editor). Cria `kit_config` e `kit_meses`, as funções do kit e o agendamento.
-- **Troca automática todo dia 1, às 00:01 (Brasília)**: para cada item, entra o produto **ativo no site** com **maior estoque** da categoria (Sedas, Piteiras, Isqueiros). Produto inativo, esgotado ou combo nunca entra. Em empate, evita repetir o item do mês anterior.
-  - Usa o **pg_cron** (Supabase → Database → Extensions → `pg_cron`). Se ele não estiver ligado, o kit é montado no 1º acesso ao site no mês (e ao abrir a tela no CRM).
-- **CRM → menu Kit do Mês**:
-  - trocar à mão os itens do mês (só aparecem produtos ativos no site, com o estoque ao lado);
-  - **Remontar pelo estoque**: refaz o kit do mês agora;
-  - prévia do kit do mês seguinte;
-  - preço, mostrar/ocultar no site, ligar/desligar a troca automática (desligada = o kit se repete);
-  - quais produtos podem entrar no kit (nenhum marcado = todos os ativos da categoria);
-  - kits vendidos no mês e histórico.
-- No pedido, o kit vai como `kit-mensal`: preço e itens vêm do CRM e o estoque baixa de cada item (cancelou, devolve).
-- **Cobrança recorrente automática ainda não existe**: o kit é pedido pelo site/WhatsApp como os outros produtos.
 
 ## 9. Notificações no celular (pedidos, conversas, atualizações)
 

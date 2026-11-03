@@ -150,14 +150,14 @@
       if (corte) { doc.setFont('helvetica', 'bold'); doc.text(`... lista completa no pedido #${p.numero} do CRM`, M, y); }
     }
 
-    // ---- rodapé: remetente + aviso 18+ ----
+    // ---- rodapé: remetente + cuidado com o perfume ----
     let f = H - M - 9;
     doc.setLineWidth(0.3); doc.line(M, f, W - M, f); f += 3.6;
     doc.setFont('helvetica', 'bold');
     linha(doc, txt(['REMETENTE: ' + (loja.nome || 'Prime Perfumes'), loja.cidade, loja.whatsapp && 'WhatsApp ' + fone(loja.whatsapp)].filter(Boolean).join(' · ')), M, f, 7.5);
     f += 3.6;
     doc.setFont('helvetica', 'normal');
-    linha(doc, 'Venda proibida para menores de 18 anos. Confira o documento do cliente na entrega.', M, f, 6.8);
+    linha(doc, 'Frágil: contém frasco de vidro. Manter na vertical e longe do calor.', M, f, 6.8);
   }
 
   // escreve numa linha só, diminuindo a fonte até caber na largura útil
