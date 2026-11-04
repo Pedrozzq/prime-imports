@@ -400,6 +400,53 @@
         });
     }
 
+    /* ---------- botão "Acompanhar meu pedido no WhatsApp" (tela de aprovado) ---------- */
+    var WHATSAPP_PRIME = '5521996931199';
+    var ULTIMO_PEDIDO_KEY = 'prime_imports_ultimo_pedido';
+
+    /**
+     * Itens, entrega e total do pedido. A sacola é limpa logo após confirmar, então
+     * guarda uma cópia: se o cliente recarregar a tela, o botão continua com os dados.
+     */
+    function resumoDoPedido(items, ref) {
+        var salvo = null;
+        try { salvo = JSON.parse(localStorage.getItem(ULTIMO_PEDIDO_KEY) || 'null'); } catch (e) {}
+        if (!items.length) return salvo && (!ref || salvo.ref === ref) ? salvo : null;
+        var cupom = getCupom(items);
+        var resumo = {
+            ref: ref || '',
+            itens: items.map(function (i) { return { qty: Number(i.qty) || 1, name: i.name, price: Number(i.price) || 0 }; }),
+            cupom: cupom ? cupom.code : '',
+            frete: getFrete(items),
+            total: Math.max(0, getTotalProdutos(items, cupom)) + getFrete(items),
+            entrega: getEntrega()
+        };
+        try { localStorage.setItem(ULTIMO_PEDIDO_KEY, JSON.stringify(resumo)); } catch (e) {}
+        return resumo;
+    }
+
+    function mensagemWhatsApp(resumo, paymentId) {
+        var linhas = ['Olá! Acabei de comprar pelo site e gostaria de acompanhar minha compra.'];
+        if (paymentId) linhas.push('', '*Pedido:* #' + paymentId);
+        if (resumo) {
+            var e = resumo.entrega || {};
+            if (e.nome) linhas.push('*Nome:* ' + e.nome);
+            if (resumo.itens && resumo.itens.length) {
+                linhas.push('', '*Itens:*');
+                resumo.itens.forEach(function (i) { linhas.push('• ' + i.qty + 'x ' + i.name + ' (' + formatBRL(i.qty * i.price) + ')'); });
+            }
+            if (resumo.cupom) linhas.push('*Cupom:* ' + resumo.cupom);
+            linhas.push('*Frete:* ' + (resumo.frete > 0 ? formatBRL(resumo.frete) : 'Grátis'));
+            linhas.push('*Total:* ' + formatBRL(resumo.total));
+            if (e.rua) {
+                linhas.push('', '*Entrega:* ' + e.rua + (e.numero ? ', ' + e.numero : '') + (e.complemento ? ' - ' + e.complemento : '') +
+                    [e.bairro, e.cidade ? e.cidade + '/' + String(e.uf || '').toUpperCase() : '', e.cep ? 'CEP ' + e.cep : '']
+                        .filter(Boolean).map(function (x) { return ' · ' + x; }).join(''));
+            }
+        }
+        return linhas.join('\n');
+    }
+
     function esconderCaixaPagamento() {
         var box = document.getElementById('checkout-pay-box');
         if (box) box.hidden = true;
@@ -418,11 +465,16 @@
         esconderCaixaPagamento();
 
         if (mp === 'success' || statusMp === 'approved') {
+            var resumo = resumoDoPedido(items, paymentId || externalRef);
             showStatus('success',
                 '<strong>Pagamento aprovado!</strong> ' +
                 (paymentId ? 'Pedido #' + escapeHtml(paymentId) + '. ' : '') +
                 'Em breve entraremos em contato pelo WhatsApp com os detalhes de envio. ' +
-                '<a class="underline" href="index.html">Voltar à loja</a>');
+                '<a class="underline" href="index.html">Voltar à loja</a>' +
+                '<a href="https://wa.me/' + WHATSAPP_PRIME + '?text=' + encodeURIComponent(mensagemWhatsApp(resumo, paymentId)) + '"' +
+                ' target="_blank" rel="noopener" class="btn-venus-solid w-full mt-4 py-3 px-4 text-xs font-semibold uppercase tracking-widest rounded-lg flex items-center justify-center gap-2"' +
+                ' style="background:#D4AF37;color:#0a0a0a;text-decoration:none">' +
+                '<i class="fa-brands fa-whatsapp text-base"></i> Acompanhar meu pedido no WhatsApp</a>');
             confirmarPedido(paymentId, externalRef);
             return;
         }
