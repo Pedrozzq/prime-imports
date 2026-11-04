@@ -67,13 +67,15 @@ async function doCrm(req: Request, body: Any) {
 
   if (body.acao === "chave") return json({ chave: PUBLICA });
   if (body.acao === "teste") {
-    const { data } = await db.from("push_inscricoes").select("*").eq("user_id", user.id);
+    const { data, error } = await db.from("push_inscricoes").select("*").eq("user_id", user.id);
+    if (error) console.error("teste: push_inscricoes", error.message);
+    console.log(`teste: ${data?.length ?? 0} aparelho(s) inscrito(s) para este login`);
     const enviados = await enviar(data ?? [], {
       titulo: "🔔 Notificações ligadas",
       corpo: "É assim que os pedidos, conversas e atualizações do CRM vão chegar neste aparelho.",
       url: "./#dashboard", tag: "teste",
     });
-    return json({ ok: true, enviados });
+    return json({ ok: true, enviados, aparelhos: data?.length ?? 0, erro: error?.message });
   }
   return json({ error: "ação desconhecida" }, 400);
 }
@@ -82,10 +84,15 @@ async function doCrm(req: Request, body: Any) {
 let segredoCache = "";
 async function doBanco(req: Request, b: Any) {
   if (!segredoCache) {
-    const { data } = await db.from("push_config").select("segredo").eq("id", 1).maybeSingle();
+    const { data, error } = await db.from("push_config").select("segredo").eq("id", 1).maybeSingle();
+    if (error) console.error("push_config:", error.message);
     segredoCache = data?.segredo ?? "";
   }
-  if (!segredoCache || req.headers.get("x-push-segredo") !== segredoCache) return json({ error: "forbidden" }, 403);
+  if (!segredoCache || req.headers.get("x-push-segredo") !== segredoCache) {
+    console.error(segredoCache ? "segredo do banco diferente do push_config" : "push_config sem segredo (tabela vazia ou ilegível)");
+    segredoCache = "";   // relê na próxima chamada
+    return json({ error: "forbidden" }, 403);
+  }
   if (!PUBLICA || !PRIVADA) return json({ error: "VAPID não configurado" }, 400);
 
   const montado = await montar(b.evento, b.id, b.extra ?? {});
@@ -94,7 +101,9 @@ async function doBanco(req: Request, b: Any) {
 
   let q = db.from("push_inscricoes").select("*").contains("tipos", [tipo]);
   if (b.ator) q = q.neq("user_id", b.ator);   // quem fez a mudança no CRM não recebe aviso da própria ação
-  const { data } = await q;
+  const { data, error } = await q;
+  if (error) console.error("push_inscricoes:", error.message);
+  console.log(`${b.evento}: ${data?.length ?? 0} aparelho(s) para avisar`);
   return json({ ok: true, enviados: await enviar(data ?? [], aviso) });
 }
 
