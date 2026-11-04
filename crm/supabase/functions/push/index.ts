@@ -106,7 +106,8 @@ async function montar(evento: string, id: string, extra: Any): Promise<[string, 
     if (evento === "pedido_novo") {
       const fora = p.status === "fora_horario";
       return ["pedidos", {
-        titulo: fora ? `🌙 Pedido #${p.numero} fora do horário` : `🛒 Novo pedido #${p.numero}`,
+        titulo: fora ? `🌙 Pedido #${p.numero} fora do horário`
+          : p.status === "aguardando_pagamento" ? `⏳ Pedido #${p.numero} aguardando pagamento` : `🛒 Novo pedido #${p.numero}`,
         corpo: `${nome} · ${brl(p.total)} · ${ORIGEM[p.origem] ?? p.origem}${p.tipo_entrega === "retirada" ? " · Retirada" : ""}`,
         url: "./#pedidos", tag: `pedido-${p.numero}`,
       }];

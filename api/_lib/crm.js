@@ -3,8 +3,11 @@
  *
  * O CRM (crm/) é quem manda em preço, estoque, "no site" e ofertas. Este módulo:
  *   - catalogoAoVivo(): lê a tabela de preços valendo agora (função loja_catalogo, pública);
- *   - registrarPagamento(): grava o pedido pago no CRM (função loja_registrar_pedido),
- *     o que dá baixa no estoque e nos ml dos decants.
+ *   - registrarCheckout(): quando o cliente vai para o Mercado Pago, cadastra o cliente e
+ *     cria o pedido como "Aguardando pagamento" (função loja_registrar_pedido);
+ *   - registrarPagamento(): o Mercado Pago respondeu → o MESMO pedido (pela referência
+ *     PRIME-… do checkout) vira "Pagamento aprovado" (baixa estoque e ml dos decants),
+ *     segue aguardando (Pix/boleto em aberto) ou "Pagamento recusado".
  *
  * Se o CRM estiver fora do ar, a loja continua vendendo pelos preços do
  * catalogo-dados.js (gerado do index.html) — o catálogo ao vivo é um "a mais".
@@ -103,7 +106,9 @@ export function itensDoMetadata(texto) {
  * Nunca lança erro: devolve {ok:false, motivo} quando não deu.
  *
  * @param {object} d
- *   ref, pagamentoStatus, metodo, parcelas, cliente {nome, telefone, email},
+ *   ref (referência PRIME-… do checkout), pagamentoId (nº do pagamento no Mercado Pago),
+ *   pagamentoStatus ('checkout' = foi para o Mercado Pago; ou o status de lá), metodo, parcelas,
+ *   cliente {nome, telefone, email},
  *   entrega {cep, rua, numero, complemento, bairro, cidade, uf},
  *   itens [{id, name, brand, qty, price}], desconto, frete, cupom
  */
@@ -118,6 +123,7 @@ export async function registrarPagamento(d) {
             p_chave: CRM_CHAVE,
             p_dados: {
                 ref: String(d.ref),
+                pagamento_id: d.pagamentoId != null ? String(d.pagamentoId) : null,
                 pagamento_status: d.pagamentoStatus || 'pending',
                 metodo: d.metodo || '',
                 parcelas: d.parcelas || null,
@@ -140,6 +146,26 @@ export async function registrarPagamento(d) {
     }
 }
 
+/**
+ * Cliente foi para o checkout do Mercado Pago: cadastra o cliente e cria o pedido
+ * "Aguardando pagamento" (ainda sem tentativa de pagamento; não baixa estoque).
+ * Abrir outro checkout depois apaga o anterior que não foi pago (no banco).
+ */
+export function registrarCheckout(d) {
+    var ent = (d && d.entrega) || {};
+    return registrarPagamento({
+        ref: d.ref,
+        pagamentoStatus: 'checkout',
+        cliente: { nome: ent.nome || '', telefone: ent.fone || '', email: ent.email || '' },
+        entrega: ent,
+        itens: d.itens,
+        desconto: d.desconto,
+        frete: d.frete,
+        cupom: d.cupom,
+        observacoes: 'cliente foi para o pagamento'
+    });
+}
+
 /** Pagamento do Mercado Pago → dados do pedido (usa o metadata gravado na preference). */
 export function dadosDoPagamento(payment, reserva) {
     const meta = (payment && payment.metadata) || {};
@@ -150,7 +176,11 @@ export function dadosDoPagamento(payment, reserva) {
     const payer = (payment && payment.payer) || {};
     const ent = Object.keys(entrega).length ? entrega : (reserva.entrega || {});
     return {
-        ref: String(payment && payment.id != null ? payment.id : (reserva.ref || '')),
+        // a referência do checkout (PRIME-…) liga o pagamento ao pedido criado em registrarCheckout();
+        // pagamentos antigos, sem ela, seguem pelo nº do pagamento
+        ref: String((payment && payment.external_reference) || (payment && payment.metadata && payment.metadata.referencia)
+            || (payment && payment.id != null ? payment.id : (reserva.ref || ''))),
+        pagamentoId: payment && payment.id != null ? String(payment.id) : null,
         pagamentoStatus: (payment && payment.status) || reserva.status || 'pending',
         metodo: (payment && payment.payment_type_id) || '',
         parcelas: (payment && payment.installments) || null,

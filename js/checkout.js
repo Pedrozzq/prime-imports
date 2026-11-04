@@ -373,6 +373,23 @@
             }),
             keepalive: true
         })
+        .then(function (res) { return res.json().catch(function () { return {}; }); })
+        .then(function (r) {
+            // Analytics: compra aprovada (o Analytics ignora o mesmo transaction_id repetido)
+            if (r && r.status === 'approved' && typeof gtag === 'function') {
+                try {
+                    gtag('event', 'purchase', {
+                        transaction_id: String(r.id || paymentId || externalRef),
+                        currency: 'BRL',
+                        value: Math.round(items.reduce(function (s, i) { return s + (Number(i.price) || 0) * (Number(i.qty) || 1); }, 0) * 100) / 100,
+                        coupon: cupom ? cupom.code : undefined,
+                        items: items.map(function (i) {
+                            return { item_id: i.id, item_name: i.name, item_brand: i.brand, price: Number(i.price) || 0, quantity: Number(i.qty) || 1 };
+                        })
+                    });
+                } catch (e) { /* Analytics bloqueado */ }
+            }
+        })
         .catch(function (err) {
             console.warn('Não foi possível confirmar o pedido:', err && err.message);
         })

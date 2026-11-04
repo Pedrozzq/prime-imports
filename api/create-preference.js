@@ -13,6 +13,10 @@
  *
  * O frete (api/_lib/frete.js) entra como uma linha própria na preference.
  *
+ * Com a preference criada, o cliente é cadastrado no CRM e o pedido entra como
+ * "Aguardando pagamento" (api/_lib/crm.js → registrarCheckout). Quando o Mercado Pago
+ * responder (api/mp-webhook.js / api/confirm-order.js), o mesmo pedido é atualizado.
+ *
  * O valor e o desconto NUNCA vêm do navegador: são reconstruídos aqui, igual
  * ao fluxo antigo do Payment Brick.
  *
@@ -28,7 +32,7 @@ import { validarCupomAoVivo } from './_lib/cupons.js';
 import { descontoDecants } from './_lib/promocoes.js';
 import { calcularFrete } from './_lib/frete.js';
 import { baseUrlDeRequest, montarPayer, itensPreferencia } from './_lib/checkout-pro.js';
-import { catalogoAoVivo, itensParaMetadata } from './_lib/crm.js';
+import { catalogoAoVivo, itensParaMetadata, registrarCheckout } from './_lib/crm.js';
 
 const ACCESS_TOKEN = process.env.MP_ACCESS_TOKEN;
 
@@ -158,10 +162,21 @@ export default async function handler(req, res) {
             return res.status(502).json({ error: 'O Mercado Pago não retornou o link de pagamento. Tente novamente.' });
         }
 
+        // CRM: cliente cadastrado e pedido "Aguardando pagamento" (nunca trava o checkout)
+        var crm = await registrarCheckout({
+            ref: referencia,
+            entrega: entrega,
+            itens: sacola.itens,
+            desconto: descontoAplicado,
+            frete: frete,
+            cupom: cupomOk ? cupom.code : null
+        });
+
         return res.status(201).json({
             id: pref.id,
             init_point: url,
-            external_reference: referencia
+            external_reference: referencia,
+            pedido: crm && crm.ok ? crm.numero : undefined
         });
     } catch (err) {
         console.error('Erro ao criar preference no Mercado Pago:', err && err.message, err && err.cause);

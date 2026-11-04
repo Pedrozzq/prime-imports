@@ -239,6 +239,7 @@ $$;
 revoke all on function public.loja_catalogo() from public;
 grant execute on function public.loja_catalogo() to anon, authenticated;
 
+-- ATENÇÃO: a versão atual desta função (e da loja_cupom) está no checkout-aguardando.sql — rode-o depois deste arquivo.
 -- Pedido pago no site → CRM. Chamado só pelo servidor da loja (precisa da chave do agente).
 -- p_dados = {ref, pagamento_status, metodo, parcelas,
 --            cliente:{nome, telefone, email}, entrega:{cep, rua, numero, complemento, bairro, cidade, uf},

@@ -535,9 +535,19 @@ details.box[open] summary{margin-bottom:10px}
 .ga-heat{display:grid;grid-template-columns:34px repeat(24,1fr);gap:2px;font-size:10px;color:var(--mut2);margin-top:6px}
 .ga-heat span{aspect-ratio:1;border-radius:3px;background:var(--lime)}
 .ga-heat em{font-style:normal;align-self:center}
-.ga-funil{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}
-.ga-funil div{padding:12px;border:1px solid var(--line);border-radius:10px;text-align:center}
-.ga-funil b{display:block;font-size:20px}.ga-funil small{color:var(--mut)}
+.ga-funil{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:8px;margin-top:8px}
+.ga-funil > div{padding:12px 10px;border:1px solid var(--line);border-radius:10px;text-align:center;background:linear-gradient(0deg,rgba(212,175,55,var(--f,0)),transparent)}
+.ga-funil b{display:block;font-size:20px}.ga-funil small{display:block;color:var(--mut)}
+.ga-funil .fonte{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);margin-bottom:4px}
+.ga-funil .perda{margin-top:4px;font-size:11px;color:var(--red)}
+.ga-cli{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin:8px 0 14px}
+.ga-cli div{padding:10px;border:1px solid var(--line);border-radius:10px}
+.ga-cli b{display:block;font-size:18px}.ga-cli small{color:var(--mut)}
+.ga-pend{display:flex;flex-direction:column;gap:6px}
+.ga-pend a{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;color:inherit;text-decoration:none;cursor:pointer}
+.ga-pend a:hover{border-color:var(--line2)}
+.ga-pend .n{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ga-pend .wa{font-size:12px;color:var(--green)}
 @media (max-width:1100px){.ga-cols3{grid-template-columns:1fr 1fr}}
 @media (max-width:760px){.ga-cols,.ga-cols3{grid-template-columns:1fr}.ga-funil{grid-template-columns:1fr 1fr}.ga-agora{flex-wrap:wrap}.ga-agora .cid{margin-left:0}}
 
@@ -1347,6 +1357,16 @@ function demoApi() {
       pedidos.push(p);
     }
   });
+  // checkouts do site no Mercado Pago (aguardando, recusado e pagos) para o funil do Google Analytics
+  [[0,'novo','approved',3],[2,'entregue','approved',6],[3,'aguardando_pagamento','checkout',0.2],[6,'aguardando_pagamento','pending',1],
+   [7,'recusado','rejected',2],[1,'entregue','approved',12],[4,'novo','approved',1.5]].forEach(([ci, st, pst, dias], k) => {
+    const c = clientes[ci], p = {id: uid(), cliente_id: c.id, status: st, tipo_entrega: 'entrega', endereco_entrega: c.endereco,
+      forma_pagamento: pst === 'checkout' ? null : 'pix', troco_para: null, desconto: 0, taxa_entrega: 0, observacoes: 'Mercado Pago PRIME-DEMO' + k,
+      origem: 'site', pagamento_ref: 'PRIME-DEMO' + k, pagamento_status: pst, criado_em: new Date(now - dias * D).toISOString()};
+    [produtos[2], produtos[6]].slice(0, 1 + (k % 2)).forEach(pr =>
+      itens.push({id: uid(), pedido_id: p.id, produto_id: pr.id, produto: pr.nome, categoria: pr.categoria, quantidade: 1, preco_unitario: pr.preco}));
+    pedidos.push(p);
+  });
   // pedidos de hoje em andamento
   [[0,'novo',12],[2,'novo',45],[4,'saiu_entrega',80],[1,'saiu_entrega',25],[5,'fora_horario',60 * 9]].forEach(([ci, st, min]) => {
     const c = clientes[ci], p = {id: uid(), cliente_id: c.id, status: st, tipo_entrega: 'entrega', endereco_entrega: c.endereco,
@@ -1783,7 +1803,14 @@ function enter(s) {
       if (payload.eventType === 'INSERT' && payload.table === 'tarefas') avisoTarefa(payload.new);
       if (payload.eventType === 'INSERT' && payload.table === 'pedidos') toast(payload.new.status === 'fora_horario'
         ? `Pedido #${payload.new.numero} agendado fora do horário de atendimento (${ORIGEM[payload.new.origem] || payload.new.origem}) · veja a data e o horário de entrega`
+        : payload.new.status === 'aguardando_pagamento'
+        ? `Pedido #${payload.new.numero}: cliente foi para o pagamento no Mercado Pago · aguardando pagamento`
         : `Novo pedido #${payload.new.numero} chegou pelo ${ORIGEM[payload.new.origem] || payload.new.origem}`);
+      // checkout do site que acabou de ser pago: mesmo aviso de pedido novo
+      if (payload.eventType === 'UPDATE' && payload.table === 'pedidos' && payload.new.status === 'novo'
+          && (cache._p || []).find(x => x.id === payload.new.id)?.status === 'aguardando_pagamento') {
+        avisoPedido(false); toast(`Pedido #${payload.new.numero}: pagamento aprovado no Mercado Pago`);
+      }
       // na tela de WhatsApp não redesenha (não apaga o que está sendo digitado)
       clearTimeout(t); t = setTimeout(() => current === 'whatsapp' ? updateBadge() : route(true), 400);
     });
@@ -2969,7 +2996,7 @@ const GA_CANAL = {'Direct': 'Direto', 'Organic Search': 'Google (orgânico)', 'O
   'Referral': 'Outros sites', 'Email': 'E-mail', 'Unassigned': 'Não identificado', 'Organic Shopping': 'Google Shopping', 'Cross-network': 'Várias redes', 'Display': 'Display', 'Organic Video': 'Vídeo'};
 const GA_APAR = {mobile: 'Celular', desktop: 'Computador', tablet: 'Tablet', 'smart tv': 'TV'};
 const GA_EVT = {page_view: 'Páginas vistas', session_start: 'Visitas iniciadas', first_visit: 'Primeira visita', user_engagement: 'Engajamento', scroll: 'Rolou a página',
-  click: 'Clique em link externo', view_item: 'Viu produto', add_to_cart: 'Pôs na sacola', begin_checkout: 'Iniciou checkout', purchase: 'Compra', form_start: 'Começou formulário', view_search_results: 'Pesquisou'};
+  click: 'Clique em link externo', view_item: 'Viu produto', add_to_cart: 'Pôs na sacola', begin_checkout: 'Iniciou checkout', add_payment_info: 'Foi para o Mercado Pago', purchase: 'Compra', form_start: 'Começou formulário', view_search_results: 'Pesquisou'};
 const gaN = v => Math.round(+v || 0).toLocaleString('pt-BR');
 const gaPct = v => (+v * 100).toLocaleString('pt-BR', {maximumFractionDigits: 1}) + '%';
 const gaTempo = s => { s = Math.round(+s || 0); return s >= 60 ? `${Math.floor(s / 60)}min ${String(s % 60).padStart(2, '0')}s` : `${s}s`; };
@@ -2991,7 +3018,7 @@ function gaDemo(dias) {
     aparelhos: [['mobile', 2900], ['desktop', 520], ['tablet', 60]].map(([nome, u]) => ({nome, usuarios: u, sessoes: u})),
     cidades: [['Goiânia', 1450], ['Aparecida de Goiânia', 420], ['Brasília', 260], ['São Paulo', 210], ['Anápolis', 140], ['(not set)', 60]].map(([nome, u]) => ({nome, usuarios: u, sessoes: u})),
     paginas: [['/', 5200], ['/checkout.html', 640], ['/obrigado.html', 98], ['/politica.html', 40]].map(([nome, v]) => ({nome, views: v, usuarios: Math.round(v / 3)})),
-    eventos: [['page_view', 6100], ['session_start', 4300], ['user_engagement', 3900], ['scroll', 2100], ['first_visit', 2400], ['view_item', 1800], ['add_to_cart', 410], ['begin_checkout', 160], ['purchase', 52]].map(([nome, n]) => ({nome, total: n, usuarios: Math.round(n * .7)})),
+    eventos: [['page_view', 6100], ['session_start', 4300], ['user_engagement', 3900], ['scroll', 2100], ['first_visit', 2400], ['view_item', 1800], ['add_to_cart', 410], ['begin_checkout', 160], ['add_payment_info', 90], ['purchase', 52]].map(([nome, n]) => ({nome, total: n, usuarios: Math.round(n * .7)})),
     entradas: [['/', 3900, .62], ['/checkout.html', 120, .8]].map(([nome, s, e]) => ({nome, sessoes: s, engajamento: e})),
     horarios: Array.from({length: 7 * 24}, (_, i) => ({dia: Math.floor(i / 24), hora: i % 24, sessoes: Math.max(0, Math.round((Math.sin((i % 24 - 6) / 24 * Math.PI) * 30) + r(-4, 10)))})),
     agora: {usuarios: r(2, 14), cidades: [{nome: 'Goiânia', usuarios: 5}, {nome: 'Brasília', usuarios: 2}]}};
@@ -3055,13 +3082,23 @@ async function viewAnalytics() {
     $('#gaRetry').onclick = () => { GA.forcar = true; viewAnalytics(); }; return;
   }
   const a = d.totais.atual || {}, b = d.totais.anterior || {};
-  // vendas do site no mesmo período (CRM)
+  // pedidos do site no mesmo período (CRM): checkout do Mercado Pago aberto → pago
   const desde = Date.now() - GA.dias * 864e5;
-  const vendasSite = peds.filter(p => p.origem === 'site' && contaVenda(p) && Date.parse(p.criado_em) >= desde);
+  const pedSite = peds.filter(p => p.origem === 'site' && Date.parse(p.criado_em) >= desde);
+  const vendasSite = pedSite.filter(contaVenda);
   const fatSite = vendasSite.reduce((s, p) => s + +p.total, 0);
   const conv = a.sessions ? vendasSite.length / a.sessions : 0;
+  const foiMp = pedSite.filter(p => p.pagamento_ref), pagouMp = foiMp.filter(contaVenda);
+  const naoPagou = foiMp.filter(p => p.status === 'aguardando_pagamento' || p.status === 'recusado');
+  // clientes que compraram pelo site no período: primeira compra × já tinham comprado
+  const pagosAntes = new Set(peds.filter(p => contaVenda(p) && Date.parse(p.criado_em) < desde).map(p => p.cliente_id));
+  const compradores = [...new Set(vendasSite.map(p => p.cliente_id))];
+  const voltaram = compradores.filter(id => pagosAntes.has(id)).length;
+  const repetiram = compradores.filter(id => vendasSite.filter(p => p.cliente_id === id).length > 1).length;
   const ev = n => (d.eventos.find(x => x.nome === n) || {}).total || 0;
-  const funil = [['Visitas', a.sessions || 0], ['Viu produto', ev('view_item')], ['Pôs na sacola', ev('add_to_cart')], ['Iniciou checkout', ev('begin_checkout')]];
+  // [rótulo, valor, fonte]: GA = Google Analytics · CRM = pedidos gravados no CRM
+  const funil = [['Visitas', a.sessions || 0, 'GA'], ['Viu produto', ev('view_item'), 'GA'], ['Pôs na sacola', ev('add_to_cart'), 'GA'],
+    ['Iniciou checkout', ev('begin_checkout'), 'GA'], ['Foi para o Mercado Pago', foiMp.length, 'CRM'], ['Pagou', pagouMp.length, 'CRM']];
   const temFunil = funil.slice(1).some(x => x[1]);
   // mapa de calor: dia da semana × hora
   const heat = Array.from({length: 7}, () => Array(24).fill(0)); (d.horarios || []).forEach(x => { if (heat[x.dia]) heat[x.dia][x.hora] += x.sessoes; });
@@ -3091,16 +3128,38 @@ async function viewAnalytics() {
       <div class="card"><h3>Páginas mais vistas</h3>${gaLista(d.paginas, x => x.views, x => x.nome === '/' ? 'Loja (página inicial)' : x.nome)}</div>
       <div class="card"><h3>O que fizeram no site</h3>${gaLista(d.eventos, x => x.total, x => GA_EVT[x.nome] || x.nome)}</div>
     </div>
+    <div class="card" style="margin-bottom:14px"><h3>Funil do site <span class="small mut">visita → pagamento</span></h3>${temFunil ? `<div class="ga-funil">${funil.map(([l, v, f], i) => {
+        const ant = i ? funil[i - 1][1] : 0, perda = i && ant > v ? 1 - v / ant : 0;
+        return `<div style="--f:${funil[0][1] ? Math.min(.22, v / funil[0][1] * .22).toFixed(3) : 0}"><div class="fonte">${f}</div><b class="num">${gaN(v)}</b><small>${l}</small>
+          <small>${i ? (funil[0][1] ? gaPct(v / funil[0][1]) + ' das visitas' : '—') : 'no período'}</small>${perda ? `<div class="perda">−${gaPct(perda)} da etapa anterior</div>` : ''}</div>`; }).join('')}</div>
+        <p class="small mut" style="margin-top:10px">GA = Google Analytics (eventos do site). CRM = pedidos gravados aqui: o pedido entra como <b>Aguardando pagamento</b> quando o cliente vai para o Mercado Pago e vira <b>Pagamento aprovado</b> quando ele paga.</p>`
+        : '<p class="small mut">Ainda não há eventos de produto, sacola e checkout no período. Assim que chegarem, o funil aparece aqui.</p>'}</div>
     <div class="ga-cols">
-      <div class="card"><h3>Funil de compra</h3>${temFunil ? `<div class="ga-funil">${funil.map(([l, v], i) => `<div><b class="num">${gaN(v)}</b><small>${l}${i ? ` · ${funil[0][1] ? gaPct(v / funil[0][1]) : '—'}` : ''}</small></div>`).join('')}</div>`
-        : '<p class="small mut">O site ainda não envia os eventos de produto, sacola e checkout para o Analytics. Assim que chegarem, o funil aparece aqui.</p>'}
-        <p class="small mut" style="margin-top:10px">Vendas registradas no CRM pelo site no período: <b>${vendasSite.length}</b> · ${brl(fatSite)}${vendasSite.length ? ` · ticket médio ${brl(fatSite / vendasSite.length)}` : ''}</p></div>
+      <div class="card"><h3>Clientes do site</h3>
+        <div class="ga-cli">
+          <div><b class="num">${compradores.length}</b><small>${compradores.length === 1 ? 'cliente comprou' : 'clientes compraram'}</small></div>
+          <div><b class="num">${compradores.length - voltaram}</b><small>primeira compra</small></div>
+          <div><b class="num">${voltaram}</b><small>já tinham comprado</small></div>
+          <div><b class="num">${vendasSite.length ? brl(fatSite / vendasSite.length) : '—'}</b><small>ticket médio</small></div>
+          <div><b class="num">${foiMp.length ? gaPct(pagouMp.length / foiMp.length) : '—'}</b><small>pagaram no Mercado Pago</small></div>
+          <div><b class="num">${repetiram}</b><small>compraram 2+ vezes no período</small></div>
+        </div>
+        <h3>Foram pagar e não pagaram <span class="small mut">${naoPagou.length}</span></h3>
+        ${naoPagou.length ? `<div class="ga-pend">${naoPagou.slice(0, 8).map(p => `<a data-gaped="${esc(p.id)}"><span class="tag s-${esc(p.status)}">${esc(STATUS[p.status] || p.status)}</span>
+            <span class="n"><b>${esc(p.clientes?.nome || 'Cliente')}</b> · ${brl(p.total)} <span class="small mut">· ${esc(ago(p.criado_em))}</span></span>
+            ${/^\d{10,13}$/.test(p.clientes?.telefone || '') ? `<span class="wa" data-gawa="${esc(p.clientes.telefone)}">WhatsApp</span>` : ''}</a>`).join('')}</div>`
+          : '<p class="small mut">Ninguém deixou o pagamento pela metade no período.</p>'}
+        <p class="small mut" style="margin-top:10px">Vendas do site no período: <b>${vendasSite.length}</b> · ${brl(fatSite)}</p></div>
       <div class="card"><h3>Horários com mais visitas</h3>${pico && pico.v ? `<p class="small mut">Pico: <b>${DS[pico.di]} às ${pico.h}h</b>. Bom horário para postar e soltar oferta relâmpago.</p>` : ''}
         <div class="ga-heat"><em></em>${Array.from({length: 24}, (_, h) => `<em style="text-align:center">${h % 3 ? '' : h}</em>`).join('')}
         ${heat.map((r, di) => `<em>${DS[di]}</em>${r.map((v, h) => `<span title="${DS[di]} ${h}h · ${v} visitas" style="opacity:${v ? (.12 + v / hMax * .88).toFixed(2) : .05}"></span>`).join('')}`).join('')}</div></div>
     </div>`;
   gaGrafico($('#gaChart'), d.serie || []);
   document.querySelectorAll('[data-gad]').forEach(x => x.onclick = () => { GA.dias = +x.dataset.gad; viewAnalytics(); });
+  document.querySelectorAll('[data-gaped]').forEach(x => x.onclick = e => {
+    const w = e.target.closest('[data-gawa]');
+    if (w) { window.open('https://wa.me/' + (w.dataset.gawa.length <= 11 ? '55' : '') + w.dataset.gawa, '_blank', 'noopener'); return; }
+    openPedido(x.dataset.gaped); });
   $('#gaAtual').onclick = () => { GA.forcar = true; viewAnalytics(); };
 }
 

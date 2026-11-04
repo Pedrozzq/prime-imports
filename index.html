@@ -2213,7 +2213,17 @@ document.addEventListener("click", e => {
           restaurarBotao();
           return;
         }
-        window.location.href = j.init_point;
+        // Analytics: "foi para o Mercado Pago" (funil do site no CRM); vai em seguida mesmo se o Analytics travar
+        let foi = false; const ir = () => { if(!foi){ foi = true; window.location.href = j.init_point; } };
+        try {
+          if(typeof gtag === "function"){
+            gtag("event", "add_payment_info", { currency: "BRL", payment_type: "Mercado Pago",
+              value: Math.round(itensPagamento.reduce((s, i) => s + i.price * i.qty, 0) * 100) / 100,
+              items: itensPagamento.map(i => ({ item_id: i.id, item_name: i.name, item_brand: i.brand, price: i.price, quantity: i.qty })),
+              transport_type: "beacon", event_callback: ir });
+          }
+        } catch(err) {}
+        setTimeout(ir, 700);
       })
       .catch(() => {
         avisar("Erro de conexão ao iniciar o pagamento. Tente novamente.");

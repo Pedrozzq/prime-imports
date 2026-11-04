@@ -193,16 +193,20 @@ O que muda no CRM vale na loja em até 1 minuto, sem publicar o site:
 | "No site" desligado | O tamanho some (sem nenhum tamanho, some o perfume) |
 | Oferta relâmpago no ar | Preço de oferta com o antigo riscado, selo -%, produtos em **Promoções** |
 | — | Pagamento aprovado vira pedido **Novo** no CRM e baixa o estoque e os ml dos decants |
+| — | Cliente clicou em pagar e foi para o Mercado Pago: o cliente é cadastrado e o pedido entra na hora como **Aguardando pagamento** (com o `checkout-aguardando.sql`); quando o Mercado Pago responder, o mesmo pedido vira **Pagamento aprovado**, segue aguardando ou fica **Pagamento recusado**. Se o cliente abrir outro checkout sem ter pago o anterior, o anterior some (sem pedido repetido) |
 | — | Pix/boleto ainda não pago: pedido **Aguardando pagamento** (não baixa estoque); vira Novo quando o Mercado Pago aprova; recusado/estornado vira Cancelado |
 
 Configurar (uma vez):
 1. **SQL Editor**: rode o `perfumaria.sql` (depois do `site-pedidos.sql`).
+   Depois rode o `checkout-aguardando.sql` (pedido *Aguardando pagamento* assim que o cliente vai para o Mercado Pago).
 2. **Chave**: no SQL Editor, `select chave from public.agente_config;` e copie o valor.
 3. **Vercel** (projeto do site) → Settings → Environment Variables: crie `CRM_CHAVE` com essa chave e faça um novo deploy.
 
 Sem a `CRM_CHAVE`, a loja já mostra preço/estoque/ofertas do CRM, mas os pedidos não entram no CRM (continuam só por e-mail).
 Se o CRM ficar fora do ar, a loja vende pelos preços escritos no `index.html`.
 Cupons e a promoção leve 3 / leve 5 continuam no código (`api/_lib/cupons.js` e `promocoes.js`).
+
+**Funil do site** (CRM > Google Analytics): Visitas → Viu produto → Pôs na sacola → Iniciou checkout (eventos do Google Analytics enviados pelo `js/crm-loja.js`) → Foi para o Mercado Pago → Pagou (pedidos do CRM). Ao lado, **Clientes do site**: quem comprou no período, primeira compra × já tinham comprado, ticket médio, quantos pagaram no Mercado Pago e a lista de quem foi pagar e não pagou (com atalho para o WhatsApp). O site também manda ao Analytics os eventos `add_payment_info` (foi para o Mercado Pago) e `purchase` (pagamento aprovado, na `checkout.html`).
 
 ## 5. WhatsApp Business dentro do CRM
 
