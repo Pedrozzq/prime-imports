@@ -275,7 +275,7 @@ Tocar na notificação abre o CRM na tela certa. O ícone do app mostra o númer
 
 ### Configurar (uma vez)
 
-1. **SQL Editor**: rode `notificacoes.sql` (depois do `whatsapp.sql`). Se o projeto do Supabase não for o `ghhxcssqwxujhikukrsp`, troque o endereço no `insert into public.push_config`.
+1. **SQL Editor**: rode `notificacoes.sql` (depois do `whatsapp.sql`). Ele já aponta para o projeto da Prime (`omfsonnubkmuuqekeoev`); se for outro projeto, troque o endereço no `insert into public.push_config`.
 2. **Chaves VAPID** (no computador, na pasta `crm`):
    ```
    npx web-push generate-vapid-keys

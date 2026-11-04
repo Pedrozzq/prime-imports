@@ -34,8 +34,9 @@ type Any = any;
 type Aviso = { titulo: string; corpo: string; url: string; tag?: string };
 
 const STATUS: Record<string, string> = {
-  novo: "Novo", confirmado: "Confirmado", em_preparo: "Em preparo", saiu_entrega: "Saiu para entrega",
-  entregue: "Entregue", cancelado: "Cancelado", fora_horario: "Fora do horário",
+  novo: "Pagamento aprovado", confirmado: "Confirmado", em_preparo: "Em preparo", saiu_entrega: "Saiu para entrega",
+  entregue: "Entregue", cancelado: "Venda cancelada", fora_horario: "Fora do horário",
+  aguardando_pagamento: "Aguardando pagamento", recusado: "Pagamento recusado",
 };
 const ORIGEM: Record<string, string> = { whatsapp: "WhatsApp", site: "Site", manual: "CRM", loja: "Loja", instagram: "Instagram" };
 const TIPO_MSG: Record<string, string> = {

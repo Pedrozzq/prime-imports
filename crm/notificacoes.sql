@@ -58,10 +58,11 @@ create table if not exists public.push_config (
 );
 alter table public.push_config enable row level security;
 revoke all on public.push_config from anon, authenticated;
--- Troque pelo endereço do SEU projeto se for outro: https://<projeto>.supabase.co/functions/v1/push
+-- Endereço da função "push" no projeto da Prime (omfsonnubkmuuqekeoev).
+-- Rodar de novo corrige o endereço (antes vinha o do projeto da tabacaria).
 insert into public.push_config (id, url)
-values (1, 'https://ghhxcssqwxujhikukrsp.supabase.co/functions/v1/push')
-on conflict (id) do nothing;
+values (1, 'https://omfsonnubkmuuqekeoev.supabase.co/functions/v1/push')
+on conflict (id) do update set url = excluded.url;
 
 -- 3. Avisa a Edge Function (assíncrono: o pg_net envia depois que a transação termina)
 --    ator = quem fez a mudança no CRM; essa pessoa não é notificada da própria ação.

@@ -21,7 +21,8 @@
 
 const SUPABASE_URL = (process.env.SUPABASE_URL || 'https://omfsonnubkmuuqekeoev.supabase.co').replace(/\/+$/, '');
 const SUPABASE_KEY = process.env.SUPABASE_ANON_KEY || 'sb_publishable__Ge0GIv8evSDYcTSINerVA_gmcU7AJN';
-const CRM_CHAVE = process.env.CRM_CHAVE || '';
+// tolera espaço, quebra de linha ou aspas coladas junto na Vercel
+const CRM_CHAVE = String(process.env.CRM_CHAVE || '').trim().replace(/^["']+|["']+$/g, '').trim();
 
 const CACHE_MS = 15 * 1000;
 let cache = null, cacheEm = 0;
