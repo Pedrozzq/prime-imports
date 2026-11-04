@@ -113,6 +113,14 @@ async function montar(evento: string, id: string, extra: Any): Promise<[string, 
         url: "./#pedidos", tag: `pedido-${p.numero}`,
       }];
     }
+    // checkout do site pago no Mercado Pago: vai como aviso de pedido (o mais importante), não só atualização
+    if (extra.de === "aguardando_pagamento" && extra.para === "novo") {
+      return ["pedidos", {
+        titulo: `✅ Pagamento aprovado · Pedido #${p.numero}`,
+        corpo: `${nome} · ${brl(p.total)} · ${ORIGEM[p.origem] ?? p.origem}`,
+        url: "./#pedidos", tag: `pedido-${p.numero}`,
+      }];
+    }
     return ["atualizacoes", {
       titulo: `📦 Pedido #${p.numero}: ${STATUS[extra.para] ?? extra.para}`,
       corpo: `${nome} · era ${STATUS[extra.de] ?? extra.de}`,

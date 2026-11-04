@@ -1023,7 +1023,8 @@ const STATUS_ANTIGO = {confirmado: 'Confirmado', em_preparo: 'Em preparo', fora_
 // pedido do site com a loja fechada: não conta como venda nem baixa estoque até virar "Novo"
 // pedido da loja com Pix/boleto ainda não pago: também não conta (vira "Novo" sozinho quando o Mercado Pago aprova)
 const contaVenda = p => !['cancelado', 'fora_horario', 'aguardando_pagamento', 'recusado'].includes(p.status);
-const ABERTOS = ['novo', 'confirmado', 'em_preparo', 'saiu_entrega'];
+// em andamento: inclui o pedido do site que foi para o Mercado Pago e ainda não pagou (Aguardando pagamento)
+const ABERTOS = ['aguardando_pagamento', 'novo', 'confirmado', 'em_preparo', 'saiu_entrega'];
 // Entrega agendada pelo site (agendamento.sql): "sex, 07/11 · 20h às 21h"
 const fmtAgenda = v => { if (!v) return '';
   const d = new Date(v), p = Object.fromEntries(new Intl.DateTimeFormat('pt-BR', {timeZone: TZ, weekday: 'short', day: '2-digit', month: '2-digit', hour: '2-digit', hourCycle: 'h23'}).formatToParts(d).map(x => [x.type, x.value]));
