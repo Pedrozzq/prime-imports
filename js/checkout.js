@@ -111,8 +111,6 @@
     var FRETE_VALOR = 29.9;
     var FRETE_GRATIS_A_PARTIR = 500;
     function getFrete(items) {
-        var soTeste = items && items.length && items.every(function (i) { return String(i.id || '').split('|')[0] === 'teste-pagamento'; });
-        if (soTeste) return 0;   // produto de teste do pagamento: sem frete
         return getSubtotal(items) >= FRETE_GRATIS_A_PARTIR ? 0 : FRETE_VALOR;
     }
 
