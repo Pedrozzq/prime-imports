@@ -375,6 +375,7 @@
         })
         .then(function (res) { return res.json().catch(function () { return {}; }); })
         .then(function (r) {
+            if (r && r.pedido) atualizarBotaoWhatsApp(r.pedido, paymentId || externalRef, paymentId);
             // Analytics: compra aprovada (o Analytics ignora o mesmo transaction_id repetido)
             if (r && r.status === 'approved' && typeof gtag === 'function') {
                 try {
@@ -421,23 +422,52 @@
             total: Math.max(0, getTotalProdutos(items, cupom)) + getFrete(items),
             entrega: getEntrega()
         };
+        resumo.nome = resumo.entrega.nome || '';
         try { localStorage.setItem(ULTIMO_PEDIDO_KEY, JSON.stringify(resumo)); } catch (e) {}
         return resumo;
     }
 
+    /**
+     * O servidor devolve o pedido montado a partir do pagamento (nº do CRM, nome, itens,
+     * total e endereço). Junta com o que o navegador tinha e atualiza o botão.
+     */
+    function atualizarBotaoWhatsApp(pedido, ref, paymentId) {
+        if (!pedido) return;
+        var atual = resumoDoPedido([], ref) || {};
+        var temItens = pedido.itens && pedido.itens.length;
+        var ent = pedido.entrega && pedido.entrega.rua ? pedido.entrega : (atual.entrega || {});
+        var resumo = {
+            ref: ref || atual.ref || '',
+            numero: pedido.numero || atual.numero,
+            nome: pedido.nome || atual.nome || (atual.entrega && atual.entrega.nome) || '',
+            itens: temItens ? pedido.itens : (atual.itens || []),
+            cupom: pedido.cupom || atual.cupom || '',
+            frete: pedido.frete != null ? pedido.frete : atual.frete,
+            total: pedido.total != null ? pedido.total : atual.total,
+            entrega: ent
+        };
+        try { localStorage.setItem(ULTIMO_PEDIDO_KEY, JSON.stringify(resumo)); } catch (e) {}
+        var wa = document.getElementById('checkout-whatsapp');
+        if (wa) wa.href = 'https://wa.me/' + WHATSAPP_PRIME + '?text=' + encodeURIComponent(mensagemWhatsApp(resumo, paymentId));
+    }
+
     function mensagemWhatsApp(resumo, paymentId) {
         var linhas = ['Olá! Acabei de comprar pelo site e gostaria de acompanhar minha compra.'];
-        if (paymentId) linhas.push('', '*Pedido:* #' + paymentId);
+        var numero = resumo && resumo.numero;
+        if (numero || paymentId) {
+            linhas.push('', '*Pedido:* #' + (numero || paymentId) + (numero && paymentId ? ' (pagamento ' + paymentId + ')' : ''));
+        }
         if (resumo) {
             var e = resumo.entrega || {};
-            if (e.nome) linhas.push('*Nome:* ' + e.nome);
+            var nome = resumo.nome || e.nome;
+            if (nome) linhas.push('*Nome:* ' + nome);
             if (resumo.itens && resumo.itens.length) {
                 linhas.push('', '*Itens:*');
                 resumo.itens.forEach(function (i) { linhas.push('• ' + i.qty + 'x ' + i.name + ' (' + formatBRL(i.qty * i.price) + ')'); });
             }
             if (resumo.cupom) linhas.push('*Cupom:* ' + resumo.cupom);
-            linhas.push('*Frete:* ' + (resumo.frete > 0 ? formatBRL(resumo.frete) : 'Grátis'));
-            linhas.push('*Total:* ' + formatBRL(resumo.total));
+            if (resumo.frete != null) linhas.push('*Frete:* ' + (resumo.frete > 0 ? formatBRL(resumo.frete) : 'Grátis'));
+            if (resumo.total != null) linhas.push('*Total:* ' + formatBRL(resumo.total));
             if (e.rua) {
                 linhas.push('', '*Entrega:* ' + e.rua + (e.numero ? ', ' + e.numero : '') + (e.complemento ? ' - ' + e.complemento : '') +
                     [e.bairro, e.cidade ? e.cidade + '/' + String(e.uf || '').toUpperCase() : '', e.cep ? 'CEP ' + e.cep : '']

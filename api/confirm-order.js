@@ -66,13 +66,18 @@ export default async function handler(req, res) {
         // Os itens e a entrega vêm do metadata da preference (o que foi cobrado); a sacola
         // do navegador fica de reserva.
         var crm = null;
+        var dados = null;
         if (payment && payment.id != null) {
-            crm = await registrarPagamento(dadosDoPagamento(payment, {
+            dados = dadosDoPagamento(payment, {
                 entrega: entrega,
                 itens: validarSacola(items, await catalogoAoVivo(), { ignorarEstoque: true }).itens,
                 cupom: body.cupom || null
-            }));
+            });
+            crm = await registrarPagamento(dados);
         }
+        // resumo para a tela de "pagamento aprovado" (botão do WhatsApp): vem do pagamento,
+        // então funciona mesmo se o cliente voltar num navegador sem a sacola
+        var pedido = dados ? resumoDoPedido(dados, payment, crm, await catalogoAoVivo()) : undefined;
 
         // Reconstrói a sacola pelos preços do servidor (mesma regra do checkout).
         var sacola = validarSacola(items, await catalogoAoVivo(), { ignorarEstoque: true });
@@ -85,6 +90,7 @@ export default async function handler(req, res) {
                 ok: !!(crm && crm.ok),
                 status: payment.status || 'unknown',
                 numero: crm && crm.numero,
+                pedido: pedido,
                 reason: 'sacola-invalida'
             });
         }
@@ -140,10 +146,32 @@ export default async function handler(req, res) {
             ok: true,
             id: pagamentoParaEmail.id,
             status: pagamentoParaEmail.status,
-            numero: crm && crm.ok ? crm.numero : undefined
+            numero: crm && crm.ok ? crm.numero : undefined,
+            pedido: pedido
         });
     } catch (err) {
         console.error('Erro em confirm-order:', err && err.message);
         return res.status(200).json({ ok: false, error: err && err.message });
     }
+}
+
+/** Nome, itens, total e endereço do pedido pago (só o que o próprio cliente informou). */
+function resumoDoPedido(dados, payment, crm, aoVivo) {
+    var cobrados = dados.itens || [];
+    var comNome = validarSacola(cobrados.map(function (i) { return { id: i.id, qty: i.qty }; }), aoVivo, { ignorarEstoque: true }).itens;
+    var nomes = {};
+    comNome.forEach(function (i) { nomes[i.id] = i.name; });
+    var e = dados.entrega || {};
+    return {
+        numero: crm && crm.ok ? crm.numero : undefined,
+        pagamento: dados.pagamentoId || undefined,
+        nome: (dados.cliente && dados.cliente.nome) || '',
+        itens: cobrados.map(function (i) {
+            return { qty: Number(i.qty) || 1, name: i.name || nomes[i.id] || String(i.id).replace('|', ' '), price: Number(i.price) || 0 };
+        }),
+        cupom: dados.cupom || '',
+        frete: Number(dados.frete) || 0,
+        total: payment && payment.transaction_amount != null ? Number(payment.transaction_amount) : undefined,
+        entrega: { rua: e.rua || '', numero: e.numero || '', complemento: e.complemento || '', bairro: e.bairro || '', cidade: e.cidade || '', uf: e.uf || '', cep: e.cep || '' }
+    };
 }
