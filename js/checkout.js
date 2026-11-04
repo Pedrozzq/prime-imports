@@ -470,11 +470,20 @@
                 '<strong>Pagamento aprovado!</strong> ' +
                 (paymentId ? 'Pedido #' + escapeHtml(paymentId) + '. ' : '') +
                 'Em breve entraremos em contato pelo WhatsApp com os detalhes de envio. ' +
-                '<a class="underline" href="index.html">Voltar à loja</a>' +
-                '<a href="https://wa.me/' + WHATSAPP_PRIME + '?text=' + encodeURIComponent(mensagemWhatsApp(resumo, paymentId)) + '"' +
-                ' target="_blank" rel="noopener" class="btn-venus-solid w-full mt-4 py-3 px-4 text-xs font-semibold uppercase tracking-widest rounded-lg flex items-center justify-center gap-2"' +
-                ' style="background:#D4AF37;color:#0a0a0a;text-decoration:none">' +
-                '<i class="fa-brands fa-whatsapp text-base"></i> Acompanhar meu pedido no WhatsApp</a>');
+                '<a class="underline" href="index.html">Voltar à loja</a>');
+            // botão branco logo abaixo da caixa verde (fora dela)
+            var statusBox = document.getElementById('checkout-status');
+            if (statusBox && !document.getElementById('checkout-whatsapp')) {
+                var wa = document.createElement('a');
+                wa.id = 'checkout-whatsapp';
+                wa.href = 'https://wa.me/' + WHATSAPP_PRIME + '?text=' + encodeURIComponent(mensagemWhatsApp(resumo, paymentId));
+                wa.target = '_blank';
+                wa.rel = 'noopener';
+                wa.className = 'btn-venus-solid w-full mt-4 py-3 px-4 text-xs font-semibold uppercase tracking-widest rounded-lg flex items-center justify-center gap-2';
+                wa.style.cssText = 'background:#ffffff;color:#0a0a0a;text-decoration:none';
+                wa.innerHTML = '<i class="fa-brands fa-whatsapp text-base"></i> Acompanhar meu pedido no WhatsApp';
+                statusBox.insertAdjacentElement('afterend', wa);
+            }
             confirmarPedido(paymentId, externalRef);
             return;
         }
