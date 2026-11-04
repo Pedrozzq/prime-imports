@@ -87,7 +87,7 @@ export default async function handler(req, res) {
         var comPromo = subtotal - promo.desconto;
         var cupom = await validarCupomAoVivo(body.cupom, comPromo, { telefone: entrega.fone });
         var aplicado = cupom.ok && cupom.desconto > 0 ? cupom : null;
-        var frete = calcularFrete(subtotal);
+        var frete = calcularFrete(subtotal, items);
         var total = Math.round(((aplicado ? comPromo - aplicado.desconto : comPromo) + frete) * 100) / 100;
 
         var resultado = await enviarEmailCheckout({

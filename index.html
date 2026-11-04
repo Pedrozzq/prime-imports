@@ -891,6 +891,13 @@ const PRODUTOS = [
     notas:{Uso:"1 a 2 vezes por semana", Ativos:"Óleo de argan, antioxidantes", Cabelo:"Ressecados a normais"},
     tamanhos:[{ml:"500 ml",mult:1},{ml:"250 ml",mult:0.6}] },
 
+  // PRODUTO DE TESTE (R$ 1,00, sem frete): só para testar o pagamento do site. Apague depois do teste.
+  { id:"teste-pagamento", nome:"Teste de pagamento", sub:"Produto de teste · não comprar", marca:"Prime Imports", cat:"bodysplash", familia:"Corpo",
+    preco:1.00, img:"img/vs-splash-bare-vanilla.webp", tom:"claro",
+    desc:"Produto interno para testar o pagamento do site (R$ 1,00, sem frete). Não é um produto à venda.",
+    notas:{Topo:"—", Corpo:"—", Fundo:"—"},
+    tamanhos:[{ml:"teste",mult:1}] },
+
   { id:"vs-splash-bare-vanilla", nome:"Victoria's Secret Bare Vanilla", sub:"Fragrance Mist 250 ml", marca:"Victoria's Secret", cat:"bodysplash", extra:["feminino"], familia:"Corpo",
     preco:149.00, img:"img/vs-splash-bare-vanilla.webp", tom:"claro",
     desc:"Body splash cremoso de baunilha e cashmere. Aconchegante, doce na medida e perfeito para reaplicar.",
@@ -1425,7 +1432,8 @@ function pintarCarrinho(){
   ultimoPctFrete = pctFrete;
 
   const total = totalSacola();
-  const frete = total >= FRETE_GRATIS_A_PARTIR ? 0 : 29.9;
+  const soTeste = estado.carrinho.length && estado.carrinho.every(i => i.id === "teste-pagamento");
+  const frete = (soTeste || total >= FRETE_GRATIS_A_PARTIR) ? 0 : 29.9;
   const promo = descontoDecants();
   const cup = cupomAtivo();
   const desconto = cup ? cup.desconto : 0;

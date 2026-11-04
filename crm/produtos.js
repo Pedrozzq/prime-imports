@@ -3,7 +3,7 @@
 //  Não edite à mão: rode "npm run catalogo" depois de alterar PRODUTOS no index.html.
 //  Cada tamanho (100 ml, decants) é um produto no CRM; o id é "<id do produto>|<tamanho>",
 //  o mesmo que o carrinho do site usa. Ao abrir, o CRM cadastra os novos e inativa os que saíram.
-//  Gerado a partir de index.html — 39 produtos, 135 variantes.
+//  Gerado a partir de index.html — 40 produtos, 136 variantes.
 // =====================================================================
 window.ZOO_CATALOGO = [
  {
@@ -1127,6 +1127,15 @@ window.ZOO_CATALOGO = [
   "secao": "masculino",
   "familia": "Cítrico",
   "linha": "nicho"
+ },
+ {
+  "id": "teste-pagamento|teste",
+  "name": "Teste de pagamento (teste)",
+  "category": "Prime Imports",
+  "price": 1,
+  "secao": "bodysplash",
+  "familia": "Corpo",
+  "linha": "importado"
  },
  {
   "id": "vs-splash-bare-vanilla|250 ml",

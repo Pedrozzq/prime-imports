@@ -104,7 +104,7 @@ export default async function handler(req, res) {
         }
 
         // Frete: decidido aqui pelo subtotal dos produtos (grátis a partir de R$ 500).
-        var frete = calcularFrete(subtotal);
+        var frete = calcularFrete(subtotal, sacola.itens);
         var totalProdutos = total;
         total = Math.round((totalProdutos + frete) * 100) / 100;
 

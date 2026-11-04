@@ -98,7 +98,7 @@ export default async function handler(req, res) {
         if (cupomAplicado) {
             total = Math.round((total - cupomAplicado.desconto) * 100) / 100;
         }
-        var frete = calcularFrete(subtotal);
+        var frete = calcularFrete(subtotal, sacola.itens);
         total = Math.round((total + frete) * 100) / 100;
 
         var pagamentoParaEmail = {

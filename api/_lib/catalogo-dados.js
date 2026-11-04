@@ -5,7 +5,7 @@
  * index.html. A chave é "<id do produto>|<tamanho>", exatamente como o
  * carrinho do front-end monta.
  *
- * Gerado a partir de index.html — 39 produtos, 135 variantes.
+ * Gerado a partir de index.html — 40 produtos, 136 variantes.
  */
 
 export const CATALOGO = {
@@ -133,6 +133,7 @@ export const CATALOGO = {
     "sospiro-vibrato|Decant 10 ml": { nome: "Sospiro Vibrato (Decant 10 ml)", marca: "Sospiro", preco: 319.00 },
     "sospiro-vibrato|Decant 15 ml": { nome: "Sospiro Vibrato (Decant 15 ml)", marca: "Sospiro", preco: 473.00 },
     "sospiro-vibrato|Decant 5 ml": { nome: "Sospiro Vibrato (Decant 5 ml)", marca: "Sospiro", preco: 174.00 },
+    "teste-pagamento|teste": { nome: "Teste de pagamento (teste)", marca: "Prime Imports", preco: 1.00 },
     "vs-splash-bare-vanilla|250 ml": { nome: "Victoria's Secret Bare Vanilla (250 ml)", marca: "Victoria's Secret", preco: 149.00 },
     "vs-splash-midnight-bloom|250 ml": { nome: "Victoria's Secret Midnight Bloom (250 ml)", marca: "Victoria's Secret", preco: 149.00 },
     "vs-splash-pure-seduction|250 ml": { nome: "Victoria's Secret Pure Seduction (250 ml)", marca: "Victoria's Secret", preco: 149.00 },
