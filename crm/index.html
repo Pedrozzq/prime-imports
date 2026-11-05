@@ -31,7 +31,7 @@
      Para configurar, edite crm/config.js; os produtos vêm do crm/produtos.js (gerado pelo "npm run catalogo") -->
 <script src="config.js"></script>
 <script src="produtos.js"></script>
-<script src="etiquetas.js?v=2"></script>
+<script src="etiquetas.js?v=3"></script>
 <style>
 :root{
   --bg:#0a0a0a; --bg2:#111111; --card:#161513; --card2:#1c1b18; --line:#2a2721; --line2:#3a352b;
@@ -228,7 +228,7 @@ td.small.mut,td.num{white-space:nowrap}
 .s-cancelado{color:var(--red);background:rgba(255,93,93,.1)}
 .s-recusado{color:#ff8a65;background:rgba(255,138,101,.1);border-color:rgba(255,138,101,.3)}
 .s-fora_horario{color:var(--violet);background:rgba(184,146,255,.1);border-color:rgba(184,146,255,.25)}
-.s-aguardando_pagamento{color:var(--amber);background:rgba(255,181,71,.1);border-color:rgba(255,181,71,.3)}
+.s-aguardando_pagamento{color:#ffd60a;background:rgba(255,214,10,.12);border-color:rgba(255,214,10,.35)}
 select.pill{appearance:none;cursor:pointer;padding-right:10px;outline:none}
 select.pill option{background:var(--card);color:var(--txt)}
 .tag{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:6px;background:var(--card2);border:1px solid var(--line2);color:var(--mut)}
@@ -2328,7 +2328,7 @@ async function geradorEtiquetas() {
     const s = document.createElement('script');
     // pasta do CRM, mesmo se a página foi aberta sem a barra no fim (".../crm")
     const pasta = /\/$|\.html?$/.test(location.pathname) ? '' : location.pathname.split('/').pop() + '/';
-    s.src = `${pasta}etiquetas.js?v=2&t=${Date.now()}`; s.onload = ok;
+    s.src = `${pasta}etiquetas.js?v=3&t=${Date.now()}`; s.onload = ok;
     s.onerror = () => erro(new Error('Não consegui carregar o gerador de etiquetas. Confira a internet e recarregue a página (Ctrl+F5).'));
     document.head.appendChild(s);
   });
@@ -2339,9 +2339,10 @@ async function imprimirEtiquetas(peds, btn) {
   if (!peds.length) return false;
   const txt = btn?.innerHTML; if (btn) { btn.disabled = true; btn.textContent = 'Gerando…'; }
   try {
-    await (await geradorEtiquetas())(peds, window.ZOO_LOJA || {});
+    const avisos = await (await geradorEtiquetas())(peds, window.ZOO_LOJA || {}) || [];
     try { const s = etqImpressas(); peds.forEach(p => s.add(p.numero)); localStorage.setItem('zoo_etq', JSON.stringify([...s].slice(-2000))); } catch {}
-    toast(peds.length === 1 ? `Etiqueta do pedido #${peds[0].numero} baixada` : `${peds.length} etiquetas baixadas num PDF`);
+    if (avisos.length) toast(`Etiqueta baixada, mas preencha à caneta: ${avisos.map(a => `#${a.numero} (${a.faltas.join(', ')})`).join(' · ')}`, true);
+    else toast(peds.length === 1 ? `Etiqueta do pedido #${peds[0].numero} baixada` : `${peds.length} etiquetas baixadas num PDF`);
     return true;
   } catch (e) { toast(e.message, true); return false; }
   finally { if (btn) { btn.disabled = false; btn.innerHTML = txt; } }

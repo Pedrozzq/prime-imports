@@ -6,12 +6,18 @@
 //  A anon key pode ficar pública: as tabelas são protegidas por RLS.
 // =====================================================================
 // Dados da loja que saem como REMETENTE na etiqueta de envio do CRM
+// endereco, bairro, cidade, uf, cep: endereço de onde a mercadoria sai. Vazio = a etiqueta sai com linhas
+// em branco para preencher à caneta (e o CRM avisa ao gerar)
 // whatsapp: só dígitos com DDI e DDD, ex.: '5531999999999' (vazio = não imprime)
 // avaliacao_google: link que vai na mensagem pronta "Avaliar no Google" (CRM > WhatsApp)
 window.ZOO_LOJA = {
   nome: 'Prime Perfumes',
+  endereco: '',
+  bairro: '',
   cidade: '',
-  whatsapp: '',
+  uf: '',
+  cep: '',
+  whatsapp: '5521996931199',
   avaliacao_google: ''
 };
 
