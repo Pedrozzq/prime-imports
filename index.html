@@ -117,9 +117,12 @@ input,select{font:inherit}
 @media(max-width:1080px){.nav{gap:16px}.nav__link{font-size:11px}}
 @media(max-width:940px){
   .nav{display:none}
-  .hamburguer{display:grid;order:2;margin-left:auto}
-  .topo__linha{gap:12px;position:relative;padding:16px 0}
-  .acoes{order:3}
+  /* mobile: menu e busca à esquerda, logo no centro, sacola à direita */
+  .hamburguer{display:grid;order:1}
+  .topo__linha{gap:6px;position:relative;padding:16px 0}
+  .acoes{display:contents}
+  #btnBusca{order:2}
+  #btnCarrinho{order:3;margin-left:auto}
   .marca{width:auto;position:absolute;left:50%;top:50%;translate:-50% -50%}
   .marca img{width:auto;height:62px;display:block}
 }
@@ -1783,8 +1786,8 @@ function vistaCatalogo(){
   const familias = [...new Set(PRODUTOS.filter(p => ["masculino","feminino","unissex","cosmeticos","bodysplash"].includes(estado.rota) ? p.cat === estado.rota : true).map(p => p.familia))];
   const mostrarFamilias = ["unissex","cosmeticos"].includes(estado.rota);
   const chipsCustom = {
-    masculino: [["","Todos"],["arabes","Árabes"],["importados","Importados"],["nicho","Nicho"]],
-    feminino:  [["","Todos"],["arabes","Árabes"],["importados","Importados"],["nicho","Nicho"],["bodysplash","Body Splash"]],
+    masculino: [["","Todos"],["arabes","Árabes"],["importados","Designer"],["nicho","Nicho"]],
+    feminino:  [["","Todos"],["arabes","Árabes"],["importados","Designer"],["nicho","Nicho"],["bodysplash","Body Splash"]],
     decants:   [["","Todos"],["masculino","Masculino"],["feminino","Feminino"]]
   }[estado.rota];
   const emBreve = estado.rota === "cosmeticos" && COSMETICOS_EM_BREVE.includes(estado.params.familia);
