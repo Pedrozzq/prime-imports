@@ -4,13 +4,21 @@
 //  impressoras térmicas (Zebra, Elgin, Argox…). Só preto e branco, sem cinza (térmica não imprime cinza).
 //  Uma página por pedido; vários pedidos saem num PDF só.
 //  A etiqueta fica por fora da caixa: não leva valores, forma de pagamento nem nome dos produtos.
-//  As bibliotecas (jsPDF e JsBarcode) só são baixadas na primeira vez que alguém gera uma etiqueta.
+//  O jsPDF e o QR code (img/qrcode-etiqueta.png) só são baixados na primeira vez que alguém gera uma etiqueta.
 // =====================================================================
 (() => {
   const LIBS = [
-    'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
-    'https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.6/JsBarcode.all.min.js'
+    'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'
   ];
+  // QR code da etiqueta (o mesmo em todas): caminho relativo a este arquivo, ache a página onde achar
+  const QR_SRC = new URL('img/qrcode-etiqueta.png?v=1', document.currentScript?.src || location.href).href;
+  let qrImg;
+  const carregarQR = () => qrImg ||= new Promise((ok, erro) => {
+    const img = new Image();
+    img.onload = () => ok(img);
+    img.onerror = () => { qrImg = null; erro(new Error('Não consegui carregar o QR code da etiqueta. Tente de novo.')); };
+    img.src = QR_SRC;
+  });
   const carregando = {};
   const carregar = src => carregando[src] ||= new Promise((ok, erro) => {
     const s = document.createElement('script');
@@ -80,7 +88,7 @@
   }
 
   // devolve o que faltou nesta etiqueta (o CRM avisa quem imprimiu)
-  function etiqueta(doc, p, loja) {
+  function etiqueta(doc, p, loja, qrImg) {
     const c = p.clientes || {};
     const retirada = p.tipo_entrega === 'retirada';
     const faltas = [];
@@ -99,19 +107,10 @@
     y += 11.5;
     doc.setLineWidth(0.5); doc.line(M, y, W - M, y); y += 2.5;
 
-    // ---- código de barras do pedido (CODE128 em vetor: barras pretas puras, nítido em qualquer térmica) ----
-    const bc = {};
-    window.JsBarcode(bc, String(p.numero), {format: 'CODE128'});
-    const bits = bc.encodings.map(e => e.data).join('');
-    const mod = Math.min(0.75, (CW - 8) / bits.length), bw = mod * bits.length, bx = (W - bw) / 2;
-    doc.setFillColor(0);
-    for (let i = 0; i < bits.length; i++) {
-      if (bits[i] !== '1') continue;
-      let n = 1; while (bits[i + n] === '1') n++;
-      doc.rect(bx + i * mod, y, n * mod, 16, 'F');
-      i += n - 1;
-    }
-    y += 20;
+    // ---- QR code (PNG só preto e branco, já com a margem branca que o leitor precisa) ----
+    const qr = 21;
+    doc.addImage(qrImg, 'PNG', (W - qr) / 2, y - 1, qr, qr, 'qr-etiqueta', 'NONE');
+    y += 22.5;
     const qtd = (p.pedido_itens || []).reduce((s, i) => s + (+i.quantidade || 0), 0);
     doc.setFont('helvetica', 'bold'); doc.setFontSize(10);
     doc.text(`PEDIDO #${p.numero}${qtd ? `  ·  ${qtd} ${qtd === 1 ? 'UNIDADE' : 'UNIDADES'}` : ''}`, W / 2, y, {align: 'center'});
@@ -203,11 +202,12 @@
   window.zooEtiquetas = async (pedidos, loja = {}) => {
     if (!pedidos.length) throw new Error('Nenhum pedido selecionado');
     for (const src of LIBS) await carregar(src);
+    const qrImg = await carregarQR();
     const doc = new window.jspdf.jsPDF({unit: 'mm', format: [W, H], orientation: 'portrait'});
     const avisos = [];
     pedidos.forEach((p, i) => {
       if (i) doc.addPage([W, H], 'portrait');
-      const faltas = etiqueta(doc, p, loja);
+      const faltas = etiqueta(doc, p, loja, qrImg);
       if (faltas.length) avisos.push({numero: p.numero, faltas});
     });
     doc.setProperties({title: pedidos.length === 1 ? `Etiqueta pedido #${pedidos[0].numero}` : `Etiquetas ${pedidos.length} pedidos`});
