@@ -5,10 +5,13 @@
  * index.html. A chave é "<id do produto>|<tamanho>", exatamente como o
  * carrinho do front-end monta.
  *
- * Gerado a partir de index.html — 39 produtos, 135 variantes.
+ * Gerado a partir de index.html — 41 produtos, 141 variantes.
  */
 
 export const CATALOGO = {
+    "212-nyc-woman|Decant 10 ml": { nome: "Carolina Herrera 212 NYC Woman (Decant 10 ml)", marca: "Carolina Herrera", preco: 90.00 },
+    "212-nyc-woman|Decant 15 ml": { nome: "Carolina Herrera 212 NYC Woman (Decant 15 ml)", marca: "Carolina Herrera", preco: 135.00 },
+    "212-nyc-woman|Decant 5 ml": { nome: "Carolina Herrera 212 NYC Woman (Decant 5 ml)", marca: "Carolina Herrera", preco: 49.00 },
     "armani-my-way|100 ml": { nome: "Giorgio Armani My Way (100 ml)", marca: "Giorgio Armani", preco: 954.00 },
     "armani-my-way|Decant 10 ml": { nome: "Giorgio Armani My Way (Decant 10 ml)", marca: "Giorgio Armani", preco: 106.00 },
     "armani-my-way|Decant 15 ml": { nome: "Giorgio Armani My Way (Decant 15 ml)", marca: "Giorgio Armani", preco: 159.00 },
@@ -64,6 +67,9 @@ export const CATALOGO = {
     "hawas-black|Decant 10 ml": { nome: "Rasasi Hawas Black (Decant 10 ml)", marca: "Rasasi", preco: 80.00 },
     "hawas-black|Decant 15 ml": { nome: "Rasasi Hawas Black (Decant 15 ml)", marca: "Rasasi", preco: 120.00 },
     "hawas-black|Decant 5 ml": { nome: "Rasasi Hawas Black (Decant 5 ml)", marca: "Rasasi", preco: 49.00 },
+    "hypnotic-poison|Decant 10 ml": { nome: "Dior Hypnotic Poison (Decant 10 ml)", marca: "Dior", preco: 90.00 },
+    "hypnotic-poison|Decant 15 ml": { nome: "Dior Hypnotic Poison (Decant 15 ml)", marca: "Dior", preco: 135.00 },
+    "hypnotic-poison|Decant 5 ml": { nome: "Dior Hypnotic Poison (Decant 5 ml)", marca: "Dior", preco: 49.00 },
     "invictus-edp|200 ml": { nome: "Paco Rabanne Invictus (200 ml)", marca: "Paco Rabanne", preco: 830.00 },
     "invictus-edp|Decant 10 ml": { nome: "Paco Rabanne Invictus (Decant 10 ml)", marca: "Paco Rabanne", preco: 55.00 },
     "invictus-edp|Decant 15 ml": { nome: "Paco Rabanne Invictus (Decant 15 ml)", marca: "Paco Rabanne", preco: 75.00 },

@@ -3,9 +3,36 @@
 //  Não edite à mão: rode "npm run catalogo" depois de alterar PRODUTOS no index.html.
 //  Cada tamanho (100 ml, decants) é um produto no CRM; o id é "<id do produto>|<tamanho>",
 //  o mesmo que o carrinho do site usa. Ao abrir, o CRM cadastra os novos e inativa os que saíram.
-//  Gerado a partir de index.html — 39 produtos, 135 variantes.
+//  Gerado a partir de index.html — 41 produtos, 141 variantes.
 // =====================================================================
 window.ZOO_CATALOGO = [
+ {
+  "id": "212-nyc-woman|Decant 10 ml",
+  "name": "Carolina Herrera 212 NYC Woman (Decant 10 ml)",
+  "category": "Carolina Herrera",
+  "price": 90,
+  "secao": "feminino",
+  "familia": "Floral",
+  "linha": "importado"
+ },
+ {
+  "id": "212-nyc-woman|Decant 15 ml",
+  "name": "Carolina Herrera 212 NYC Woman (Decant 15 ml)",
+  "category": "Carolina Herrera",
+  "price": 135,
+  "secao": "feminino",
+  "familia": "Floral",
+  "linha": "importado"
+ },
+ {
+  "id": "212-nyc-woman|Decant 5 ml",
+  "name": "Carolina Herrera 212 NYC Woman (Decant 5 ml)",
+  "category": "Carolina Herrera",
+  "price": 49,
+  "secao": "feminino",
+  "familia": "Floral",
+  "linha": "importado"
+ },
  {
   "id": "armani-my-way|100 ml",
   "name": "Giorgio Armani My Way (100 ml)",
@@ -500,6 +527,33 @@ window.ZOO_CATALOGO = [
   "secao": "masculino",
   "familia": "Árabe",
   "linha": "arabe"
+ },
+ {
+  "id": "hypnotic-poison|Decant 10 ml",
+  "name": "Dior Hypnotic Poison (Decant 10 ml)",
+  "category": "Dior",
+  "price": 90,
+  "secao": "feminino",
+  "familia": "Doce",
+  "linha": "importado"
+ },
+ {
+  "id": "hypnotic-poison|Decant 15 ml",
+  "name": "Dior Hypnotic Poison (Decant 15 ml)",
+  "category": "Dior",
+  "price": 135,
+  "secao": "feminino",
+  "familia": "Doce",
+  "linha": "importado"
+ },
+ {
+  "id": "hypnotic-poison|Decant 5 ml",
+  "name": "Dior Hypnotic Poison (Decant 5 ml)",
+  "category": "Dior",
+  "price": 49,
+  "secao": "feminino",
+  "familia": "Doce",
+  "linha": "importado"
  },
  {
   "id": "invictus-edp|200 ml",
