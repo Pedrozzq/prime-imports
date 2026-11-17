@@ -166,10 +166,84 @@
         "<span class=\"relampago__pct\"><small>até</small><b class=\"relampago__ouro\">-" + pctMax + "%</b><small>off</small></span>" +
         "<div class=\"relampago__tempo\"><small>Termina em</small><span class=\"relampago__relogio\" data-relampago-fim=\"" + fim + "\"></span>" +
           "<em class=\"relampago__hora\">até as " + new Date(fim).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }) + "</em></div>" +
-        "<a class=\"relampago__btn\" href=\"#/promocoes\">Ver ofertas <span aria-hidden=\"true\">→</span></a>" +
+        "<button class=\"relampago__btn\" type=\"button\" data-abrir-ofertas>Ver ofertas <span aria-hidden=\"true\">→</span></button>" +
+      "</div>";
+    var pop = document.getElementById("modalOfertas");
+    if (pop && pop.classList.contains("aberto")) pintarPopOfertas();
+    tic();
+  }
+
+  // ---------- POP-UP "VER OFERTAS" ----------
+  // Lista cada item da oferta relâmpago (perfume + tamanho) com preço antigo riscado,
+  // preço de oferta, -% e cronômetro; dá para pôr na sacola ali mesmo.
+  function itensOferta() {
+    var vistos = {}, lista = [];
+    OFERTAS.forEach(function (o) {
+      var fim = Date.parse(o.fim);
+      if (!(fim > agora())) return;
+      (o.itens || []).forEach(function (i) {
+        var pid = String(i.id).split("|")[0], ml = String(i.id).slice(pid.length + 1);
+        if (vistos[pid + "|" + ml]) return;
+        var p = acharProduto(pid);
+        var idx = p ? p.tamanhos.findIndex(function (x) { return x.ml === ml; }) : -1;
+        var t = idx >= 0 && p.tamanhos[idx];
+        if (!t || !t.precoAntigo) return;
+        vistos[pid + "|" + ml] = 1;
+        lista.push({ p: p, t: t, idx: idx, fim: fim, pct: Math.round((1 - t.preco / t.precoAntigo) * 100) });
+      });
+    });
+    return lista.sort(function (a, b) { return b.pct - a.pct; });
+  }
+
+  function pintarPopOfertas() {
+    var pop = document.getElementById("modalOfertas");
+    if (!pop) {
+      pop = document.createElement("div");
+      pop.id = "modalOfertas"; pop.className = "modal ofertas-pop";
+      pop.setAttribute("role", "dialog"); pop.setAttribute("aria-modal", "true"); pop.setAttribute("aria-label", "Ofertas relâmpago");
+      document.body.appendChild(pop);
+    }
+    var o = OFERTAS.filter(function (x) { return Date.parse(x.fim) > agora(); })[0];
+    var lista = itensOferta();
+    var img = function (p) { return p.img; };   // foto do frasco (a do decant é igual para todos)
+    pop.innerHTML =
+      "<div class=\"ofertas-pop__painel\">" +
+        "<button class=\"modal__fechar ofertas-pop__fechar\" type=\"button\" data-fechar aria-label=\"Fechar\"><svg viewBox=\"0 0 24 24\"><path d=\"M6 6l12 12M18 6L6 18\"/></svg></button>" +
+        "<header class=\"ofertas-pop__topo\">" +
+          "<small class=\"relampago__ouro\">⚡ Oferta relâmpago</small>" +
+          "<h2>" + escHtml((o && o.titulo) || "Ofertas relâmpago") + "</h2>" +
+          (o && o.subtitulo ? "<p>" + escHtml(o.subtitulo) + "</p>" : "") +
+          (o ? "<span class=\"ofertas-pop__tempo\" data-relampago-fim=\"" + Date.parse(o.fim) + "\"></span>" : "") +
+        "</header>" +
+        (lista.length
+          ? "<ul class=\"ofertas-pop__lista\">" + lista.map(function (x) {
+              return "<li class=\"ofertas-pop__item\">" +
+                "<button type=\"button\" class=\"ofertas-pop__img\" data-oferta-ver=\"" + escHtml(x.p.id) + "\" aria-label=\"Ver detalhes de " + escHtml(x.p.nome) + "\">" +
+                  "<img src=\"" + escHtml(img(x.p, x.t.ml)) + "\" alt=\"\" loading=\"lazy\"><span class=\"ofertas-pop__pct\">-" + x.pct + "%</span></button>" +
+                "<div class=\"ofertas-pop__info\">" +
+                  "<small>" + escHtml(x.p.marca || "") + "</small>" +
+                  "<b>" + escHtml(x.p.nome) + "</b>" +
+                  "<span class=\"ofertas-pop__ml\">" + escHtml(x.t.ml) + "</span>" +
+                  "<span class=\"ofertas-pop__precos\"><s>" + dinheiro(x.t.precoAntigo) + "</s><strong>" + dinheiro(x.t.preco) + "</strong></span>" +
+                "</div>" +
+                "<button type=\"button\" class=\"ofertas-pop__add\" data-oferta-add=\"" + escHtml(x.p.id) + "\" data-oferta-idx=\"" + x.idx + "\">Comprar</button>" +
+              "</li>";
+            }).join("") + "</ul>"
+          : "<p class=\"ofertas-pop__vazio\">A oferta relâmpago acabou. Fique de olho, logo tem outra!</p>") +
       "</div>";
     tic();
   }
+
+  document.addEventListener("click", function (e) {
+    var alvo = e.target;
+    if (!alvo.closest) return;
+    if (alvo.closest("[data-abrir-ofertas]")) { pintarPopOfertas(); abrirSobreposicao("modalOfertas"); return; }
+    if (alvo.id === "modalOfertas") { fecharTudo(); return; }   // clique fora do painel
+    var ver = alvo.closest("[data-oferta-ver]");
+    if (ver) { fecharTudo(); abrirProduto(ver.dataset.ofertaVer); return; }
+    var add = alvo.closest("[data-oferta-add]");
+    if (add) { adicionar(add.dataset.ofertaAdd, Number(add.dataset.ofertaIdx) || 0); fecharTudo(); abrirSobreposicao("gavetaCarrinho"); }
+  });
 
   function marcarCartoes() {
     document.querySelectorAll("article.produto[data-produto]").forEach(function (a) {
@@ -269,6 +343,32 @@
       ".relampago__hora{font-style:normal;font-size:11px;letter-spacing:.06em;color:#a99d86}",
       ".relampago--final .relampago__relogio b{color:#ffd9cf;border-color:rgba(255,99,71,.8);box-shadow:0 0 16px -2px rgba(255,80,50,.65)}",
       ".relampago--final .relampago__tempo>small{color:#ff8a6b;animation:relPisca 1s steps(1) infinite}",
+      ".ofertas-pop__painel{position:relative;width:min(720px,100%);max-height:88vh;overflow-y:auto;background:linear-gradient(180deg,#0d0a06,#050403);border:1px solid rgba(217,179,108,.55);box-shadow:0 44px 100px -34px rgba(0,0,0,.9),0 0 40px -18px rgba(217,179,108,.6);color:#f6efe2;scale:.96;transition:scale .28s}",
+      ".ofertas-pop.aberto .ofertas-pop__painel{scale:1}",
+      ".ofertas-pop__fechar{background:rgba(3,7,14,.55)!important;border:1px solid rgba(217,179,108,.45);color:#f3d58f!important}",
+      ".ofertas-pop__topo{padding:28px 28px 18px;text-align:center;border-bottom:1px solid rgba(217,179,108,.25);background:radial-gradient(60% 140% at 50% 0%,rgba(217,179,108,.18),transparent 70%)}",
+      ".ofertas-pop__topo small{font-size:10.5px;letter-spacing:.32em;text-transform:uppercase;font-weight:700}",
+      ".ofertas-pop__topo h2{margin:8px 0 4px;font-family:\"Cormorant Garamond\",Georgia,serif;font-size:30px;font-weight:600;letter-spacing:.04em;color:#fff}",
+      ".ofertas-pop__topo p{margin:0;font-size:13px;color:#bfb29a}",
+      ".ofertas-pop__tempo{display:inline-block;margin-top:12px;padding:6px 14px;border:1px solid rgba(217,179,108,.5);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#f3d58f;font-variant-numeric:tabular-nums}",
+      ".ofertas-pop__lista{list-style:none;margin:0;padding:10px 18px 22px}",
+      ".ofertas-pop__item{display:grid;grid-template-columns:84px 1fr auto;gap:16px;align-items:center;padding:14px 8px;border-bottom:1px solid rgba(217,179,108,.15)}",
+      ".ofertas-pop__item:last-child{border-bottom:0}",
+      ".ofertas-pop__img{position:relative;width:84px;height:84px;padding:6px;background:radial-gradient(circle,#1a140b,#070605);border:1px solid rgba(217,179,108,.3);cursor:pointer}",
+      ".ofertas-pop__img img{width:100%;height:100%;object-fit:contain}",
+      ".ofertas-pop__pct{position:absolute;top:-8px;left:-8px;padding:3px 7px;background:linear-gradient(135deg,#7d0f0a,#c0392b 50%,#e0452f);border:1px solid rgba(243,213,143,.8);color:#fff6da;font-size:11px;font-weight:700}",
+      ".ofertas-pop__info{display:flex;flex-direction:column;gap:2px;min-width:0}",
+      ".ofertas-pop__info small{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:#d9b36c}",
+      ".ofertas-pop__info b{font-family:\"Cormorant Garamond\",Georgia,serif;font-size:19px;font-weight:600;color:#fff}",
+      ".ofertas-pop__ml{font-size:12px;color:#a99d86}",
+      ".ofertas-pop__precos{display:flex;align-items:baseline;gap:8px;margin-top:3px}",
+      ".ofertas-pop__precos s{font-size:12.5px;color:#8f8570}",
+      ".ofertas-pop__precos strong{font-size:18px;color:#ff7a4d}",
+      ".ofertas-pop__add{padding:11px 18px;background:linear-gradient(135deg,#f6dc9c,#d9b36c 45%,#a87b2e);color:#140f07;font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;cursor:pointer;transition:transform .2s}",
+      ".ofertas-pop__add:hover{transform:translateY(-2px)}",
+      ".ofertas-pop__vazio{padding:30px;text-align:center;color:#bfb29a}",
+      "@media(max-width:560px){.ofertas-pop__item{grid-template-columns:64px 1fr;gap:12px}.ofertas-pop__img{width:64px;height:64px}.ofertas-pop__add{grid-column:1/-1}.ofertas-pop__topo h2{font-size:24px}}",
+      ".relampago__btn{border:0;cursor:pointer;font-family:inherit}",
       ".relampago__btn{position:relative;overflow:hidden;padding:12px 22px;background:linear-gradient(135deg,#f6dc9c,#d9b36c 45%,#a87b2e);color:#140f07;font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;text-decoration:none;box-shadow:0 10px 26px -12px rgba(217,179,108,.9);transition:transform .25s,box-shadow .25s}",
       ".relampago__btn::after{content:\"\";position:absolute;top:0;bottom:0;width:40%;left:-60%;background:linear-gradient(105deg,transparent,rgba(255,255,255,.7),transparent);transform:skewX(-20deg);animation:relBotao 3s ease-in-out infinite}",
       ".relampago__btn:hover{transform:translateY(-2px);box-shadow:0 16px 30px -12px rgba(217,179,108,1)}",
