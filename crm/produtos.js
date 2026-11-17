@@ -736,7 +736,7 @@ window.ZOO_CATALOGO = [
   "id": "la-vie-est-belle-200|Decant 10 ml",
   "name": "Lancôme La Vie Est Belle (Decant 10 ml)",
   "category": "Lancôme",
-  "price": 99,
+  "price": 55,
   "secao": "feminino",
   "familia": "Doce",
   "linha": "importado"
@@ -1060,7 +1060,7 @@ window.ZOO_CATALOGO = [
   "id": "sauvage-edp-200|Decant 10 ml",
   "name": "Dior Sauvage (Decant 10 ml)",
   "category": "Dior",
-  "price": 88,
+  "price": 45,
   "secao": "masculino",
   "familia": "Cítrico",
   "linha": "importado"
